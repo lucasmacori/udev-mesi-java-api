@@ -15,4 +15,7 @@ public class Constructor {
 	
 	@Column(name = "name", nullable = false, length = 50, unique = true)
 	public String name;
+
+	@Column(name = "is_active", nullable = false, columnDefinition = "bool default true")
+	public boolean isActive;
 }

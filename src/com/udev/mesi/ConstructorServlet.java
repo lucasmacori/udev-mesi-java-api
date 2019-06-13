@@ -1,20 +1,20 @@
 package com.udev.mesi;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.hibernate.SessionFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,9 +32,10 @@ public class ConstructorServlet {
  
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public WsResponse get() throws JSONException {
+	public Response get() throws JSONException {
  
 		// Initialisation de la réponse JSON
+		int status = 200;
 		WsResponse response;
 		
 		try {
@@ -44,7 +45,7 @@ public class ConstructorServlet {
 			EntityManager em = emf.createEntityManager();		
 			
 			// Récupération des constructeurs depuis la base de données
-			Query query = em.createQuery("from Constructor");
+			Query query = em.createQuery("FROM Constructor WHERE is_active = true");
 			List<Constructor> constructors = query.getResultList();
 			
 			// Création de la réponse JSON
@@ -56,65 +57,129 @@ public class ConstructorServlet {
 	 
 			// Renvoi de la réponse
 		} catch (Exception e) {
+			if (status == 200) status = 500;
 			response = new WsResponse("KO", e.getMessage());
 		}
 		
-		return response;
+		return Response.status(status).entity(response).build();
 	}
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes("application/x-www-form-urlencoded")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response create(final MultivaluedMap<String, String> formParams) throws JSONException {
-		
+
 		// Initialisation de la réponse JSON
-		JSONObject jsonObject;
+		int status = 200;
+		WsResponse response;
 				
 		try {
-			jsonObject = new JSONObject();
-			
+
 			// Vérification des paramètres
-			if (!isValidConstructor(formParams)) {
+			if (!isValidConstructor(formParams, false)) {
+				status = 400;
 				throw new Exception("Le constructeur n'est pas correct. Veuillez renseigner les valeurs suivantes: 'name'");
 			}
 			
+			// Création du constructeur
+			// TODO: Vérifier si le constructeur n'existe pas déja (si inatif, le réactiver)
+			Constructor constructor = new Constructor();
+			constructor.name = formParams.get("name").get(0);
+
+			// Persistence du constructeur
+			saveConstructor(constructor);
+			
+			response = new WsResponse("OK", null);
+		} catch (Exception e) {
+			if (status == 200) status = 500;
+			response = new WsResponse("KO", e.getMessage());
+		}
+
+		return Response.status(status).entity(response).build();
+	}
+
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response update(final MultivaluedMap<String, String> formParams) throws JSONException {
+
+		// Initialisation de la réponse JSON
+		int status = 200;
+		WsResponse response;
+
+		try {
+
+			// Vérification des paramètres
+			if (!isValidConstructor(formParams, true)) {
+				status = 400;
+				throw new Exception("Le constructeur n'est pas correct. Veuillez renseigner les valeurs suivantes: 'id', 'name'");
+			}
+
 			// Création du gestionnaire d'entités
 			EntityManagerFactory emf = Persistence.createEntityManagerFactory(UNIT_NAME);
 			EntityManager em = emf.createEntityManager();
-			/*EntityManagerFactory emf = Persistence.createEntityManagerFactory(UNIT_NAME);
-			EntityManager em = emf.createEntityManager();*/
-			
-			// Création du constructeur
-			Constructor constructor = new Constructor();
-			constructor.name = formParams.get("name").get(0);
-			
-			// Persistence du constructeur
-			em.getTransaction().begin();			
-			em.flush();
-			em.persist(constructor);
-			em.getTransaction().commit();
-			
-			// Fermeture du gestionnaire d'entités
-			em.close();
-			//emf.close();
-			
-			jsonObject.put("status", "OK");
-			
-			return Response.status(200).entity(jsonObject.toString()).build();
-		} catch (Exception e) {
-			jsonObject = new JSONObject();			
-			jsonObject.put("message", e.getMessage());
-			jsonObject.put("status", "KO");
-			return Response.status(500).entity(jsonObject.toString()).build();
-		}
-	}
-	
-	private boolean isValidConstructor(final MultivaluedMap<String, String> formParams) {
-		if (formParams.containsKey("name")) {
-			if (formParams.get("name").size() == 1) {
-				return true;
+
+			// Récupération du constructeur
+			try {
+				long id = Long.parseLong(formParams.get("id").get(0));
+
+				Constructor constructor = em.find(Constructor.class, id);
+
+				if (constructor == null || !constructor.isActive) {
+					throw new Exception("Le constructeur avec l'ID '" + id + "' n'existe pas");
+				}
+
+				// Modification du constructeur
+				constructor.name = formParams.get("name").get(0);
+
+				// Persistence du constructeur
+				saveConstructor(constructor);
+
+				// Fermeture du gestionnaire d'entités
+				em.close();
+				emf.close();
+
+				response = new WsResponse("OK", null);
+			} catch (NumberFormatException e) {
+				status = 400;
+				throw new Exception("L'id entré n'est pas un nombre entier");
 			}
+		} catch (Exception e) {
+			if (status == 200) status = 500;
+			response = new WsResponse("KO", e.getMessage());
+
 		}
-		return false;
+
+		return Response.status(status).entity(response).build();
+	}
+
+	@DELETE
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response delete(MultivaluedMap<String, String> formParams) throws JSONException {
+		// TODO: Appeler la méthode de modification pour passer is_active à false
+		return Response.status(200).build();
+	}
+
+	private boolean isValidConstructor(final MultivaluedMap<String, String> formParams, boolean isUpdate) {
+		if (isUpdate && !formParams.containsKey("id")) return false;
+		if (!formParams.containsKey("name")) return false;
+		return true;
+	}
+
+	private void saveConstructor(Constructor constructor) {
+		// Création du gestionnaire d'entités
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(UNIT_NAME);
+		EntityManager em = emf.createEntityManager();
+
+		// Validation des changements
+		em.getTransaction().begin();
+		em.flush();
+		em.persist(constructor);
+		em.getTransaction().commit();
+
+		// Fermeture du gestionnaire d'entités
+		em.close();
+		emf.close();
 	}
 }
