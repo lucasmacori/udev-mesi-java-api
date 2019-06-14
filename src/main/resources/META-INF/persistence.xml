@@ -5,7 +5,7 @@
 version="2.0">
 	<persistence-unit name="udevmesi" transaction-type="RESOURCE_LOCAL">
  		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-    	<class>com.udev.mesi.entities.Constructor</class>
+    	<class>main.java.com.udev.mesi.entities.Constructor</class>
 		<properties>
       		<property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/udev-mesi" />
       		<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
