@@ -2,27 +2,31 @@ package main.java.com.udev.mesi.entities;
 
 import com.udev.mesi.models.WsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Constructor implements IEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "id", updatable = false, nullable = false)
+	@Column(updatable = false, nullable = false)
 	public Long id;
-	
-	@Column(name = "name", nullable = false, length = 50, unique = true)
+
+	@Column(nullable = false, length = 50, unique = true)
 	public String name;
 
-	@Column(name = "is_active", nullable = false, columnDefinition = "bool default true")
+	@Column(nullable = false, columnDefinition = "bool default true")
 	public boolean isActive;
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "constructor")
+	public List<Model> models;
+
 	@Override
-	public Object toWs() {
-		return new WsConstructor(id, name, isActive);
+	public Object toWs(boolean circular) {
+		if (circular) {
+			return new WsConstructor(id, name, isActive, models);
+		} else {
+			return new WsConstructor(id, name, isActive, null);
+		}
 	}
 }

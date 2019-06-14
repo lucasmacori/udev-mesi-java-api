@@ -3,7 +3,6 @@ package com.udev.mesi.services;
 import com.udev.mesi.Database;
 import com.udev.mesi.messages.WsGetConstructors;
 import com.udev.mesi.messages.WsResponse;
-import com.udev.mesi.models.WsConstructor;
 import main.java.com.udev.mesi.entities.Constructor;
 import org.json.JSONException;
 
@@ -19,6 +18,7 @@ public class ConstructorService {
     public static WsGetConstructors read() throws JSONException {
 
         // Initialisation de la réponse
+        WsGetConstructors response;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -37,15 +37,17 @@ public class ConstructorService {
             // Création de la réponse JSON
             status = "OK";
             code = 200;
+            response = new WsGetConstructors(status, message, code, constructors);
 
             // Fermeture du gestionnaire d'entités
             em.close();
             emf.close();
         } catch (Exception e) {
             message = e.getMessage();
+            response = new WsGetConstructors(status, message, code, null);
         }
 
-        return new WsGetConstructors(status, message, code, constructors);
+        return response;
     }
 
     public static WsResponse create(final MultivaluedMap<String, String> formParams) throws JSONException {
@@ -227,7 +229,6 @@ public class ConstructorService {
 
     private static boolean isValidConstructor(final MultivaluedMap<String, String> formParams, boolean isUpdate) {
         if (isUpdate && !formParams.containsKey("id")) return false;
-        if (!formParams.containsKey("name")) return false;
-        return true;
+        return formParams.containsKey("name");
     }
 }

@@ -6,12 +6,12 @@ version="2.0">
 	<persistence-unit name="udevmesi" transaction-type="RESOURCE_LOCAL">
  		<provider>org.hibernate.ejb.HibernatePersistence</provider>
     	<class>main.java.com.udev.mesi.entities.Constructor</class>
+		<class>main.java.com.udev.mesi.entities.Model</class>
 		<properties>
       		<property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/udev-mesi" />
       		<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
       		<property name="hibernate.connection.username" value="JavaRESTfulAPI" />
-      		<property name="hibernate.connection.password" value="" />
-			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
 			<property name="hibernate.hbm2ddl.auto" value="update" />
 	   	</properties>
  	</persistence-unit>
