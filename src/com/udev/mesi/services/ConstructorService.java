@@ -88,6 +88,7 @@ public class ConstructorService {
                 // Création du constructeur
                 constructor = new Constructor();
                 constructor.name = name;
+                constructor.models = null;
             }
             constructor.isActive = true;
 
