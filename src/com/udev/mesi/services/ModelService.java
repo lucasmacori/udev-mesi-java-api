@@ -231,6 +231,61 @@ public class ModelService {
         return new WsResponse(status, message, code);
     }
 
+    public static WsResponse delete(final MultivaluedMap<String, String> formParams) throws JSONException {
+
+        // Initialisation de la réponse
+        String status = "KO";
+        String message = null;
+        int code = 500;
+
+        List<Model> models = null;
+        Model model = null;
+
+        try {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
+
+            // Vérification des paramètres
+            if (!formParams.containsKey("id")) {
+                throw new Exception("Le modèle n'est pas correct. Veuillez renseigner les valeurs suivantes: 'id'");
+            }
+
+            long id = Long.parseLong(formParams.get("id").get(0));
+
+            // Récupération des modèles depuis la base de données
+            Query query = em.createQuery("FROM Model WHERE isActive = true AND id = :id");
+            query.setParameter("id", id);
+            models = query.getResultList();
+
+            // Vérification de l'existence du modèle
+            if (models.size() == 0) {
+                throw new Exception("Le modèle avec l'id '" + id + "' n'existe pas");
+            }
+
+            model = models.get(0);
+            model.isActive = false;
+
+            // Persistence du model
+            em.getTransaction().begin();
+            em.persist(model);
+            em.flush();
+            em.getTransaction().commit();
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+
+            // Fermeture du gestionnaire d'entités
+            em.close();
+            emf.close();
+        } catch (Exception e) {
+            message = e.getMessage();
+        }
+
+        return new WsResponse(status, message, code);
+    }
+
     private static boolean isValidModel(final MultivaluedMap<String, String> formParams, boolean isUpdate) {
         if (isUpdate && !formParams.containsKey("id")) return false;
         return formParams.containsKey("name") && formParams.containsKey("constructor")

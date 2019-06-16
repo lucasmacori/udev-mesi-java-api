@@ -35,4 +35,12 @@ public class ModelServlet {
         WsResponse response = ModelService.update(formParams);
         return Response.status(response.getCode()).entity(response).build();
     }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response delete(final MultivaluedMap<String, String> formParams) throws JSONException {
+        WsResponse response = ModelService.delete(formParams);
+        return Response.status(response.getCode()).entity(response).build();
+    }
 }
