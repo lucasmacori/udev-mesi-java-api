@@ -25,8 +25,7 @@ public class Constructor implements IEntity {
 	public Object toWs(boolean circular) {
 		if (circular) {
 			return new WsConstructor(id, name, isActive, models);
-		} else {
-			return new WsConstructor(id, name, isActive, null);
-		}
+        }
+        return new WsConstructor(id, name, isActive, null);
 	}
 }

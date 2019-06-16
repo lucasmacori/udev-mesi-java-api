@@ -16,7 +16,7 @@ public class Model implements IEntity {
     @JoinColumn(nullable = false)
     public Constructor constructor;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 50)
     public String name;
 
     @Column(nullable = false, columnDefinition = "bool default true")
@@ -32,9 +32,7 @@ public class Model implements IEntity {
     public Object toWs(boolean circular) {
         if (circular) {
             return new WsModel(id, (WsConstructor) constructor.toWs(false), name, isActive, countEcoSlots, countBusinessSlots);
-        } else {
-            return new WsModel(id, null, name, isActive, countEcoSlots, countBusinessSlots);
         }
-
+        return new WsModel(id, null, name, isActive, countEcoSlots, countBusinessSlots);
     }
 }

@@ -81,7 +81,7 @@ public class ConstructorService {
 
             if (constructors.size() > 0) {
                 constructor = constructors.get(0);
-                if (constructor.isActive == true) {
+                if (constructor.isActive) {
                     throw new Exception("Un constructeur avec le nom " + name + " existe déjà");
                 }
             } else {
