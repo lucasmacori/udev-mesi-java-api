@@ -1,6 +1,5 @@
 package main.java.com.udev.mesi.entities;
 
-import com.udev.mesi.models.WsConstructor;
 import com.udev.mesi.models.WsModel;
 
 import javax.persistence.*;
@@ -29,9 +28,9 @@ public class Model implements IEntity {
     public int countBusinessSlots;
 
     @Override
-    public Object toWs(boolean circular) {
+    public WsModel toWs(boolean circular) {
         if (circular) {
-            return new WsModel(id, (WsConstructor) constructor.toWs(false), name, isActive, countEcoSlots, countBusinessSlots);
+            return new WsModel(id, constructor.toWs(false), name, isActive, countEcoSlots, countBusinessSlots);
         }
         return new WsModel(id, null, name, isActive, countEcoSlots, countBusinessSlots);
     }
