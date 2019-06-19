@@ -23,24 +23,24 @@ public class ModelServlet {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response create(final MultivaluedMap<String, String> formParams) throws JSONException {
-        WsResponse response = ModelService.create(formParams);
+    public Response create(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+        WsResponse response = ModelService.create(acceptLanguage, formParams);
         return Response.status(response.getCode()).entity(response).build();
     }
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response update(final MultivaluedMap<String, String> formParams) throws JSONException {
-        WsResponse response = ModelService.update(formParams);
+    public Response update(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+        WsResponse response = ModelService.update(acceptLanguage, formParams);
         return Response.status(response.getCode()).entity(response).build();
     }
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response delete(final MultivaluedMap<String, String> formParams) throws JSONException {
-        WsResponse response = ModelService.delete(formParams);
+    public Response delete(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+        WsResponse response = ModelService.delete(acceptLanguage, formParams);
         return Response.status(response.getCode()).entity(response).build();
     }
 }

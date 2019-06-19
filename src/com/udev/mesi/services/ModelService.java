@@ -1,6 +1,7 @@
 package com.udev.mesi.services;
 
 import com.udev.mesi.Database;
+import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetModels;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Constructor;
@@ -51,12 +52,15 @@ public class ModelService {
         return response;
     }
 
-    public static WsResponse create(final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
         String status = "KO";
         String message = null;
         int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         Model model;
 
@@ -68,7 +72,7 @@ public class ModelService {
             // Vérification des paramètres
             if (!isValidModel(formParams, false)) {
                 code = 400;
-                throw new Exception("Le modèle n'est pas correct. Veuillez renseigner les valeurs suivantes: " +
+                throw new Exception(MessageService.getMessageFromCode("invalid_model", languageCode).text +
                         "'constructor', 'name', 'countEcoSlots', 'countBusinessSlots'");
             }
 
@@ -95,7 +99,7 @@ public class ModelService {
             if (models.size() > 0) {
                 model = models.get(0);
                 if (model.isActive) {
-                    throw new Exception("Un modèle avec le constructor " + constructor_id + " et le nom '" + name + "' existe déjà");
+                    throw new Exception(MessageService.getMessageFromCode("model_already_exists", languageCode).text);
                 }
             } else {
                 // Récupération du constructeur
@@ -104,7 +108,7 @@ public class ModelService {
                 List<Constructor> constructors = query.getResultList();
 
                 if (constructors.size() == 0 || !constructors.get(0).isActive) {
-                    throw new Exception("Le constructeur avec l'id '" + constructor_id + "' n'existe pas");
+                    throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
                 }
                 // Création du modèle
                 model = new Model();
@@ -127,13 +131,10 @@ public class ModelService {
             status = "OK";
             code = 200;
         } catch (NumberFormatException e) {
+            message = getMessageFromConversionStep(conversion_step, languageCode);
             code = 400;
-            if (conversion_step == 0) {
-                message = "L'id du constructeur entré n'est pas un nombre entier";
-            } else if (conversion_step == 1) {
-                message = "Le nombre de places eco entré n'est pas un nombre entier";
-            } else {
-                message = "Le nombre de places affaire entré n'est pas un nombre entier";
+            if (message == null) {
+                code = 500;
             }
         } catch (Exception e) {
             message = e.getMessage();
@@ -142,7 +143,7 @@ public class ModelService {
         return new WsResponse(status, message, code);
     }
 
-    public static WsResponse update(final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
         String status = "KO";
@@ -150,11 +151,14 @@ public class ModelService {
         int code = 500;
         int conversion_step = 0;
 
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
         try {
             // Vérification des paramètres
             if (!formParams.containsKey("id")) {
                 code = 400;
-                throw new Exception("Le modèle n'est pas correct. Veuillez renseigner au moins les valeurs suivantes: 'id'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_model", languageCode).text + " 'id'");
             }
 
             long id = Long.parseLong(formParams.get("id").get(0));
@@ -182,7 +186,7 @@ public class ModelService {
             Model model = em.find(Model.class, id);
 
             if (model == null || !model.isActive) {
-                throw new Exception("Le modèle avec l'id '" + id + "' n'existe pas");
+                throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
             }
 
             // TODO: Vérifier que le modèle n'existe pas déjà avec le même nom et le même constructeur
@@ -195,7 +199,7 @@ public class ModelService {
                 List<Constructor> constructors = query.getResultList();
 
                 if (constructors.size() == 0 || !constructors.get(0).isActive) {
-                    throw new Exception("Le constructeur avec l'id '" + constructor_id + "' n'existe pas");
+                    throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
                 }
                 model.constructor = constructors.get(0);
             }
@@ -216,13 +220,10 @@ public class ModelService {
             status = "OK";
             code = 200;
         } catch (NumberFormatException e) {
+            message = getMessageFromConversionStep(conversion_step, languageCode);
             code = 400;
-            if (conversion_step == 0) {
-                message = "L'id du constructeur entré n'est pas un nombre entier";
-            } else if (conversion_step == 1) {
-                message = "Le nombre de places eco entré n'est pas un nombre entier";
-            } else {
-                message = "Le nombre de places affaire entré n'est pas un nombre entier";
+            if (message == null) {
+                code = 500;
             }
         } catch (Exception e) {
             message = e.getMessage();
@@ -231,12 +232,15 @@ public class ModelService {
         return new WsResponse(status, message, code);
     }
 
-    public static WsResponse delete(final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse delete(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
         String status = "KO";
         String message = null;
         int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         List<Model> models = null;
         Model model = null;
@@ -248,7 +252,7 @@ public class ModelService {
 
             // Vérification des paramètres
             if (!formParams.containsKey("id")) {
-                throw new Exception("Le modèle n'est pas correct. Veuillez renseigner les valeurs suivantes: 'id'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_model", languageCode).text + " 'id'");
             }
 
             long id = Long.parseLong(formParams.get("id").get(0));
@@ -260,7 +264,7 @@ public class ModelService {
 
             // Vérification de l'existence du modèle
             if (models.size() == 0) {
-                throw new Exception("Le modèle avec l'id '" + id + "' n'existe pas");
+                throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
             }
 
             model = models.get(0);
@@ -290,5 +294,22 @@ public class ModelService {
         if (isUpdate && !formParams.containsKey("id")) return false;
         return formParams.containsKey("name") && formParams.containsKey("constructor")
                 && formParams.containsKey("countEcoSlots") && formParams.containsKey("countBusinessSlots");
+    }
+
+    private static String getMessageFromConversionStep(int conversion_step, String languageCode) {
+        String message = null;
+        try {
+            if (conversion_step == 0) {
+                message = "'id' ";
+            } else if (conversion_step == 1) {
+                message = "'countEcoSlots': ";
+            } else {
+                message = "'countBusinessSlots': ";
+            }
+            message += MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;
+        } catch (MessageException me) {
+            message = null;
+        }
+        return message;
     }
 }

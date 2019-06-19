@@ -1,6 +1,7 @@
 package com.udev.mesi.services;
 
 import com.udev.mesi.Database;
+import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetConstructors;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Constructor;
@@ -50,12 +51,15 @@ public class ConstructorService {
         return response;
     }
 
-    public static WsResponse create(final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
         String status = "KO";
         String message = null;
         int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         Constructor constructor;
 
@@ -63,7 +67,7 @@ public class ConstructorService {
             // Vérification des paramètres
             if (!isValidConstructor(formParams, false)) {
                 code = 400;
-                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", "fr").text + " 'name'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", languageCode).text + " 'name'");
             }
 
             String name = formParams.get("name").get(0);
@@ -82,7 +86,7 @@ public class ConstructorService {
             if (constructors.size() > 0) {
                 constructor = constructors.get(0);
                 if (constructor.isActive) {
-                    throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", "en").text);
+                    throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", languageCode).text);
                 }
             } else {
                 // Création du constructeur
@@ -110,18 +114,21 @@ public class ConstructorService {
         return new WsResponse(status, message, code);
     }
 
-    public static WsResponse update(final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
         String status = "KO";
         String message = null;
         int code = 500;
 
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
         try {
             // Vérification des paramètres
             if (!isValidConstructor(formParams, true)) {
                 code = 400;
-                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", "fr").text + " 'id', 'name'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", languageCode).text + " 'id', 'name'");
             }
 
             long id = Long.parseLong(formParams.get("id").get(0));
@@ -135,7 +142,7 @@ public class ConstructorService {
             Constructor constructor = em.find(Constructor.class, id);
 
             if (constructor == null || !constructor.isActive) {
-                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", "fr").text);
+                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
             }
 
             // Récupération des constructeurs depuis la base de données
@@ -145,7 +152,7 @@ public class ConstructorService {
 
             // Vérification de l'existence du constructeur
             if (constructors.size() > 0) {
-                throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", "fr").text);
+                throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", languageCode).text);
             }
 
             // Modification du constructeur
@@ -164,8 +171,12 @@ public class ConstructorService {
             status = "OK";
             code = 200;
         } catch (NumberFormatException e) {
-            code = 400;
-            message = "L'id entré n'est pas un nombre entier";
+            try {
+                message = "'id': " + MessageService.getMessageFromCode("constructor_already_exists", languageCode).text;
+                code = 400;
+            } catch (MessageException me) {
+                message = me.getMessage();
+            }
         } catch (Exception e) {
             message = e.getMessage();
         }
@@ -173,12 +184,15 @@ public class ConstructorService {
         return new WsResponse(status, message, code);
     }
 
-    public static WsResponse delete(final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse delete(final String acceptLanguage, MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
         String status = "KO";
         String message = null;
         int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         List<Constructor> constructors = null;
         Constructor constructor = null;
@@ -190,7 +204,7 @@ public class ConstructorService {
 
             // Vérification des paramètres
             if (!formParams.containsKey("id")) {
-                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", "fr").text + " 'id'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", languageCode).text + " 'id'");
             }
 
             long id = Long.parseLong(formParams.get("id").get(0));
@@ -202,7 +216,7 @@ public class ConstructorService {
 
             // Vérification de l'existence du constructeur
             if (constructors.size() == 0) {
-                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", "fr").text);
+                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
             }
 
             constructor = constructors.get(0);

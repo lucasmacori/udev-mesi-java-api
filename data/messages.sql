@@ -4,15 +4,21 @@ VALUES ('fr', 'Français'),
        ('en', 'English'),
        ('it', 'Italiano');
 
+-- Génériques
+INSERT INTO message (code, language_code, text)
+VALUES ('is_not_an_integer', 'fr', 'n''est pas un nombre entier'),
+       ('is_not_an_integer', 'en', 'is not an integer'),
+       ('is_not_an_integer', 'it', 'non é un numero intero');
+
 -- Constructeurs
 INSERT INTO message (code, language_code, text)
-VALUES ('invalid_contructor', 'fr', 'Le constructeur est invalide, veuillez renseigner les valeurs suivantes:'),
+VALUES ('invalid_constructor', 'fr', 'Le constructeur est invalide, veuillez renseigner les valeurs suivantes:'),
        ('constructor_already_exists', 'fr', 'Le constructeur existe déjà'),
        ('constructor_does_not_exist', 'fr', 'Le constructeur n''existe pas'),
-       ('invalid_contructor', 'en', 'The constructor does not exist, please provide the following values:'),
+       ('invalid_constructor', 'en', 'The constructor does not exist, please provide the following values:'),
        ('constructor_already_exists', 'en', 'The constructor already exists'),
        ('constructor_does_not_exist', 'en', 'The constructor does not exist'),
-       ('invalid_contructor', 'it', 'Il costruttore non è valido, inserire i seguenti valori:'),
+       ('invalid_constructor', 'it', 'Il costruttore non è valido, inserire i seguenti valori:'),
        ('constructor_already_exist', 'it', 'Il costruttore esiste già'),
        ('constructor_does_not_exist', 'it', 'Il costruttore non esiste');
 
