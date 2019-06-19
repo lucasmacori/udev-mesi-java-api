@@ -1,15 +1,14 @@
 package com.udev.mesi;
 
+import com.udev.mesi.messages.WsGetConstructors;
+import com.udev.mesi.messages.WsResponse;
+import com.udev.mesi.services.ConstructorService;
+import org.json.JSONException;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-
-import com.udev.mesi.services.ConstructorService;
-import org.json.JSONException;
-
-import com.udev.mesi.messages.WsGetConstructors;
-import com.udev.mesi.messages.WsResponse;
 
 @Path("/constructor")
 public class ConstructorServlet {

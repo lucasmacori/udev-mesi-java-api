@@ -63,7 +63,7 @@ public class ConstructorService {
             // Vérification des paramètres
             if (!isValidConstructor(formParams, false)) {
                 code = 400;
-                throw new Exception("Le constructeur n'est pas correct. Veuillez renseigner les valeurs suivantes: 'name'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", "fr").text + " 'name'");
             }
 
             String name = formParams.get("name").get(0);
@@ -82,7 +82,7 @@ public class ConstructorService {
             if (constructors.size() > 0) {
                 constructor = constructors.get(0);
                 if (constructor.isActive) {
-                    throw new Exception("Un constructeur avec le nom " + name + " existe déjà");
+                    throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", "en").text);
                 }
             } else {
                 // Création du constructeur
@@ -121,7 +121,7 @@ public class ConstructorService {
             // Vérification des paramètres
             if (!isValidConstructor(formParams, true)) {
                 code = 400;
-                throw new Exception("Le constructeur n'est pas correct. Veuillez renseigner les valeurs suivantes: 'id', 'name'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", "fr").text + " 'id', 'name'");
             }
 
             long id = Long.parseLong(formParams.get("id").get(0));
@@ -135,7 +135,7 @@ public class ConstructorService {
             Constructor constructor = em.find(Constructor.class, id);
 
             if (constructor == null || !constructor.isActive) {
-                throw new Exception("Le constructeur avec l'id '" + id + "' n'existe pas");
+                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", "fr").text);
             }
 
             // Récupération des constructeurs depuis la base de données
@@ -145,7 +145,7 @@ public class ConstructorService {
 
             // Vérification de l'existence du constructeur
             if (constructors.size() > 0) {
-                throw new Exception("Le constructeur avec le nom '" + name + "' existe déjà ou a déjà existé");
+                throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", "fr").text);
             }
 
             // Modification du constructeur
@@ -190,7 +190,7 @@ public class ConstructorService {
 
             // Vérification des paramètres
             if (!formParams.containsKey("id")) {
-                throw new Exception("Le constructeur n'est pas correct. Veuillez renseigner les valeurs suivantes: 'id'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", "fr").text + " 'id'");
             }
 
             long id = Long.parseLong(formParams.get("id").get(0));
@@ -202,7 +202,7 @@ public class ConstructorService {
 
             // Vérification de l'existence du constructeur
             if (constructors.size() == 0) {
-                throw new Exception("Le constructeur avec l'id '" + id + "' n'existe pas");
+                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", "fr").text);
             }
 
             constructor = constructors.get(0);

@@ -7,7 +7,11 @@ import javax.persistence.*;
 @Entity
 public class Message implements IEntity {
     @Id
-    @Column(updatable = false, nullable = false, length = 5)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(updatable = false, nullable = false)
+    public long id;
+
+    @Column(updatable = false, nullable = false)
     public String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
