@@ -12,6 +12,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
+import java.sql.Timestamp;
 import java.util.List;
 
 public class ConstructorService {
@@ -83,16 +84,24 @@ public class ConstructorService {
 
             em.getTransaction().begin();
 
-            if (constructors.size() > 0) {
+            if (constructors.size() == 1) {
                 constructor = constructors.get(0);
                 if (constructor.isActive) {
                     throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", languageCode).text);
+                } else {
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    constructor.name += "_old_" + timestamp.getTime();
+                    em.persist(constructor);
+                    em.flush();
+
+                    // Création du constructeur
+                    constructor = new Constructor();
+                    constructor.name = name;
                 }
             } else {
                 // Création du constructeur
                 constructor = new Constructor();
                 constructor.name = name;
-                constructor.models = null;
             }
             constructor.isActive = true;
 
@@ -150,16 +159,25 @@ public class ConstructorService {
             query.setParameter("name", name);
             List<Constructor> constructors = query.getResultList();
 
+            em.getTransaction().begin();
+
             // Vérification de l'existence du constructeur
-            if (constructors.size() > 0) {
-                throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", languageCode).text);
+            if (constructors.size() == 1) {
+                Constructor oldConstructor = constructors.get(0);
+                if (oldConstructor.isActive) {
+                    throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", languageCode).text);
+                } else {
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    oldConstructor.name += "_old_" + timestamp.getTime();
+                    em.persist(oldConstructor);
+                    em.flush();
+                }
             }
 
             // Modification du constructeur
             constructor.name = name;
 
             // Persistence du constructeur
-            em.getTransaction().begin();
             em.persist(constructor);
             em.flush();
             em.getTransaction().commit();

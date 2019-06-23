@@ -87,36 +87,23 @@ public class ModelService {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
             EntityManager em = emf.createEntityManager();
 
-            // Vérification de l'existence du modèle
-            // TODO: Fix la vérification (seul le nom est vérifié pour l'unicité du model)
-            query = em.createQuery("FROM Model WHERE name = :name");
-            // query.setParameter("constructor_id", constructor_id);
-            query.setParameter("name", name);
-            List<Model> models = query.getResultList();
-
             em.getTransaction().begin();
 
-            if (models.size() > 0) {
-                model = models.get(0);
-                if (model.isActive) {
-                    throw new Exception(MessageService.getMessageFromCode("model_already_exists", languageCode).text);
-                }
-            } else {
-                // Récupération du constructeur
-                query = em.createQuery("FROM Constructor WHERE id = :constructor_id");
-                query.setParameter("constructor_id", constructor_id);
-                List<Constructor> constructors = query.getResultList();
+            // Récupération du constructeur
+            query = em.createQuery("FROM Constructor WHERE id = :constructor_id");
+            query.setParameter("constructor_id", constructor_id);
+            List<Constructor> constructors = query.getResultList();
 
-                if (constructors.size() == 0 || !constructors.get(0).isActive) {
-                    throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
-                }
-                // Création du modèle
-                model = new Model();
-                model.name = name;
-                model.constructor = constructors.get(0);
-                model.countEcoSlots = countEcoSlots;
-                model.countBusinessSlots = countBusinessSlots;
+            if (constructors.size() == 0 || !constructors.get(0).isActive) {
+                throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
             }
+
+            // Création du modèle
+            model = new Model();
+            model.name = name;
+            model.constructor = constructors.get(0);
+            model.countEcoSlots = countEcoSlots;
+            model.countBusinessSlots = countBusinessSlots;
             model.isActive = true;
 
             // Validation des changements
@@ -188,8 +175,6 @@ public class ModelService {
             if (model == null || !model.isActive) {
                 throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
             }
-
-            // TODO: Vérifier que le modèle n'existe pas déjà avec le même nom et le même constructeur
 
             // Modification du modèle
             if (constructor_id > 0) {
