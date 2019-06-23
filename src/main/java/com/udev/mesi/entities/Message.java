@@ -9,7 +9,7 @@ public class Message implements IEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
-    public long id;
+    public Long id;
 
     @Column(updatable = false, nullable = false)
     public String code;

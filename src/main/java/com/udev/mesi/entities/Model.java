@@ -3,6 +3,7 @@ package main.java.com.udev.mesi.entities;
 import com.udev.mesi.models.WsModel;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Model implements IEntity {
@@ -27,11 +28,14 @@ public class Model implements IEntity {
     @Column(nullable = false, columnDefinition = "int default 0")
     public int countBusinessSlots;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "model")
+    public List<Plane> planes;
+
     @Override
     public WsModel toWs(boolean circular) {
         if (circular) {
-            return new WsModel(id, constructor.toWs(false), name, isActive, countEcoSlots, countBusinessSlots);
+            return new WsModel(id, constructor.toWs(false), name, isActive, countEcoSlots, countBusinessSlots, planes);
         }
-        return new WsModel(id, null, name, isActive, countEcoSlots, countBusinessSlots);
+        return new WsModel(id, null, name, isActive, countEcoSlots, countBusinessSlots, null);
     }
 }
