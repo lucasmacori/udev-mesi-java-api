@@ -6,6 +6,8 @@ import main.java.com.udev.mesi.entities.Constructor;
 import main.java.com.udev.mesi.entities.Model;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -26,39 +28,95 @@ public class t2_ModelTest {
     private static final String ROUTE = APIConfig.PATH + "model/";
     static Model model;
 
-    @Test
-    public void t1_create() {
-        final Constructor constructor = t1_ConstructorTest.getConstructor();
 
-        Response response = given()
-                .urlEncodingEnabled(true)
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("Accept", "application/json")
-                .contentType("application/x-www-form-urlencoded")
-                .formParam("name", "TestModel")
-                .formParam("constructor", 1)
-                .formParam("countEcoSlots", 300)
-                .formParam("countBusinessSlots", 100)
-                .post(ROUTE);
-
-        assertEquals(200, response.getStatusCode());
-        response
-                .then()
-                .assertThat().body("status", CoreMatchers.equalTo("OK"));
-
+    @BeforeClass
+    public static void prepare() {
         // Création du gestionnaire d'entités
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
         EntityManager em = emf.createEntityManager();
 
-        // Récupération du constructeur depuis la base de données
-        Query query = em.createQuery("FROM Model WHERE isActive = true AND name = 'TestModel' AND countEcoSlots = 300 AND countBusinessSlots = 100");
+        Query query = em.createQuery("SELECT COUNT(c.id) FROM Constructor c WHERE isActive = true");
+        int count = Integer.parseInt(query.getResultList().get(0).toString());
+
+        if (count == 0) {
+            Constructor constructor = new Constructor();
+            constructor.name = "TestConstructor";
+            constructor.isActive = true;
+            em.getTransaction().begin();
+            em.flush();
+            em.persist(constructor);
+            em.getTransaction().commit();
+        }
+    }
+
+    @AfterClass
+    public static void clean() {
+        // Création du gestionnaire d'entités
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+        EntityManager em = emf.createEntityManager();
+
+        em.getTransaction().begin();
+
+        // Suppression du modèle
+        Query query = em.createQuery("FROM Model WHERE id = ( SELECT MAX(c.id) FROM Model c)");
         List<Model> models = query.getResultList();
 
-        assertEquals(1, models.size());
-
         if (models.size() == 1) {
-            model = models.get(0);
+            em.flush();
+            em.remove(models.get(0));
         }
+
+        // Suppression du constructeur
+        query = em.createQuery("DELETE FROM Constructor WHERE name = 'TestConstructor' AND id = (SELECT MAX(c.id) FROM Constructor c)");
+        query.executeUpdate();
+
+        em.getTransaction().commit();
+
+        em.close();
+        emf.close();
+    }
+
+    @Test
+    public void t1_create() {
+        // Création du gestionnaire d'entités
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+        EntityManager em = emf.createEntityManager();
+
+        Query query = em.createQuery("FROM Constructor WHERE id = ( SELECT MAX(c.id) FROM Constructor c WHERE isActive = true)");
+        List<Constructor> constructors = query.getResultList();
+
+        if (constructors.size() == 1) {
+            Constructor constructor = constructors.get(0);
+
+            Response response = given()
+                    .urlEncodingEnabled(true)
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header("Accept", "application/json")
+                    .contentType("application/x-www-form-urlencoded")
+                    .formParam("name", "TestModel")
+                    .formParam("constructor", constructor.id)
+                    .formParam("countEcoSlots", 300)
+                    .formParam("countBusinessSlots", 100)
+                    .post(ROUTE);
+
+            assertEquals(200, response.getStatusCode());
+            response
+                    .then()
+                    .assertThat().body("status", CoreMatchers.equalTo("OK"));
+
+            // Récupération du constructeur depuis la base de données
+            query = em.createQuery("FROM Model WHERE isActive = true AND name = 'TestModel' AND countEcoSlots = 300 AND countBusinessSlots = 100");
+            List<Model> models = query.getResultList();
+
+            assertEquals(1, models.size());
+
+            if (models.size() == 1) {
+                model = models.get(0);
+            }
+        }
+
+        em.close();
+        emf.close();
     }
 
     @Test
@@ -91,6 +149,9 @@ public class t2_ModelTest {
         } else if (size > 1) {
             validatableResponse.assertThat().body("models", Matchers.hasSize(size.intValue()));
         }
+
+        em.close();
+        emf.close();
     }
 
     @Test
@@ -126,6 +187,9 @@ public class t2_ModelTest {
                 assertEquals(model.id, models.get(0).id);
                 assertEquals("TestModelNew", models.get(0).name);
             }
+
+            em.close();
+            emf.close();
         } else {
             fail("La requête POST ne s'étant pas exécutée, il est impossible de tester la requête PUT");
         }
@@ -162,6 +226,9 @@ public class t2_ModelTest {
                 assertEquals(model.id, models.get(0).id);
                 assertEquals("TestModelNew", models.get(0).name);
             }
+
+            em.close();
+            emf.close();
         } else {
             fail("La requête POST ne s'étant pas exécutée, il est impossible de tester la requête DELETE");
         }

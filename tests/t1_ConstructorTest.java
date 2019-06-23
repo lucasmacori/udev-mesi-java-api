@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import main.java.com.udev.mesi.entities.Constructor;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -24,8 +25,24 @@ public class t1_ConstructorTest {
     private static final String ROUTE = APIConfig.PATH + "constructor/";
     private static Constructor constructor;
 
-    public static Constructor getConstructor() {
-        return constructor;
+    @AfterClass
+    public static void clean() {
+        // Création du gestionnaire d'entités
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+        EntityManager em = emf.createEntityManager();
+
+        Query query = em.createQuery("FROM Constructor WHERE id = ( SELECT MAX(c.id) FROM Constructor c)");
+        List<Constructor> constructors = query.getResultList();
+
+        if (constructors.size() == 1) {
+            em.getTransaction().begin();
+            em.flush();
+            em.remove(constructors.get(0));
+            em.getTransaction().commit();
+        }
+
+        em.close();
+        emf.close();
     }
 
     @Test
@@ -56,6 +73,9 @@ public class t1_ConstructorTest {
         if (constructors.size() == 1) {
             constructor = constructors.get(0);
         }
+
+        em.close();
+        emf.close();
     }
 
     @Test
@@ -80,6 +100,9 @@ public class t1_ConstructorTest {
                 .assertThat().body("status", Matchers.equalTo("OK"))
                 .assertThat().body("constructors", Matchers.notNullValue())
                 .assertThat().body("constructors", Matchers.hasSize(size.intValue()));
+
+        em.close();
+        emf.close();
     }
 
     @Test
@@ -113,6 +136,9 @@ public class t1_ConstructorTest {
                 assertEquals(constructor.id, constructors.get(0).id);
                 assertEquals("TestConstructorNew", constructors.get(0).name);
             }
+
+            em.close();
+            emf.close();
         } else {
             fail("La requête POST ne s'étant pas exécutée, il est impossible de tester la requête PUT");
         }
@@ -149,6 +175,9 @@ public class t1_ConstructorTest {
                 assertEquals(constructor.id, constructors.get(0).id);
                 assertEquals("TestConstructorNew", constructors.get(0).name);
             }
+
+            em.close();
+            emf.close();
         } else {
             fail("La requête POST ne s'étant pas exécutée, il est impossible de tester la requête DELETE");
         }
