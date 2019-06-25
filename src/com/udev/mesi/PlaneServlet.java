@@ -34,4 +34,12 @@ public class PlaneServlet {
         WsResponse response = PlaneService.update(acceptLanguage, formParams);
         return Response.status(response.getCode()).entity(response).build();
     }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response delete(@HeaderParam("Accept-Language") final String acceptLanguage, MultivaluedMap<String, String> formParams) throws JSONException {
+        WsResponse response = PlaneService.delete(acceptLanguage, formParams);
+        return Response.status(response.getCode()).entity(response).build();
+    }
 }

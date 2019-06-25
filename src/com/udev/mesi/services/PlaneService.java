@@ -13,7 +13,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
-import java.sql.Timestamp;
 import java.util.List;
 
 public class PlaneService {
@@ -97,15 +96,8 @@ public class PlaneService {
                     code = 400;
                     throw new Exception(MessageService.getMessageFromCode("plane_already_exists", languageCode).text);
                 } else {
-                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                    plane.ARN += "_old_" + timestamp.getTime();
-                    em.persist(ARN);
-                    em.flush();
-
-                    // Création de l'avion
-                    plane = new Plane();
-                    plane.ARN = ARN;
                     plane.model = model;
+                    plane.isUnderMaintenance = false;
                 }
             } else {
                 // Création de l'avion
@@ -222,8 +214,62 @@ public class PlaneService {
         return new WsResponse(status, message, code);
     }
 
-    private static boolean isValidPlane(final MultivaluedMap<String, String> formParams, boolean isUpdate) {
-        if (!isUpdate && !formParams.containsKey("model")) {
+    public static WsResponse delete(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+
+        // Initialisation de la réponse
+        String status = "KO";
+        String message = null;
+        int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+        Plane plane = null;
+
+        try {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
+
+            // Vérification des paramètres
+            if (!isValidPlane(formParams, true)) {
+                code = 400;
+                throw new Exception(MessageService.getMessageFromCode("invalid_plane", languageCode).text + " 'ARN'");
+            }
+
+            String ARN = formParams.get("ARN").get(0);
+
+            plane = em.find(Plane.class, ARN);
+
+            // Vérification de l'existence du modèle
+            if (plane == null || !plane.isActive) {
+                code = 400;
+                throw new Exception(MessageService.getMessageFromCode("plane_does_not_exist", languageCode).text);
+            }
+            plane.isActive = false;
+
+            // Persistence du model
+            em.getTransaction().begin();
+            em.persist(plane);
+            em.flush();
+            em.getTransaction().commit();
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+
+            // Fermeture du gestionnaire d'entités
+            em.close();
+            emf.close();
+        } catch (Exception e) {
+            message = e.getMessage();
+        }
+
+        return new WsResponse(status, message, code);
+    }
+
+    private static boolean isValidPlane(final MultivaluedMap<String, String> formParams, boolean isUpdateOrDelete) {
+        if (!isUpdateOrDelete && !formParams.containsKey("model")) {
             return false;
         }
         return formParams.containsKey("ARN");
