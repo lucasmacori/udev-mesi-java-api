@@ -95,7 +95,7 @@ public class ModelService {
             List<Constructor> constructors = query.getResultList();
 
             if (constructors.size() == 0 || !constructors.get(0).isActive) {
-                throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
+                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
             }
 
             // Création du modèle

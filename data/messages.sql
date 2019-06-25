@@ -19,7 +19,7 @@ VALUES ('invalid_constructor', 'fr', 'Le constructeur est invalide, veuillez ren
        ('constructor_already_exists', 'en', 'The constructor already exists'),
        ('constructor_does_not_exist', 'en', 'The constructor does not exist'),
        ('invalid_constructor', 'it', 'Il costruttore non è valido, inserire i seguenti valori:'),
-       ('constructor_already_exist', 'it', 'Il costruttore esiste già'),
+       ('constructor_already_exists', 'it', 'Il costruttore esiste già'),
        ('constructor_does_not_exist', 'it', 'Il costruttore non esiste');
 
 -- Modèles
@@ -31,5 +31,17 @@ VALUES ('invalid_model', 'fr', 'Le modèle est invalide, veuillez renseigner les
        ('model_already_exists', 'en', 'The model already exists'),
        ('model_does_not_exist', 'en', 'The model does not exist'),
        ('invalid_model', 'it', 'Il modello non è valido, inserire i seguenti valori:'),
-       ('model_already_exist', 'it', 'Il modello esiste già'),
+       ('model_already_exists', 'it', 'Il modello esiste già'),
        ('model_does_not_exist', 'it', 'Il modello non esiste');
+
+-- Avions
+INSERT INTO message (code, language_code, text)
+VALUES ('invalid_plane', 'fr', 'L''avion est invalide, veuillez renseigner les valeurs suivantes:'),
+       ('plane_already_exists', 'fr', 'L''avion existe déjà'),
+       ('plane_does_not_exist', 'fr', 'L''avion n''existe pas'),
+       ('invalid_plane', 'en', 'The plane does not exist, please provide the following values:'),
+       ('plane_already_exists', 'en', 'The plane already exists'),
+       ('plane_does_not_exist', 'en', 'The plane does not exist'),
+       ('invalid_plane', 'it', 'L''aeroplano non è valido, inserire i seguenti valori:'),
+       ('plane_already_exists', 'it', 'L''aeroplano esiste già'),
+       ('plane_does_not_exist', 'it', 'L''aeroplano non esiste');
