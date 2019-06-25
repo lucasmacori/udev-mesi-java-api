@@ -23,8 +23,12 @@ public class Plane implements IEntity {
 
     @Override
     public Object toWs(boolean circular) {
-        if (circular) {
-            return new WsPlane(ARN, model.toWs(false), isUnderMaintenance, isActive);
+        return new WsPlane(ARN, model.toWs(true, circular), isUnderMaintenance, isActive);
+    }
+
+    public Object toWs(boolean includeModels, boolean circular) {
+        if (includeModels) {
+            return toWs(circular);
         }
         return new WsPlane(ARN, null, isUnderMaintenance, isActive);
     }

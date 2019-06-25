@@ -39,14 +39,14 @@ public class ModelService {
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-            response = new WsGetModels(status, message, code, models);
+            response = new WsGetModels(status, message, code, models, true);
 
             // Fermeture du gestionnaire d'entités
             em.close();
             emf.close();
         } catch (Exception e) {
             message = e.getMessage();
-            response = new WsGetModels(status, message, code, null);
+            response = new WsGetModels(status, message, code, null, true);
         }
 
         return response;

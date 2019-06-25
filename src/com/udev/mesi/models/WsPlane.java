@@ -22,11 +22,11 @@ public class WsPlane {
         this.isActive = isActive;
     }
 
-    public static WsPlane[] getArrayFromList(List<Plane> planes, boolean circular) {
+    public static WsPlane[] getArrayFromList(List<Plane> planes, boolean includeModels, boolean circular) {
         try {
             WsPlane[] planes_array = new WsPlane[planes.size()];
             for (int i = 0; i < planes.size(); i++) {
-                planes_array[i] = (WsPlane) planes.get(i).toWs(circular);
+                planes_array[i] = (WsPlane) planes.get(i).toWs(includeModels, circular);
             }
             return planes_array;
         } catch (NullPointerException e) {

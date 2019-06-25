@@ -18,21 +18,21 @@ public class WsModel {
     public WsModel() {
     }
 
-    public WsModel(long id, WsConstructor constructor, String name, boolean isActive, int countEcoSlots, int countBusinessSlots, List planes) {
+    public WsModel(long id, WsConstructor constructor, String name, boolean isActive, int countEcoSlots, int countBusinessSlots, List planes, boolean includePlanes) {
         this.id = id;
         this.constructor = constructor;
         this.name = name;
         this.isActive = isActive;
         this.countEcoSlots = countEcoSlots;
         this.countBusinessSlots = countBusinessSlots;
-        this.planes = WsPlane.getArrayFromList(planes, false);
+        this.planes = WsPlane.getArrayFromList(planes, false, includePlanes);
     }
 
     public static WsModel[] getArrayFromList(List<Model> models, boolean circular) {
         try {
             WsModel[] models_array = new WsModel[models.size()];
             for (int i = 0; i < models.size(); i++) {
-                models_array[i] = models.get(i).toWs(circular);
+                models_array[i] = models.get(i).toWs(circular, true);
             }
             return models_array;
         } catch (NullPointerException e) {

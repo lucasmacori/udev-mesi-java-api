@@ -34,8 +34,20 @@ public class Model implements IEntity {
     @Override
     public WsModel toWs(boolean circular) {
         if (circular) {
-            return new WsModel(id, constructor.toWs(false), name, isActive, countEcoSlots, countBusinessSlots, planes);
+            return new WsModel(id, constructor.toWs(false), name, isActive, countEcoSlots, countBusinessSlots, planes, true);
         }
-        return new WsModel(id, null, name, isActive, countEcoSlots, countBusinessSlots, null);
+        return new WsModel(id, null, name, isActive, countEcoSlots, countBusinessSlots, null, false);
+    }
+
+    public WsModel toWs(boolean includeConstructor, boolean includePlanes) {
+        Constructor constructor1 = null;
+        List<Plane> planes1 = null;
+        if (includeConstructor) {
+            constructor1 = constructor;
+        }
+        if (includePlanes) {
+            planes1 = planes;
+        }
+        return new WsModel(id, constructor1.toWs(false), name, isActive, countEcoSlots, countBusinessSlots, planes1, includePlanes);
     }
 }

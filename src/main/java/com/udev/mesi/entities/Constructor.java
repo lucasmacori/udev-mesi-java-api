@@ -24,7 +24,7 @@ public class Constructor implements IEntity {
 	@Override
     public WsConstructor toWs(boolean circular) {
 		if (circular) {
-			return new WsConstructor(id, name, isActive, models);
+			return new WsConstructor(id, name, isActive, models); // TODO: Include models ?
         }
         return new WsConstructor(id, name, isActive, null);
 	}

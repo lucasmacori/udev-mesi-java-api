@@ -15,7 +15,7 @@ public class WsGetModels extends WsResponse {
         super();
     }
 
-    public WsGetModels(String status, String message, int code, List<Model> models) {
+    public WsGetModels(String status, String message, int code, List<Model> models, boolean includePlanes) {
         super(status, message, code);
         this.models = WsModel.getArrayFromList(models, true);
     }

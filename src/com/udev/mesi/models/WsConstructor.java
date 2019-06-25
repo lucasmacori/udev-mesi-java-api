@@ -19,14 +19,14 @@ public class WsConstructor {
 		this.id = id;
 		this.name = name;
 		this.isActive = isActive;
-		this.models = WsModel.getArrayFromList(models, false);
+		this.models = WsModel.getArrayFromList(models, true);
 	}
 
 	public static WsConstructor[] getArrayFromList(List<Constructor> constructors, boolean circular) {
 		try {
 			WsConstructor[] constructors_array = new WsConstructor[constructors.size()];
 			for (int i = 0; i < constructors.size(); i++) {
-				constructors_array[i] = (WsConstructor) constructors.get(i).toWs(circular);
+				constructors_array[i] = constructors.get(i).toWs(circular);
 			}
 			return constructors_array;
 		} catch (NullPointerException e) {
