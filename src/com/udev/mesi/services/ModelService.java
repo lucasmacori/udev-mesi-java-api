@@ -95,6 +95,7 @@ public class ModelService {
             List<Constructor> constructors = query.getResultList();
 
             if (constructors.size() == 0 || !constructors.get(0).isActive) {
+                code = 400;
                 throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
             }
 
@@ -173,6 +174,7 @@ public class ModelService {
             Model model = em.find(Model.class, id);
 
             if (model == null || !model.isActive) {
+                code = 400;
                 throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
             }
 
@@ -184,6 +186,7 @@ public class ModelService {
                 List<Constructor> constructors = query.getResultList();
 
                 if (constructors.size() == 0 || !constructors.get(0).isActive) {
+                    code = 400;
                     throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
                 }
                 model.constructor = constructors.get(0);
@@ -237,6 +240,7 @@ public class ModelService {
 
             // Vérification des paramètres
             if (!formParams.containsKey("id")) {
+                code = 400;
                 throw new Exception(MessageService.getMessageFromCode("invalid_model", languageCode).text + " 'id'");
             }
 
@@ -249,6 +253,7 @@ public class ModelService {
 
             // Vérification de l'existence du modèle
             if (models.size() == 0) {
+                code = 400;
                 throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
             }
 

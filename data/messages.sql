@@ -8,7 +8,10 @@ VALUES ('fr', 'Français'),
 INSERT INTO message (code, language_code, text)
 VALUES ('is_not_an_integer', 'fr', 'n''est pas un nombre entier'),
        ('is_not_an_integer', 'en', 'is not an integer'),
-       ('is_not_an_integer', 'it', 'non é un numero intero');
+       ('is_not_an_integer', 'it', 'non é un numero intero'),
+       ('is_not_a_boolean', 'fr', 'n''est pas un booléen'),
+       ('is_not_a_boolean', 'en', 'is not a boolean'),
+       ('is_not_a_boolean', 'it', 'non é un booleano');
 
 -- Constructeurs
 INSERT INTO message (code, language_code, text)

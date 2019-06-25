@@ -26,4 +26,12 @@ public class PlaneServlet {
         WsResponse response = PlaneService.create(acceptLanguage, formParams);
         return Response.status(response.getCode()).entity(response).build();
     }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response update(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+        WsResponse response = PlaneService.update(acceptLanguage, formParams);
+        return Response.status(response.getCode()).entity(response).build();
+    }
 }

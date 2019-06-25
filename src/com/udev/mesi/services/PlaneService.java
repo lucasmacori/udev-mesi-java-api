@@ -66,9 +66,9 @@ public class PlaneService {
 
         try {
             // Vérification des paramètres
-            if (!isValidPlane(formParams)) {
+            if (!isValidPlane(formParams, false)) {
                 code = 400;
-                throw new Exception(MessageService.getMessageFromCode("invalid_plane", languageCode).text + " 'name'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_plane", languageCode).text + " 'ARN', 'model'");
             }
 
             String ARN = formParams.get("ARN").get(0);
@@ -94,6 +94,7 @@ public class PlaneService {
             if (planes.size() == 1) {
                 plane = planes.get(0);
                 if (plane.isActive) {
+                    code = 400;
                     throw new Exception(MessageService.getMessageFromCode("plane_already_exists", languageCode).text);
                 } else {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -143,7 +144,88 @@ public class PlaneService {
         return new WsResponse(status, message, code);
     }
 
-    private static boolean isValidPlane(final MultivaluedMap<String, String> formParams) {
-        return formParams.containsKey("ARN") && formParams.containsKey("model");
+    public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+
+        // Initialisation de la réponse
+        String status = "KO";
+        String message = null;
+        int code = 500;
+        int conversion_step = 0;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+        try {
+            // Vérification des paramètres
+            if (!isValidPlane(formParams, true)) {
+                code = 400;
+                throw new Exception(MessageService.getMessageFromCode("invalid_plane", languageCode).text + " 'ARN'");
+            }
+
+            // Récupération des paramètres
+            String ARN = formParams.get("ARN").get(0);
+            long model_id = -1;
+            if (formParams.containsKey("model")) {
+                model_id = Long.parseLong(formParams.get("model").get(0));
+            }
+            Boolean isUnderMaintenance = null;
+            if (formParams.containsKey("isUnderMaintenance")) {
+                String isUnderMaintenanceStr = formParams.get("isUnderMaintenance").get(0).trim().toLowerCase();
+                if (isUnderMaintenanceStr.equals("true") || isUnderMaintenanceStr.equals("false")) {
+                    isUnderMaintenance = Boolean.parseBoolean(formParams.get("isUnderMaintenance").get(0));
+                } else {
+                    code = 400;
+                    throw new Exception("'isUnderMaintenance' " + MessageService.getMessageFromCode("is_not_a_boolean", languageCode).text);
+                }
+            }
+
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
+
+            // Récupération de l'avion
+            Plane plane = em.find(Plane.class, ARN);
+
+            if (plane == null || !plane.isActive) {
+                code = 400;
+                throw new Exception(MessageService.getMessageFromCode("plane_does_not_exist", languageCode).text);
+            }
+
+            // Modification de l'avion
+            if (model_id > 0) {
+                // Vérification de l'existence du modèle
+                Model model = em.find(Model.class, model_id);
+                if (!model.equals(plane.model) && (model == null || !model.isActive)) {
+                    code = 400;
+                    throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
+                }
+                plane.model = model;
+            }
+            if (isUnderMaintenance != null) plane.isUnderMaintenance = isUnderMaintenance;
+
+            // Persistence du constructeur
+            em.getTransaction().begin();
+            em.persist(plane);
+            em.flush();
+            em.getTransaction().commit();
+
+            // Fermeture du gestionnaire d'entités
+            em.close();
+            emf.close();
+
+            status = "OK";
+            code = 200;
+        } catch (Exception e) {
+            message = e.getMessage();
+        }
+
+        return new WsResponse(status, message, code);
+    }
+
+    private static boolean isValidPlane(final MultivaluedMap<String, String> formParams, boolean isUpdate) {
+        if (!isUpdate && !formParams.containsKey("model")) {
+            return false;
+        }
+        return formParams.containsKey("ARN");
     }
 }
