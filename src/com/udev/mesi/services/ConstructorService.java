@@ -193,7 +193,7 @@ public class ConstructorService {
             code = 200;
         } catch (NumberFormatException e) {
             try {
-                message = "'id': " + MessageService.getMessageFromCode("constructor_already_exists", languageCode).text;
+                message = "'id': " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;
                 code = 400;
             } catch (MessageException me) {
                 message = me.getMessage();
@@ -258,6 +258,13 @@ public class ConstructorService {
             // Fermeture du gestionnaire d'entités
             em.close();
             emf.close();
+        } catch (NumberFormatException e) {
+            try {
+                message = "'id': " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;
+                code = 400;
+            } catch (MessageException me) {
+                message = me.getMessage();
+            }
         } catch (Exception e) {
             message = e.getMessage();
         }

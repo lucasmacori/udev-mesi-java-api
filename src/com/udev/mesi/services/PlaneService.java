@@ -207,6 +207,13 @@ public class PlaneService {
 
             status = "OK";
             code = 200;
+        } catch (NumberFormatException e) {
+            try {
+                message = "'id': " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;
+                code = 400;
+            } catch (MessageException me) {
+                message = me.getMessage();
+            }
         } catch (Exception e) {
             message = e.getMessage();
         }
