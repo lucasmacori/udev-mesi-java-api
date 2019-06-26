@@ -87,6 +87,7 @@ public class ConstructorService {
             if (constructors.size() == 1) {
                 constructor = constructors.get(0);
                 if (constructor.isActive) {
+                    code = 400;
                     throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", languageCode).text);
                 } else {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -151,6 +152,7 @@ public class ConstructorService {
             Constructor constructor = em.find(Constructor.class, id);
 
             if (constructor == null || !constructor.isActive) {
+                code = 400;
                 throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
             }
 
@@ -165,6 +167,7 @@ public class ConstructorService {
             if (constructors.size() == 1) {
                 Constructor oldConstructor = constructors.get(0);
                 if (oldConstructor.isActive) {
+                    code = 400;
                     throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", languageCode).text);
                 } else {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -222,6 +225,7 @@ public class ConstructorService {
 
             // Vérification des paramètres
             if (!formParams.containsKey("id")) {
+                code = 400;
                 throw new Exception(MessageService.getMessageFromCode("invalid_constructor", languageCode).text + " 'id'");
             }
 
@@ -234,6 +238,7 @@ public class ConstructorService {
 
             // Vérification de l'existence du constructeur
             if (constructors.size() == 0) {
+                code = 400;
                 throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
             }
 
