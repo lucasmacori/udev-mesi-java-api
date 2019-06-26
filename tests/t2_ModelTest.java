@@ -62,14 +62,13 @@ public class t2_ModelTest {
         List<Model> models = query.getResultList();
 
         if (models.size() == 1) {
-            em.flush();
             em.remove(models.get(0));
+            em.flush();
+
+            // Suppression du constructeur
+            query = em.createQuery("DELETE FROM Constructor WHERE name = 'TestConstructor' AND id = (SELECT MAX(c.id) FROM Constructor c)");
+            query.executeUpdate();
         }
-
-        // Suppression du constructeur
-        query = em.createQuery("DELETE FROM Constructor WHERE name = 'TestConstructor' AND id = (SELECT MAX(c.id) FROM Constructor c)");
-        query.executeUpdate();
-
         em.getTransaction().commit();
 
         em.close();

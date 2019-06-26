@@ -102,12 +102,12 @@ public class t4_FlightTest {
 
         validatableResponse.assertThat().body("status", Matchers.equalTo("OK"));
         if (size > 0) {
-            validatableResponse
-                    .assertThat().body("flights", Matchers.notNullValue())
-                    .assertThat().body("flights", Matchers.hasSize(size.intValue()));
-        } else {
-            validatableResponse
-                    .assertThat().body("flights", Matchers.nullValue());
+            validatableResponse.assertThat().body("flights", Matchers.notNullValue());
+        }
+        if (size > 1) {
+            validatableResponse.assertThat().body("flights", Matchers.hasSize(size.intValue()));
+        } else if (size == 0) {
+            validatableResponse.assertThat().body("flights", Matchers.nullValue());
         }
 
         em.close();

@@ -1,6 +1,7 @@
 import com.udev.mesi.Database;
 import config.APIConfig;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import main.java.com.udev.mesi.entities.Constructor;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -96,10 +97,21 @@ public class t1_ConstructorTest {
                 .contentType("application/x-www-form-urlencoded")
                 .get(ROUTE);
         assertEquals(200, response.getStatusCode());
-        response.then()
-                .assertThat().body("status", Matchers.equalTo("OK"))
-                .assertThat().body("constructors", Matchers.notNullValue())
-                .assertThat().body("constructors", Matchers.hasSize(size.intValue()));
+
+        ValidatableResponse validatableResponse = response.then();
+
+        validatableResponse.assertThat().body("status", Matchers.equalTo("OK"));
+        System.out.println(response.prettyPrint());
+        if (size > 0) {
+            validatableResponse
+                    .assertThat().body("constructors", Matchers.notNullValue());
+        }
+        if (size > 1) {
+            validatableResponse
+                    .assertThat().body("constructors", Matchers.hasSize(size.intValue()));
+        } else if (size == 0) {
+            validatableResponse.assertThat().body("constructors", Matchers.nullValue());
+        }
 
         em.close();
         emf.close();
