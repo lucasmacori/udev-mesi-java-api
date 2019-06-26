@@ -7,6 +7,10 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <class>main.java.com.udev.mesi.entities.Constructor</class>
 		<class>main.java.com.udev.mesi.entities.Model</class>
+        <class>main.java.com.udev.mesi.entities.Language</class>
+        <class>main.java.com.udev.mesi.entities.Message</class>
+        <class>main.java.com.udev.mesi.entities.Plane</class>
+        <class>main.java.com.udev.mesi.entities.Flight</class>
 		<properties>
             <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/udev-mesi"/>
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
