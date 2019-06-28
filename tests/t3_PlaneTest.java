@@ -28,7 +28,8 @@ public class t3_PlaneTest {
 
     private static final String ROUTE = APIConfig.PATH + "plane/";
     static Plane plane;
-
+    static int modelCount = 0;
+    static int constructorCount = 0;
 
     @BeforeClass
     public static void prepare() {
@@ -48,6 +49,7 @@ public class t3_PlaneTest {
             constructor.isActive = true;
             em.flush();
             em.persist(constructor);
+            constructorCount++;
         }
 
         // Création d'un model si aucun n'existe
@@ -69,6 +71,7 @@ public class t3_PlaneTest {
                 model.isActive = true;
                 em.flush();
                 em.persist(model);
+                modelCount++;
             } else {
                 fail("Aucun constructeur n'a pu être créé");
             }
@@ -87,24 +90,31 @@ public class t3_PlaneTest {
 
         em.getTransaction().begin();
 
+        Query query;
+
         // Suppression de l'avion
-        Query query = em.createQuery("FROM Plane WHERE id = ( SELECT MAX(p.id) FROM Plane p)");
-        List<Plane> planes = query.getResultList();
+        query = em.createQuery("DELETE FROM Plane WHERE id = ( SELECT MAX(p.id) FROM Plane p)");
+        query.executeUpdate();
+        em.flush();
 
-        if (planes.size() == 1) {
-            em.remove(planes.get(0));
-            em.flush();
-
-            // Suppression du modèle
-            query = em.createQuery("DELETE FROM Model WHERE id = :id");
-            query.setParameter("id", planes.get(0).model.id);
+        // Suppression des modèles
+        while (modelCount > 0) {
+            // Récupération du modèle
+            query = em.createQuery("DELETE FROM Model WHERE id = ( SELECT MAX(m.id) FROM Model m )");
             query.executeUpdate();
             em.flush();
+            modelCount--;
+        }
 
-            // Suppression du constructeur
+        em.getTransaction().commit();
+        em.getTransaction().begin();
+
+        // Suppression du constructeur
+        while (constructorCount > 0) {
             query = em.createQuery("DELETE FROM Constructor WHERE name = 'TestConstructor' AND id = (SELECT MAX(c.id) FROM Constructor c)");
             query.executeUpdate(); // FIXME: Suppression du constructeur qui plante (model qui en dépend non supprimé visiblement
             em.flush();
+            constructorCount--;
         }
 
         em.getTransaction().commit();
