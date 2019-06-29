@@ -3,6 +3,7 @@ package main.java.com.udev.mesi.entities;
 import com.udev.mesi.models.WsPlane;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Plane implements IEntity {
@@ -21,15 +22,11 @@ public class Plane implements IEntity {
     @Column(nullable = false, columnDefinition = "bool default true")
     public boolean isActive;
 
-    @Override
-    public WsPlane toWs(boolean circular) {
-        return new WsPlane(ARN, model.toWs(true, circular), isUnderMaintenance, isActive);
-    }
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plane")
+    public List<FlightDetails> flightDetails;
 
-    public WsPlane toWs(boolean includeModels, boolean circular) {
-        if (includeModels) {
-            return toWs(circular);
-        }
-        return new WsPlane(ARN, null, isUnderMaintenance, isActive);
+    @Override
+    public WsPlane toWs() {
+        return new WsPlane(ARN, model.toWs(), isUnderMaintenance, isActive);
     }
 }

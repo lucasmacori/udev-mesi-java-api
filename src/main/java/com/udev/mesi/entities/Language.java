@@ -18,10 +18,7 @@ public class Language implements IEntity {
     public List<Message> messages;
 
     @Override
-    public WsLanguage toWs(boolean circular) {
-        if (circular) {
-            return new WsLanguage(code, name, messages);
-        }
-        return new WsLanguage(code, name, null);
+    public WsLanguage toWs() {
+        return new WsLanguage(code, name);
     }
 }

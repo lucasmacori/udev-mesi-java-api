@@ -26,7 +26,7 @@ public class WsPlane {
         try {
             WsPlane[] planes_array = new WsPlane[planes.size()];
             for (int i = 0; i < planes.size(); i++) {
-                planes_array[i] = (WsPlane) planes.get(i).toWs(includeModels, circular);
+                planes_array[i] = planes.get(i).toWs();
             }
             return planes_array;
         } catch (NullPointerException e) {

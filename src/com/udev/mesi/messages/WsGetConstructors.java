@@ -17,6 +17,6 @@ public class WsGetConstructors extends WsResponse {
 
 	public WsGetConstructors(String status, String message, int code, List<Constructor> constructors) {
 		super(status, message, code);
-		this.constructors = WsConstructor.getArrayFromList(constructors, true);
+        this.constructors = WsConstructor.getArrayFromList(constructors);
 	}
 }

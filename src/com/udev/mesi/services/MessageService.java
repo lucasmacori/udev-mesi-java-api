@@ -29,7 +29,7 @@ public class MessageService {
             query.setParameter("languageCode", languageCode);
             List<Message> messages = query.getResultList();
             if (messages.size() > 0) {
-                return messages.get(0).toWs(false);
+                return messages.get(0).toWs();
             } else {
                 throw new MessageNotFoundException("Le message '" + messageCode + "' pour le langage '" + languageCode + "' n'existe pas");
             }

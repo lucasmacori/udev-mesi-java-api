@@ -20,11 +20,11 @@ public class WsMessage {
         this.text = text;
     }
 
-    public static WsMessage[] getArrayFromList(List<Message> messages, boolean circular) {
+    public static WsMessage[] getArrayFromList(List<Message> messages) {
         try {
             WsMessage[] messages_array = new WsMessage[messages.size()];
             for (int i = 0; i < messages.size(); i++) {
-                messages_array[i] = messages.get(i).toWs(circular);
+                messages_array[i] = messages.get(i).toWs();
             }
             return messages_array;
         } catch (NullPointerException e) {

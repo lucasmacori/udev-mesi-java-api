@@ -17,6 +17,6 @@ public class WsGetFlights extends WsResponse {
 
     public WsGetFlights(String status, String message, int code, List<Flight> flights) {
         super(status, message, code);
-        this.flights = WsFlight.getArrayFromList(flights, true);
+        this.flights = WsFlight.getArrayFromList(flights);
     }
 }

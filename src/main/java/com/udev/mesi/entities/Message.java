@@ -22,10 +22,7 @@ public class Message implements IEntity {
     public String text;
 
     @Override
-    public WsMessage toWs(boolean circular) {
-        if (circular) {
-            return new WsMessage(code, language.toWs(false), text);
-        }
-        return new WsMessage(code, null, text);
+    public WsMessage toWs() {
+        return new WsMessage(code, language.toWs(), text);
     }
 }

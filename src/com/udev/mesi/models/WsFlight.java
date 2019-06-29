@@ -22,11 +22,11 @@ public class WsFlight {
         this.isActive = isActive;
     }
 
-    public static WsFlight[] getArrayFromList(List<Flight> flights, boolean circular) {
+    public static WsFlight[] getArrayFromList(List<Flight> flights) {
         try {
             WsFlight[] flights_array = new WsFlight[flights.size()];
             for (int i = 0; i < flights.size(); i++) {
-                flights_array[i] = flights.get(i).toWs(circular);
+                flights_array[i] = flights.get(i).toWs();
             }
             return flights_array;
         } catch (NullPointerException e) {

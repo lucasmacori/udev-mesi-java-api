@@ -22,10 +22,7 @@ public class Constructor implements IEntity {
 	public List<Model> models;
 
 	@Override
-    public WsConstructor toWs(boolean circular) {
-		if (circular) {
-            return new WsConstructor(id, name, isActive, models);
-        }
-        return new WsConstructor(id, name, isActive, null);
+	public WsConstructor toWs() {
+		return new WsConstructor(id, name, isActive);
 	}
 }

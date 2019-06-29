@@ -93,7 +93,7 @@ public class t3_PlaneTest {
         Query query;
 
         // Suppression de l'avion
-        query = em.createQuery("DELETE FROM Plane WHERE id = ( SELECT MAX(p.id) FROM Plane p)");
+        query = em.createQuery("DELETE FROM Plane WHERE ARN = 'ARN-999'");
         query.executeUpdate();
         em.flush();
 
@@ -112,7 +112,7 @@ public class t3_PlaneTest {
         // Suppression du constructeur
         while (constructorCount > 0) {
             query = em.createQuery("DELETE FROM Constructor WHERE name = 'TestConstructor' AND id = (SELECT MAX(c.id) FROM Constructor c)");
-            query.executeUpdate(); // FIXME: Suppression du constructeur qui plante (model qui en dépend non supprimé visiblement
+            query.executeUpdate();
             em.flush();
             constructorCount--;
         }
