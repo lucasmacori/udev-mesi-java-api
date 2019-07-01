@@ -11,7 +11,10 @@ VALUES ('is_not_an_integer', 'fr', 'n''est pas un nombre entier'),
        ('is_not_an_integer', 'it', 'non é un numero intero'),
        ('is_not_a_boolean', 'fr', 'n''est pas un booléen'),
        ('is_not_a_boolean', 'en', 'is not a boolean'),
-       ('is_not_a_boolean', 'it', 'non é un booleano');
+       ('is_not_a_boolean', 'it', 'non é un booleano'),
+       ('is_not_a_date', 'fr', 'n''est pas une date'),
+       ('is_not_a_date', 'en', 'is not a date'),
+       ('is_not_a_date', 'it', 'non é una data');
 
 -- Constructeurs
 INSERT INTO message (code, language_code, text)
@@ -60,3 +63,15 @@ VALUES ('invalid_flight', 'fr', 'Le vol est invalide, veuillez renseigner les va
        ('invalid_flight', 'it', 'Il volo non è valido, inserire i seguenti valori:'),
        ('flight_already_exists', 'it', 'Il volo esiste già'),
        ('flight_does_not_exist', 'it', 'Il volo non esiste');
+
+-- Détail de vol
+INSERT INTO message (code, language_code, text)
+VALUES ('invalid_flight_details', 'fr', 'Le détail du vol est invalide, veuillez renseigner les valeurs suivantes:'),
+       ('flight_details_already_exists', 'fr', 'Le détail du vol existe déjà'),
+       ('flight_details_does_not_exist', 'fr', 'Le détail du vol n''existe pas'),
+       ('invalid_flight_details', 'en', 'The flight details are invalid, please provide the following values:'),
+       ('flight_details_already_exists', 'en', 'The flight details already exist'),
+       ('flight_details_does_not_exist', 'en', 'The flight details do not exist'),
+       ('invalid_flight_details', 'it', 'I dettagli del volo non sono validi, inserire i seguenti valori:'),
+       ('flight_details_already_exists', 'it', 'I dettagli del volo esistono già'),
+       ('flight_details_does_not_exist', 'it', 'I dettagli del volo non esistono');

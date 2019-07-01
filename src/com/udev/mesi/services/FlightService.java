@@ -267,4 +267,17 @@ public class FlightService {
         }
         return isUpdate || (formParams.containsKey("departureCity") && formParams.containsKey("arrivalCity"));
     }
+
+    public static Flight exists(long pk) {
+        // Création du gestionnaire d'entités
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+        EntityManager em = emf.createEntityManager();
+
+        // Récupération du vol
+        Flight flight = em.find(Flight.class, pk);
+        if (flight == null || !flight.isActive) {
+            return null;
+        }
+        return flight;
+    }
 }

@@ -1,5 +1,6 @@
 package com.udev.mesi.models;
 
+import com.udev.mesi.config.APIDateFormat;
 import main.java.com.udev.mesi.entities.FlightDetails;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -9,8 +10,8 @@ import java.util.List;
 @XmlRootElement
 public class WsFlightDetails {
     public Long id;
-    public Date departureDateTime;
-    public Date arrivalDateTime;
+    public String departureDateTime;
+    public String arrivalDateTime;
     public boolean isActive;
     public WsFlight flight;
     public WsPlane plane;
@@ -20,8 +21,8 @@ public class WsFlightDetails {
 
     public WsFlightDetails(Long id, Date departureDateTime, Date arrivalDateTime, boolean isActive, WsFlight flight, WsPlane plane) {
         this.id = id;
-        this.departureDateTime = departureDateTime;
-        this.arrivalDateTime = arrivalDateTime;
+        this.departureDateTime = APIDateFormat.DATE_FORMAT.format(departureDateTime);
+        this.arrivalDateTime = APIDateFormat.DATE_FORMAT.format(arrivalDateTime);
         this.isActive = isActive;
         this.flight = flight;
         this.plane = plane;

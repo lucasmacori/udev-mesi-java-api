@@ -1,5 +1,6 @@
 .settings/
 .idea/
+.vs/
 target/
 pom.xml.tag
 pom.xml.releaseBackup

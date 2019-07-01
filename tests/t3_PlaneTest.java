@@ -106,9 +106,6 @@ public class t3_PlaneTest {
             modelCount--;
         }
 
-        em.getTransaction().commit();
-        em.getTransaction().begin();
-
         // Suppression du constructeur
         while (constructorCount > 0) {
             query = em.createQuery("DELETE FROM Constructor WHERE name = 'TestConstructor' AND id = (SELECT MAX(c.id) FROM Constructor c)");

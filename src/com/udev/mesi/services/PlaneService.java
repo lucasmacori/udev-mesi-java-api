@@ -15,7 +15,7 @@ import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
 
-public class PlaneService {
+public class PlaneService implements IWebService {
     public static WsGetPlanes read() throws JSONException {
 
         // Initialisation de la réponse
@@ -280,5 +280,20 @@ public class PlaneService {
             return false;
         }
         return formParams.containsKey("ARN");
+    }
+
+    public static Plane exists(String pk) {
+        // Création du gestionnaire d'entités
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+        EntityManager em = emf.createEntityManager();
+
+        // Récupération du vol
+        Query query = em.createQuery("FROM Plane WHERE ARN = :ARN");
+        query.setParameter("ARN", pk);
+        List<Plane> planes = query.getResultList();
+        if (planes.size() != 1 || !planes.get(0).isActive) {
+            return null;
+        }
+        return planes.get(0);
     }
 }
