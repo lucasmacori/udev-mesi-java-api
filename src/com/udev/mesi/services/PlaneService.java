@@ -186,10 +186,9 @@ public class PlaneService implements IWebService {
             // Modification de l'avion
             if (model_id > 0) {
                 // Vérification de l'existence du modèle
-                Model model = em.find(Model.class, model_id);
-                if (!model.equals(plane.model) && (model == null || !model.isActive)) {
-                    code = 400;
-                    throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
+                Model model = ModelService.exists(model_id);
+                if (model == null) {
+                    throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text + " 'id'");
                 }
                 plane.model = model;
             }

@@ -276,4 +276,17 @@ public class ConstructorService {
         if (isUpdate && !formParams.containsKey("id")) return false;
         return formParams.containsKey("name");
     }
+
+    public static Constructor exists(long pk) {
+        // Création du gestionnaire d'entités
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+        EntityManager em = emf.createEntityManager();
+
+        // Récupération du constructeur
+        Constructor constructor = em.find(Constructor.class, pk);
+        if (constructor == null || !constructor.isActive) {
+            return null;
+        }
+        return constructor;
+    }
 }

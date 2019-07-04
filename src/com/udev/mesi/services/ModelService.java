@@ -90,19 +90,15 @@ public class ModelService {
             em.getTransaction().begin();
 
             // Récupération du constructeur
-            query = em.createQuery("FROM Constructor WHERE id = :constructor_id");
-            query.setParameter("constructor_id", constructor_id);
-            List<Constructor> constructors = query.getResultList();
-
-            if (constructors.size() == 0 || !constructors.get(0).isActive) {
-                code = 400;
-                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
+            Constructor constructor = ConstructorService.exists(constructor_id);
+            if (constructor == null) {
+                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text + " 'id'");
             }
 
             // Création du modèle
             model = new Model();
             model.name = name;
-            model.constructor = constructors.get(0);
+            model.constructor = constructor;
             model.countEcoSlots = countEcoSlots;
             model.countBusinessSlots = countBusinessSlots;
             model.isActive = true;
@@ -181,15 +177,10 @@ public class ModelService {
             // Modification du modèle
             if (constructor_id > 0) {
                 // Récupération du constructeur
-                Query query = em.createQuery("FROM Constructor WHERE id = :constructor_id");
-                query.setParameter("constructor_id", constructor_id);
-                List<Constructor> constructors = query.getResultList();
-
-                if (constructors.size() == 0 || !constructors.get(0).isActive) {
-                    code = 400;
-                    throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
+                model.constructor = ConstructorService.exists(id);
+                if (model.constructor == null) {
+                    throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text + " 'id'");
                 }
-                model.constructor = constructors.get(0);
             }
             if (name != null && name.trim() != "") model.name = name;
             if (countEcoSlots > -1) model.countEcoSlots = countEcoSlots;
@@ -308,5 +299,18 @@ public class ModelService {
             message = null;
         }
         return message;
+    }
+
+    public static Model exists(long pk) {
+        // Création du gestionnaire d'entités
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+        EntityManager em = emf.createEntityManager();
+
+        // Récupération du constructeur
+        Model model = em.find(Model.class, pk);
+        if (model == null || !model.isActive) {
+            return null;
+        }
+        return model;
     }
 }

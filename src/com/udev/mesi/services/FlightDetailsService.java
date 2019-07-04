@@ -335,4 +335,17 @@ public class FlightDetailsService {
         return isUpdate || (formParams.containsKey("flight") && formParams.containsKey("plane")
                 && formParams.containsKey("departureDateTime") && formParams.containsKey("arrivalDateTime"));
     }
+
+    public static FlightDetails exists(long pk) {
+        // Création du gestionnaire d'entités
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+        EntityManager em = emf.createEntityManager();
+
+        // Récupération du constructeur
+        FlightDetails flightDetails = em.find(FlightDetails.class, pk);
+        if (flightDetails == null || !flightDetails.isActive) {
+            return null;
+        }
+        return flightDetails;
+    }
 }
