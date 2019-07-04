@@ -141,7 +141,7 @@ public class t3_PlaneTest {
                     .formParam("model", model.id)
                     .post(ROUTE);
 
-            assertEquals(200, response.getStatusCode());
+            assertEquals(201, response.getStatusCode());
             response
                     .then()
                     .assertThat().body("status", CoreMatchers.equalTo("OK"));

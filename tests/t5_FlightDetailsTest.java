@@ -161,7 +161,7 @@ public class t5_FlightDetailsTest {
                     .formParam("arrivalDateTime", "2019-06-30 04:15:00")
                     .post(ROUTE);
 
-            assertEquals(200, response.getStatusCode());
+            assertEquals(201, response.getStatusCode());
             response
                     .then()
                     .assertThat().body("status", CoreMatchers.equalTo("OK"));

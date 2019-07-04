@@ -57,7 +57,7 @@ public class t4_FlightTest {
                 .formParam("arrivalCity", "Gotham")
                 .post(ROUTE);
 
-        assertEquals(200, response.getStatusCode());
+        assertEquals(201, response.getStatusCode());
         response
                 .then()
                 .assertThat().body("status", CoreMatchers.equalTo("OK"));

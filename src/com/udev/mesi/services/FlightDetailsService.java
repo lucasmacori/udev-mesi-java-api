@@ -132,7 +132,7 @@ public class FlightDetailsService {
             emf.close();
 
             status = "OK";
-            code = 200;
+            code = 201;
         } catch (NumberFormatException e) {
             try {
                 message = "'flight_id' " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;

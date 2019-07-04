@@ -98,7 +98,7 @@ public class t2_ModelTest {
                     .formParam("countBusinessSlots", 100)
                     .post(ROUTE);
 
-            assertEquals(200, response.getStatusCode());
+            assertEquals(201, response.getStatusCode());
             response
                     .then()
                     .assertThat().body("status", CoreMatchers.equalTo("OK"));

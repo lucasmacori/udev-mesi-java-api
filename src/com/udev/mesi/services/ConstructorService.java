@@ -116,7 +116,7 @@ public class ConstructorService {
             emf.close();
 
             status = "OK";
-            code = 200;
+            code = 201;
         } catch (Exception e) {
             message = e.getMessage();
         }

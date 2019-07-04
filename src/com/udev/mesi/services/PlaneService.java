@@ -117,7 +117,7 @@ public class PlaneService implements IWebService {
             emf.close();
 
             status = "OK";
-            code = 200;
+            code = 201;
         } catch (NumberFormatException e) {
             try {
                 message = "'model' " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;

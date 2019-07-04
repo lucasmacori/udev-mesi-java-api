@@ -56,7 +56,7 @@ public class t1_ConstructorTest {
                 .formParam("name", "TestConstructor")
                 .post(ROUTE);
 
-        assertEquals(200, response.getStatusCode());
+        assertEquals(201, response.getStatusCode());
         response
                 .then()
                 .assertThat().body("status", CoreMatchers.equalTo("OK"));

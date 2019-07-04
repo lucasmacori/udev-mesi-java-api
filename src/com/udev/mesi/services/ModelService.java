@@ -113,7 +113,7 @@ public class ModelService {
             emf.close();
 
             status = "OK";
-            code = 200;
+            code = 201;
         } catch (NumberFormatException e) {
             message = getMessageFromConversionStep(conversion_step, languageCode);
             code = 400;
