@@ -3,6 +3,7 @@ package com.udev.mesi.services;
 import com.udev.mesi.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetFlights;
+import com.udev.mesi.messages.WsGetSingleFlight;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Flight;
 import org.json.JSONException;
@@ -45,6 +46,49 @@ public class FlightService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetFlights(status, message, code, null);
+        }
+
+        return response;
+    }
+
+    public static WsGetSingleFlight readOne(final long id, final String acceptLanguage) throws JSONException {
+
+        // Initialisation de la réponse
+        WsGetSingleFlight response;
+        String status = "KO";
+        String message;
+        int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+        Flight flight = null;
+
+        try {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
+
+            // Récupération des constructeurs depuis la base de données
+            flight = em.find(Flight.class, id);
+
+            // Vérification de l'existence du constructeur
+            if (flight == null || !flight.isActive) {
+                code = 400;
+                throw new Exception(MessageService.getMessageFromCode("flight_does_not_exist", languageCode).text);
+            }
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+            response = new WsGetSingleFlight(status, null, code, flight);
+
+            // Fermeture du gestionnaire d'entités
+            em.close();
+            emf.close();
+        } catch (Exception e) {
+            message = e.getMessage();
+            response = new WsGetSingleFlight(status, message, code, null);
         }
 
         return response;

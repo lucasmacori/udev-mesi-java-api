@@ -162,7 +162,36 @@ public class t3_PlaneTest {
     }
 
     @Test
-    public void t2_read() {
+    public void t2_readOne() {
+        // Création du gestionnaire d'entités
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+        EntityManager em = emf.createEntityManager();
+
+        if (plane != null) {
+            Response response = given()
+                    .urlEncodingEnabled(true)
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header("Accept", "application/json")
+                    .contentType("application/x-www-form-urlencoded")
+                    .get(ROUTE + plane.ARN);
+            response.prettyPrint();
+            assertEquals(200, response.getStatusCode());
+
+            ValidatableResponse validatableResponse = response.then();
+
+            validatableResponse
+                    .assertThat().body("status", Matchers.equalTo("OK"))
+                    .assertThat().body("plane", Matchers.notNullValue());
+
+            em.close();
+            emf.close();
+        } else {
+            fail("La requête POST ne s'étant pas exécutée, il est impossible de tester la requête GET " + ROUTE + "/pk");
+        }
+    }
+
+    @Test
+    public void t3_read() {
         // Création du gestionnaire d'entités
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
         EntityManager em = emf.createEntityManager();
@@ -197,7 +226,7 @@ public class t3_PlaneTest {
     }
 
     @Test
-    public void t3_update() {
+    public void t4_update() {
         if (plane != null) {
             Response response = given()
                     .urlEncodingEnabled(true)
@@ -237,7 +266,7 @@ public class t3_PlaneTest {
     }
 
     @Test
-    public void t4_delete() {
+    public void t5_delete() {
         if (plane != null) {
             Response response = given()
                     .urlEncodingEnabled(true)

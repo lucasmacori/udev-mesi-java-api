@@ -4,6 +4,7 @@ import com.udev.mesi.Database;
 import com.udev.mesi.config.APIDateFormat;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetFlightDetails;
+import com.udev.mesi.messages.WsGetSingleFlightDetails;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Flight;
 import main.java.com.udev.mesi.entities.FlightDetails;
@@ -54,6 +55,49 @@ public class FlightDetailsService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetFlightDetails(status, message, code, null);
+        }
+
+        return response;
+    }
+
+    public static WsGetSingleFlightDetails readOne(final long id, final String acceptLanguage) throws JSONException {
+
+        // Initialisation de la réponse
+        WsGetSingleFlightDetails response;
+        String status = "KO";
+        String message;
+        int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+        FlightDetails flightDetails = null;
+
+        try {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
+
+            // Récupération des constructeurs depuis la base de données
+            flightDetails = em.find(FlightDetails.class, id);
+
+            // Vérification de l'existence du constructeur
+            if (flightDetails == null || !flightDetails.isActive) {
+                code = 400;
+                throw new Exception(MessageService.getMessageFromCode("flight_details_does_not_exist", languageCode).text);
+            }
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+            response = new WsGetSingleFlightDetails(status, null, code, flightDetails);
+
+            // Fermeture du gestionnaire d'entités
+            em.close();
+            emf.close();
+        } catch (Exception e) {
+            message = e.getMessage();
+            response = new WsGetSingleFlightDetails(status, message, code, null);
         }
 
         return response;

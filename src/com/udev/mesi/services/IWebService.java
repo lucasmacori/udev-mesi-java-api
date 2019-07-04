@@ -3,19 +3,23 @@ package com.udev.mesi.services;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public interface IWebService {
-    static Object create(Object pk) {
+    static Object create() {
         throw new NotImplementedException();
     }
 
-    static Object read(Object pk) {
+    static Object read() {
         throw new NotImplementedException();
     }
 
-    static Object update(Object pk) {
+    static Object readOne() {
         throw new NotImplementedException();
     }
 
-    static Object delete(Object pk) {
+    static Object update() {
+        throw new NotImplementedException();
+    }
+
+    static Object delete() {
         throw new NotImplementedException();
     }
 

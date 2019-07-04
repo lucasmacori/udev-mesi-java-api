@@ -3,6 +3,7 @@ package com.udev.mesi.services;
 import com.udev.mesi.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetModels;
+import com.udev.mesi.messages.WsGetSingleModel;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Constructor;
 import main.java.com.udev.mesi.entities.Model;
@@ -47,6 +48,49 @@ public class ModelService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetModels(status, message, code, null, true);
+        }
+
+        return response;
+    }
+
+    public static WsGetSingleModel readOne(final long id, final String acceptLanguage) throws JSONException {
+
+        // Initialisation de la réponse
+        WsGetSingleModel response;
+        String status = "KO";
+        String message;
+        int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+        Model model = null;
+
+        try {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
+
+            // Récupération du modèle depuis la base de données
+            model = em.find(Model.class, id);
+
+            // Vérification de l'existence du modèle
+            if (model == null || !model.isActive) {
+                code = 400;
+                throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
+            }
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+            response = new WsGetSingleModel(status, null, code, model);
+
+            // Fermeture du gestionnaire d'entités
+            em.close();
+            emf.close();
+        } catch (Exception e) {
+            message = e.getMessage();
+            response = new WsGetSingleModel(status, message, code, null);
         }
 
         return response;

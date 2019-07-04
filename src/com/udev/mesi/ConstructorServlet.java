@@ -1,6 +1,7 @@
 package com.udev.mesi;
 
 import com.udev.mesi.messages.WsGetConstructors;
+import com.udev.mesi.messages.WsGetSingleConstructor;
 import com.udev.mesi.messages.WsResponse;
 import com.udev.mesi.services.ConstructorService;
 import org.json.JSONException;
@@ -17,6 +18,14 @@ public class ConstructorServlet {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response get() throws JSONException {
 		WsGetConstructors response = ConstructorService.read();
+		return Response.status(response.getCode()).entity(response).build();
+	}
+
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getByPk(@PathParam("id") final long id, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
+		WsGetSingleConstructor response = ConstructorService.readOne(id, acceptLanguage);
 		return Response.status(response.getCode()).entity(response).build();
 	}
 	

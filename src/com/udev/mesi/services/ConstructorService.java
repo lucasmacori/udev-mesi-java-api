@@ -3,6 +3,7 @@ package com.udev.mesi.services;
 import com.udev.mesi.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetConstructors;
+import com.udev.mesi.messages.WsGetSingleConstructor;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Constructor;
 import org.json.JSONException;
@@ -47,6 +48,49 @@ public class ConstructorService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetConstructors(status, message, code, null);
+        }
+
+        return response;
+    }
+
+    public static WsGetSingleConstructor readOne(final long id, final String acceptLanguage) throws JSONException {
+
+        // Initialisation de la réponse
+        WsGetSingleConstructor response;
+        String status = "KO";
+        String message;
+        int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+        Constructor constructor = null;
+
+        try {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
+
+            // Récupération des constructeurs depuis la base de données
+            constructor = em.find(Constructor.class, id);
+
+            // Vérification de l'existence du constructeur
+            if (constructor == null || !constructor.isActive) {
+                code = 400;
+                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
+            }
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+            response = new WsGetSingleConstructor(status, null, code, constructor);
+
+            // Fermeture du gestionnaire d'entités
+            em.close();
+            emf.close();
+        } catch (Exception e) {
+            message = e.getMessage();
+            response = new WsGetSingleConstructor(status, message, code, null);
         }
 
         return response;
