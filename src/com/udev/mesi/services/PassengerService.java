@@ -3,6 +3,7 @@ package com.udev.mesi.services;
 import com.udev.mesi.Database;
 import com.udev.mesi.config.APIFormat;
 import com.udev.mesi.exceptions.MessageException;
+import com.udev.mesi.messages.WsExists;
 import com.udev.mesi.messages.WsGetPassengers;
 import com.udev.mesi.messages.WsGetSinglePassenger;
 import com.udev.mesi.messages.WsResponse;
@@ -49,6 +50,123 @@ public class PassengerService implements IWebService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetPassengers(status, message, code, null);
+        }
+
+        return response;
+    }
+
+    public static WsExists emailExists(final String email, final String acceptLanguage) throws JSONException {
+
+        // Initialisation de la réponse
+        WsExists response;
+        String status = "KO";
+        String message;
+        int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+        Passenger passenger = null;
+
+        try {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
+
+            // Vérification de l'existence de l'email
+            Query query = em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.email = :email");
+            query.setParameter("email", email);
+            int count = Integer.parseInt(query.getResultList().get(0).toString());
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+            response = new WsExists(status, null, code, (count == 1));
+
+            // Fermeture du gestionnaire d'entités
+            em.close();
+            emf.close();
+        } catch (Exception e) {
+            message = e.getMessage();
+            response = new WsExists(status, message, code, false);
+        }
+
+        return response;
+    }
+
+    public static WsExists phoneNumberExists(final String phoneNumber, final String acceptLanguage) throws JSONException {
+
+        // Initialisation de la réponse
+        WsExists response;
+        String status = "KO";
+        String message;
+        int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+        Passenger passenger = null;
+
+        try {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
+
+            // Vérification de l'existence du numéro de téléphone
+            Query query = em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.phoneNumber = :phoneNumber");
+            query.setParameter("phoneNumber", phoneNumber);
+            int count = Integer.parseInt(query.getResultList().get(0).toString());
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+            response = new WsExists(status, null, code, (count == 1));
+
+            // Fermeture du gestionnaire d'entités
+            em.close();
+            emf.close();
+        } catch (Exception e) {
+            message = e.getMessage();
+            response = new WsExists(status, message, code, false);
+        }
+
+        return response;
+    }
+
+    public static WsExists IDNumberExists(final String IDNumber, final String acceptLanguage) throws JSONException {
+
+        // Initialisation de la réponse
+        WsExists response;
+        String status = "KO";
+        String message;
+        int code = 500;
+
+        // Récupération de la langue de l'utilisateur
+        String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+        Passenger passenger = null;
+
+        try {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
+
+            // Vérification de l'existence du numéro de téléphone
+            Query query = em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.IDNumber = :IDNumber");
+            query.setParameter("IDNumber", IDNumber);
+            int count = Integer.parseInt(query.getResultList().get(0).toString());
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+            response = new WsExists(status, null, code, (count == 1));
+
+            // Fermeture du gestionnaire d'entités
+            em.close();
+            emf.close();
+        } catch (Exception e) {
+            message = e.getMessage();
+            response = new WsExists(status, message, code, false);
         }
 
         return response;

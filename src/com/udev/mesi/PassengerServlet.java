@@ -1,5 +1,6 @@
 package com.udev.mesi;
 
+import com.udev.mesi.messages.WsExists;
 import com.udev.mesi.messages.WsGetPassengers;
 import com.udev.mesi.messages.WsGetSinglePassenger;
 import com.udev.mesi.messages.WsResponse;
@@ -25,6 +26,30 @@ public class PassengerServlet {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getByPk(@PathParam("id") final long id, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
         WsGetSinglePassenger response = PassengerService.readOne(id, acceptLanguage);
+        return Response.status(response.getCode()).entity(response).build();
+    }
+
+    @GET
+    @Path("emailExists/{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getEmailExists(@PathParam("email") final String email, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
+        WsExists response = PassengerService.emailExists(email, acceptLanguage);
+        return Response.status(response.getCode()).entity(response).build();
+    }
+
+    @GET
+    @Path("phoneNumberExists/{phoneNumber}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPhoneNumberExists(@PathParam("phoneNumber") final String phoneNumber, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
+        WsExists response = PassengerService.phoneNumberExists(phoneNumber, acceptLanguage);
+        return Response.status(response.getCode()).entity(response).build();
+    }
+
+    @GET
+    @Path("IDNumberExists/{IDNumber}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getIDNumberExists(@PathParam("IDNumber") final String IDNumber, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
+        WsExists response = PassengerService.IDNumberExists(IDNumber, acceptLanguage);
         return Response.status(response.getCode()).entity(response).build();
     }
 
