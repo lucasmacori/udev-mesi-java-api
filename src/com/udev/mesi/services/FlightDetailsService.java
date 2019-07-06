@@ -1,7 +1,7 @@
 package com.udev.mesi.services;
 
 import com.udev.mesi.Database;
-import com.udev.mesi.config.APIDateFormat;
+import com.udev.mesi.config.APIFormat;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetFlightDetails;
 import com.udev.mesi.messages.WsGetSingleFlightDetails;
@@ -30,10 +30,6 @@ public class FlightDetailsService {
         int code = 500;
 
         List<FlightDetails> flightDetails = null;
-
-        //
-        // FIXME: L'entité FlightDetails à tout pété
-        //
 
         try {
             // Création du gestionnaire d'entités
@@ -130,9 +126,9 @@ public class FlightDetailsService {
             // Récupération des paramètres
             long flight_id = Long.parseLong(formParams.get("flight").get(0));
             String plane_arn = formParams.get("plane").get(0);
-            Date departureDateTime = APIDateFormat.DATETIME_FORMAT.parse(formParams.get("departureDateTime").get(0));
+            Date departureDateTime = APIFormat.DATETIME_FORMAT.parse(formParams.get("departureDateTime").get(0));
             conversion_step++;
-            Date arrivalDateTime = APIDateFormat.DATETIME_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
+            Date arrivalDateTime = APIFormat.DATETIME_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
 
             // Création du gestionnaire d'entités
             EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
@@ -224,11 +220,11 @@ public class FlightDetailsService {
                 plane_arn = formParams.get("plane").get(0);
             }
             if (formParams.containsKey("departureDateTime")) {
-                departureDateTime = APIDateFormat.DATETIME_FORMAT.parse(formParams.get("departureDateTime").get(0));
+                departureDateTime = APIFormat.DATETIME_FORMAT.parse(formParams.get("departureDateTime").get(0));
             }
             conversion_step++;
             if (formParams.containsKey("arrivalDateTime")) {
-                arrivalDateTime = APIDateFormat.DATETIME_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
+                arrivalDateTime = APIFormat.DATETIME_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
             }
 
             // Création du gestionnaire d'entités

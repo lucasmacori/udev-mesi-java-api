@@ -75,3 +75,15 @@ VALUES ('invalid_flight_details', 'fr', 'Le détail du vol est invalide, veuille
        ('invalid_flight_details', 'it', 'I dettagli del volo non sono validi, inserire i seguenti valori:'),
        ('flight_details_already_exists', 'it', 'I dettagli del volo esistono già'),
        ('flight_details_does_not_exist', 'it', 'I dettagli del volo non esistono');
+
+-- Passagers
+INSERT INTO message (code, language_code, text)
+VALUES ('invalid_passenger', 'fr', 'Le passager est invalide, veuillez renseigner les valeurs suivantes:'),
+       ('passenger_already_exists', 'fr', 'Le passager existe déjà'),
+       ('passenger_does_not_exist', 'fr', 'Le passager n''existe pas'),
+       ('invalid_passenger', 'en', 'The passenger is invalid, please provide the following values:'),
+       ('passenger_already_exists', 'en', 'The passenger already exist'),
+       ('passenger_does_not_exist', 'en', 'The passenger does not exist'),
+       ('invalid_passenger', 'it', 'Il passeggero non é valido, inserire i seguenti valori:'),
+       ('passenger_already_exists', 'it', 'Il passeggero esiste già'),
+       ('passenger_does_not_exist', 'it', 'Il passeggero non esiste');

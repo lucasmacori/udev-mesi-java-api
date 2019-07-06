@@ -19,12 +19,6 @@ public class Passenger implements IEntity {
     @Column(length = 255)
     public String hash;
 
-    @Column(length = 50)
-    public String salt;
-
-    @Column(length = 1)
-    public char pepper;
-
     @Column(length = 35, nullable = false)
     public String firstName;
 
@@ -48,6 +42,6 @@ public class Passenger implements IEntity {
 
     @Override
     public WsPassenger toWs() {
-        return null;
+        return new WsPassenger(id, email, hash, firstName, lastName, gender + "", birthday, phoneNumber, IDNumber, isActive);
     }
 }

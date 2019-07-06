@@ -10,7 +10,7 @@ public class WsModel {
     public Long id;
     public WsConstructor constructor;
     public String name;
-    public boolean isActive;
+    private boolean isActive;
     public int countEcoSlots;
     public int countBusinessSlots;
 

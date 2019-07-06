@@ -93,7 +93,6 @@ public class t4_FlightTest {
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
                     .get(ROUTE + flight.id);
-            response.prettyPrint();
             assertEquals(200, response.getStatusCode());
 
             ValidatableResponse validatableResponse = response.then();

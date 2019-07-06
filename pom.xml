@@ -76,5 +76,10 @@
             <version>2.9.9</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.8.0</version>
+        </dependency>
     </dependencies>
 </project>

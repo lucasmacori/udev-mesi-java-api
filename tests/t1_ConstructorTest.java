@@ -28,22 +28,25 @@ public class t1_ConstructorTest {
 
     @AfterClass
     public static void clean() {
-        // Création du gestionnaire d'entités
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-        EntityManager em = emf.createEntityManager();
+        if (constructor != null) {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
 
-        Query query = em.createQuery("FROM Constructor WHERE id = ( SELECT MAX(c.id) FROM Constructor c)");
-        List<Constructor> constructors = query.getResultList();
+            Query query = em.createQuery("FROM Constructor WHERE id = :id");
+            query.setParameter("id", constructor.id);
+            List<Constructor> constructors = query.getResultList();
 
-        if (constructors.size() == 1) {
-            em.getTransaction().begin();
-            em.flush();
-            em.remove(constructors.get(0));
-            em.getTransaction().commit();
+            if (constructors.size() == 1) {
+                em.getTransaction().begin();
+                em.flush();
+                em.remove(constructors.get(0));
+                em.getTransaction().commit();
+            }
+
+            em.close();
+            emf.close();
         }
-
-        em.close();
-        emf.close();
     }
 
     @Test
@@ -92,7 +95,6 @@ public class t1_ConstructorTest {
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
                     .get(ROUTE + constructor.id);
-            response.prettyPrint();
             assertEquals(200, response.getStatusCode());
 
             ValidatableResponse validatableResponse = response.then();

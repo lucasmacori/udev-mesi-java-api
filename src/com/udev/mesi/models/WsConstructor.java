@@ -10,7 +10,7 @@ public class WsConstructor {
 	
 	public Long id;
 	public String name;
-	public boolean isActive;
+    private boolean isActive;
 
 	public WsConstructor() {}
 

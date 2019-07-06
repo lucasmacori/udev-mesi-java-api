@@ -21,29 +21,32 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class t6_passengerTest {
+public class t6_PassengerTest {
 
     private static final String ROUTE = APIConfig.PATH + "passenger/";
     private static Passenger passenger;
 
     @AfterClass
     public static void clean() {
-        // Création du gestionnaire d'entités
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-        EntityManager em = emf.createEntityManager();
+        if (passenger != null) {
+            // Création du gestionnaire d'entités
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
+            EntityManager em = emf.createEntityManager();
 
-        Query query = em.createQuery("FROM Passenger WHERE id = ( SELECT MAX(p.id) FROM Passenger p)");
-        List<Passenger> passengers = query.getResultList();
+            Query query = em.createQuery("FROM Passenger WHERE id = :id");
+            query.setParameter("id", passenger.id);
+            List<Passenger> passengers = query.getResultList();
 
-        if (passengers.size() == 1) {
-            em.getTransaction().begin();
-            em.flush();
-            em.remove(passengers.get(0));
-            em.getTransaction().commit();
+            if (passengers.size() == 1) {
+                em.getTransaction().begin();
+                em.flush();
+                em.remove(passengers.get(0));
+                em.getTransaction().commit();
+            }
+
+            em.close();
+            emf.close();
         }
-
-        em.close();
-        emf.close();
     }
 
     @Test
@@ -99,11 +102,9 @@ public class t6_passengerTest {
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
                     .get(ROUTE + passenger.id);
-            response.prettyPrint();
             assertEquals(200, response.getStatusCode());
 
             ValidatableResponse validatableResponse = response.then();
-
             validatableResponse
                     .assertThat().body("status", Matchers.equalTo("OK"))
                     .assertThat().body("passenger", Matchers.notNullValue());
@@ -167,7 +168,7 @@ public class t6_passengerTest {
                     .formParam("lastName", "Tyler")
                     .formParam("gender", "f")
                     .formParam("birthday", "1951-06-08")
-                    .formParam("phoneNumber", "06777777777")
+                    .formParam("phoneNumber", "0777777777")
                     .formParam("IDNumber", "9876543210")
                     .put(ROUTE);
 
@@ -218,7 +219,7 @@ public class t6_passengerTest {
             EntityManager em = emf.createEntityManager();
 
             // Vérification de la modification
-            Query query = em.createQuery("FROM Constructor WHERE isActive = false AND id = :id");
+            Query query = em.createQuery("FROM Passenger WHERE isActive = false AND id = :id");
             query.setParameter("id", passenger.id);
             List<Passenger> passengers = query.getResultList();
 

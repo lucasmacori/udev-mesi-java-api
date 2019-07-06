@@ -10,7 +10,7 @@ public class WsPlane {
     public String ARN;
     public WsModel model;
     public boolean isUnderMaintenance;
-    public boolean isActive;
+    private boolean isActive;
 
     public WsPlane() {
     }

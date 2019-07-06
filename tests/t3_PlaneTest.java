@@ -174,7 +174,6 @@ public class t3_PlaneTest {
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
                     .get(ROUTE + plane.ARN);
-            response.prettyPrint();
             assertEquals(200, response.getStatusCode());
 
             ValidatableResponse validatableResponse = response.then();

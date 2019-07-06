@@ -1,5 +1,5 @@
 import com.udev.mesi.Database;
-import com.udev.mesi.config.APIDateFormat;
+import com.udev.mesi.config.APIFormat;
 import config.APIConfig;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
@@ -194,7 +194,6 @@ public class t5_FlightDetailsTest {
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
                     .get(ROUTE + flightDetails.id);
-            response.prettyPrint();
             assertEquals(200, response.getStatusCode());
 
             ValidatableResponse validatableResponse = response.then();
@@ -302,11 +301,11 @@ public class t5_FlightDetailsTest {
                     assertEquals(t5_FlightDetailsTest.flightDetails.id, flightDetails.get(0).id);
                     assertEquals(flight.id, flightDetails.get(0).flight.id);
                     assertEquals(plane.ARN, flightDetails.get(0).plane.ARN);
-                    assertEquals(APIDateFormat.DATETIME_FORMAT.parse("2019-06-30 06:30:00"), APIDateFormat.DATETIME_FORMAT.parse(flightDetails.get(0).departureDateTime.toString()));
-                    assertEquals(APIDateFormat.DATETIME_FORMAT.parse("2019-07-01 06:30:00"), APIDateFormat.DATETIME_FORMAT.parse(flightDetails.get(0).arrivaleDateTime.toString()));
+                    assertEquals(APIFormat.DATETIME_FORMAT.parse("2019-06-30 06:30:00"), APIFormat.DATETIME_FORMAT.parse(flightDetails.get(0).departureDateTime.toString()));
+                    assertEquals(APIFormat.DATETIME_FORMAT.parse("2019-07-01 06:30:00"), APIFormat.DATETIME_FORMAT.parse(flightDetails.get(0).arrivaleDateTime.toString()));
 
-                    t5_FlightDetailsTest.flightDetails.departureDateTime = APIDateFormat.DATETIME_FORMAT.parse("2019-06-30 06:30:00");
-                    t5_FlightDetailsTest.flightDetails.arrivaleDateTime = APIDateFormat.DATETIME_FORMAT.parse("2019-07-01 06:30:00");
+                    t5_FlightDetailsTest.flightDetails.departureDateTime = APIFormat.DATETIME_FORMAT.parse("2019-06-30 06:30:00");
+                    t5_FlightDetailsTest.flightDetails.arrivaleDateTime = APIFormat.DATETIME_FORMAT.parse("2019-07-01 06:30:00");
                 }
             } catch (ParseException e) {
                 fail("Impossible de convertir la date de sortie");

@@ -10,7 +10,7 @@ public class WsFlight {
     public Long id;
     public String departureCity;
     public String arrivalCity;
-    public boolean isActive;
+    private boolean isActive;
 
     public WsFlight() {
     }
