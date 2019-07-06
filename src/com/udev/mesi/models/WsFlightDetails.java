@@ -21,8 +21,8 @@ public class WsFlightDetails {
 
     public WsFlightDetails(Long id, Date departureDateTime, Date arrivalDateTime, boolean isActive, WsFlight flight, WsPlane plane) {
         this.id = id;
-        this.departureDateTime = APIDateFormat.DATE_FORMAT.format(departureDateTime);
-        this.arrivalDateTime = APIDateFormat.DATE_FORMAT.format(arrivalDateTime);
+        this.departureDateTime = APIDateFormat.DATETIME_FORMAT.format(departureDateTime);
+        this.arrivalDateTime = APIDateFormat.DATETIME_FORMAT.format(arrivalDateTime);
         this.isActive = isActive;
         this.flight = flight;
         this.plane = plane;

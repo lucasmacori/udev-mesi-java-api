@@ -130,9 +130,9 @@ public class FlightDetailsService {
             // Récupération des paramètres
             long flight_id = Long.parseLong(formParams.get("flight").get(0));
             String plane_arn = formParams.get("plane").get(0);
-            Date departureDateTime = APIDateFormat.DATE_FORMAT.parse(formParams.get("departureDateTime").get(0));
+            Date departureDateTime = APIDateFormat.DATETIME_FORMAT.parse(formParams.get("departureDateTime").get(0));
             conversion_step++;
-            Date arrivalDateTime = APIDateFormat.DATE_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
+            Date arrivalDateTime = APIDateFormat.DATETIME_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
 
             // Création du gestionnaire d'entités
             EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
@@ -224,11 +224,11 @@ public class FlightDetailsService {
                 plane_arn = formParams.get("plane").get(0);
             }
             if (formParams.containsKey("departureDateTime")) {
-                departureDateTime = APIDateFormat.DATE_FORMAT.parse(formParams.get("departureDateTime").get(0));
+                departureDateTime = APIDateFormat.DATETIME_FORMAT.parse(formParams.get("departureDateTime").get(0));
             }
             conversion_step++;
             if (formParams.containsKey("arrivalDateTime")) {
-                arrivalDateTime = APIDateFormat.DATE_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
+                arrivalDateTime = APIDateFormat.DATETIME_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
             }
 
             // Création du gestionnaire d'entités

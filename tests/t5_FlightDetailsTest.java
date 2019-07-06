@@ -302,11 +302,11 @@ public class t5_FlightDetailsTest {
                     assertEquals(t5_FlightDetailsTest.flightDetails.id, flightDetails.get(0).id);
                     assertEquals(flight.id, flightDetails.get(0).flight.id);
                     assertEquals(plane.ARN, flightDetails.get(0).plane.ARN);
-                    assertEquals(APIDateFormat.DATE_FORMAT.parse("2019-06-30 06:30:00"), APIDateFormat.DATE_FORMAT.parse(flightDetails.get(0).departureDateTime.toString()));
-                    assertEquals(APIDateFormat.DATE_FORMAT.parse("2019-07-01 06:30:00"), APIDateFormat.DATE_FORMAT.parse(flightDetails.get(0).arrivaleDateTime.toString()));
+                    assertEquals(APIDateFormat.DATETIME_FORMAT.parse("2019-06-30 06:30:00"), APIDateFormat.DATETIME_FORMAT.parse(flightDetails.get(0).departureDateTime.toString()));
+                    assertEquals(APIDateFormat.DATETIME_FORMAT.parse("2019-07-01 06:30:00"), APIDateFormat.DATETIME_FORMAT.parse(flightDetails.get(0).arrivaleDateTime.toString()));
 
-                    t5_FlightDetailsTest.flightDetails.departureDateTime = APIDateFormat.DATE_FORMAT.parse("2019-06-30 06:30:00");
-                    t5_FlightDetailsTest.flightDetails.arrivaleDateTime = APIDateFormat.DATE_FORMAT.parse("2019-07-01 06:30:00");
+                    t5_FlightDetailsTest.flightDetails.departureDateTime = APIDateFormat.DATETIME_FORMAT.parse("2019-06-30 06:30:00");
+                    t5_FlightDetailsTest.flightDetails.arrivaleDateTime = APIDateFormat.DATETIME_FORMAT.parse("2019-07-01 06:30:00");
                 }
             } catch (ParseException e) {
                 fail("Impossible de convertir la date de sortie");
