@@ -22,7 +22,7 @@ public class WsPlane {
         this.isActive = isActive;
     }
 
-    public static WsPlane[] getArrayFromList(List<Plane> planes, boolean includeModels, boolean circular) {
+    public static WsPlane[] getArrayFromList(List<Plane> planes) {
         try {
             WsPlane[] planes_array = new WsPlane[planes.size()];
             for (int i = 0; i < planes.size(); i++) {

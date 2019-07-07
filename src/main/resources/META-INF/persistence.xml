@@ -11,6 +11,9 @@
         <class>main.java.com.udev.mesi.entities.Message</class>
         <class>main.java.com.udev.mesi.entities.Plane</class>
         <class>main.java.com.udev.mesi.entities.Flight</class>
+        <class>main.java.com.udev.mesi.entities.FlightDetails</class>
+        <class>main.java.com.udev.mesi.entities.Passenger</class>
+        <class>main.java.com.udev.mesi.entities.Reservation</class>
 		<properties>
             <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/udev-mesi"/>
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>

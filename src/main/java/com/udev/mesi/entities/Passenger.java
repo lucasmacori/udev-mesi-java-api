@@ -4,6 +4,7 @@ import com.udev.mesi.models.WsPassenger;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Passenger implements IEntity {
@@ -36,6 +37,9 @@ public class Passenger implements IEntity {
 
     @Column(nullable = false, unique = true, length = 20)
     public String IDNumber;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "passenger")
+    public List<Reservation> reservations;
 
     @Column(nullable = false, columnDefinition = "bool default true")
     public boolean isActive;

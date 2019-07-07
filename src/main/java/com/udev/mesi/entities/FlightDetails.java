@@ -4,6 +4,7 @@ import com.udev.mesi.models.WsFlightDetails;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class FlightDetails implements IEntity {
@@ -28,6 +29,9 @@ public class FlightDetails implements IEntity {
 
     @Column(nullable = false)
     public Date arrivaleDateTime;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "flightDetails")
+    public List<Reservation> reservations;
 
     @Override
     public WsFlightDetails toWs() {

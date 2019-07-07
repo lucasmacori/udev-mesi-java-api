@@ -39,14 +39,14 @@ public class PlaneService implements IWebService {
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-            response = new WsGetPlanes(status, message, code, planes, true);
+            response = new WsGetPlanes(status, message, code, planes);
 
             // Fermeture du gestionnaire d'entités
             em.close();
             emf.close();
         } catch (Exception e) {
             message = e.getMessage();
-            response = new WsGetPlanes(status, message, code, null, false);
+            response = new WsGetPlanes(status, message, code, null);
         }
 
         return response;
