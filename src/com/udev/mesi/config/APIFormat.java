@@ -40,6 +40,16 @@ public class APIFormat {
         return (password.length() <= maxLength && password.length() >= minLength);
     }
 
+    // Long
+    public static boolean isValidLong(String value) {
+        try {
+            Long.parseLong(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     // Gender
     public static boolean isValidGender(String gender) {
         return (gender.length() == 1 && (gender.toUpperCase().toCharArray()[0] == 'M' || gender.toUpperCase().toCharArray()[0] == 'F'));

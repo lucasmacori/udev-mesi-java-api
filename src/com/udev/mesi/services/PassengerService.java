@@ -18,7 +18,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.util.Date;
 import java.util.List;
 
-public class PassengerService implements IWebService {
+public class PassengerService {
 
     public static WsGetPassengers read() throws JSONException {
 
@@ -475,7 +475,6 @@ public class PassengerService implements IWebService {
 
     private static boolean isValidPassenger(final MultivaluedMap<String, String> formParams, boolean isUpdate) {
         if (isUpdate && !formParams.containsKey("id")) return false;
-        boolean isValid = true;
         if ((formParams.containsKey("email") || !isUpdate) && (!formParams.containsKey("email") || !APIFormat.isValidEmail(formParams.get("email").get(0))))
             return false;
         if ((formParams.containsKey("password") || !isUpdate) && (!formParams.containsKey("password") && !APIFormat.isValidString(formParams.get("password").get(0), 8, 50)))
@@ -490,9 +489,7 @@ public class PassengerService implements IWebService {
             return false;
         if ((formParams.containsKey("phoneNumber") || !isUpdate) && (!formParams.containsKey("phoneNumber") && APIFormat.isValidString(formParams.get("phoneNumber").get(0), 6, 15)))
             return false;
-        if ((formParams.containsKey("IDNumber") || !isUpdate) && (!formParams.containsKey("IDNumber") && APIFormat.isValidString(formParams.get("IDNumber").get(0), 8, 20)))
-            return false;
-        return isValid;
+        return (!formParams.containsKey("IDNumber") && isUpdate) || (formParams.containsKey("IDNumber") || !APIFormat.isValidString(formParams.get("IDNumber").get(0), 8, 20));
     }
 
     public static Passenger exists(long pk) {

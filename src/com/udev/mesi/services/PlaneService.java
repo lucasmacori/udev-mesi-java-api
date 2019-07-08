@@ -16,7 +16,7 @@ import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
 
-public class PlaneService implements IWebService {
+public class PlaneService {
     public static WsGetPlanes read() throws JSONException {
 
         // Initialisation de la réponse

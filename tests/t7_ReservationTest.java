@@ -103,6 +103,10 @@ public class t7_ReservationTest {
         em.getTransaction().begin();
 
         // Suppression de la réservation si existante
+        if (reservation != null) {
+            Reservation reservation1 = em.find(Reservation.class, reservation.id);
+            em.remove(reservation1);
+        }
 
         em.flush();
 
@@ -137,7 +141,7 @@ public class t7_ReservationTest {
         EntityManager em = emf.createEntityManager();
 
         // Récupération de la réservation depuis la base de données
-        Query query = em.createQuery("FROM Reservation WHERE isActive = true AND flightDetails = :fd_id AND passenger = :p_id");
+        Query query = em.createQuery("SELECT r FROM Reservation r, FlightDetails fd, Passenger p WHERE r.isActive = true AND fd.id = r.flightDetails AND p.id = r.passenger AND fd.id = :fd_id AND p.id = :p_id");
         query.setParameter("fd_id", flightDetails_id);
         query.setParameter("p_id", passenger_id);
         List<Reservation> reservations = query.getResultList();
@@ -240,7 +244,7 @@ public class t7_ReservationTest {
                     .assertThat().body("status", Matchers.equalTo("OK"));
 
             // Vérification de la modification
-            query = em.createQuery("SELECT r FROM Reservation r WHERE r.isActive = true AND r.id = :id AND flightDetails = :fd_id AND r.passenger = :p_id");
+            query = em.createQuery("SELECT r FROM Reservation r, FlightDetails fd, Passenger p WHERE r.isActive = true AND r.id = :id AND fd.id = r.flightDetails AND p.id = r.passenger AND fd.id = :fd_id AND p.id = :p_id");
             query.setParameter("id", reservation.id);
             query.setParameter("fd_id", flightDetails_id);
             query.setParameter("p_id", passenger_id);

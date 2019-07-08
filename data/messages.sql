@@ -87,3 +87,15 @@ VALUES ('invalid_passenger', 'fr', 'Le passager est invalide, veuillez renseigne
        ('invalid_passenger', 'it', 'Il passeggero non é valido, inserire i seguenti valori:'),
        ('passenger_already_exists', 'it', 'Il passeggero esiste già'),
        ('passenger_does_not_exist', 'it', 'Il passeggero non esiste');
+
+-- Réservations
+INSERT INTO message (code, language_code, text)
+VALUES ('invalid_reservation', 'fr', 'La réservation est invalide, veuillez renseigner les valeurs suivantes:'),
+       ('reservation_already_exists', 'fr', 'La réservation existe déjà'),
+       ('reservation_does_not_exist', 'fr', 'La réservation n''existe pas'),
+       ('invalid_reservation', 'en', 'The reservation is invalid, please provide the following values:'),
+       ('reservation_already_exists', 'en', 'The reservation already exist'),
+       ('reservation_does_not_exist', 'en', 'The reservation does not exist'),
+       ('invalid_reservation', 'it', 'La prenotazione non é valida, inserire i seguenti valori:'),
+       ('reservation_already_exists', 'it', 'La prenotazione esiste già'),
+       ('reservation_does_not_exist', 'it', 'La prenotazione non esiste');
