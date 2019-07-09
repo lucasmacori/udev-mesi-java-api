@@ -1,12 +1,12 @@
 package main.java.com.udev.mesi.entities;
 
-import com.udev.mesi.models.WsConstructor;
+import com.udev.mesi.models.WsManufacturer;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class Constructor implements IEntity {
+public class Manufacturer implements IEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(updatable = false, nullable = false)
@@ -18,11 +18,11 @@ public class Constructor implements IEntity {
 	@Column(nullable = false, columnDefinition = "bool default true")
 	public boolean isActive;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "constructor")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer")
 	public List<Model> models;
 
 	@Override
-	public WsConstructor toWs() {
-		return new WsConstructor(id, name, isActive);
+	public WsManufacturer toWs() {
+		return new WsManufacturer(id, name, isActive);
 	}
 }

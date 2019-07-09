@@ -2,7 +2,7 @@ import com.udev.mesi.Database;
 import config.APIConfig;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import main.java.com.udev.mesi.entities.Constructor;
+import main.java.com.udev.mesi.entities.Manufacturer;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
@@ -21,26 +21,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class t1_ConstructorTest {
+public class t1_ManufacturerTest {
 
-    private static final String ROUTE = APIConfig.PATH + "constructor/";
-    private static Constructor constructor;
+    private static final String ROUTE = APIConfig.PATH + "manufacturer/";
+    private static Manufacturer manufacturer;
 
     @AfterClass
     public static void clean() {
-        if (constructor != null) {
+        if (manufacturer != null) {
             // Création du gestionnaire d'entités
             EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
             EntityManager em = emf.createEntityManager();
 
-            Query query = em.createQuery("FROM Constructor WHERE id = :id");
-            query.setParameter("id", constructor.id);
-            List<Constructor> constructors = query.getResultList();
+            Query query = em.createQuery("FROM Manufacturer WHERE id = :id");
+            query.setParameter("id", manufacturer.id);
+            List<Manufacturer> manufacturers = query.getResultList();
 
-            if (constructors.size() == 1) {
+            if (manufacturers.size() == 1) {
                 em.getTransaction().begin();
                 em.flush();
-                em.remove(constructors.get(0));
+                em.remove(manufacturers.get(0));
                 em.getTransaction().commit();
             }
 
@@ -69,13 +69,13 @@ public class t1_ConstructorTest {
         EntityManager em = emf.createEntityManager();
 
         // Récupération du constructeur depuis la base de données
-        Query query = em.createQuery("FROM Constructor WHERE isActive = true AND name = 'TestConstructor'");
-        List<Constructor> constructors = query.getResultList();
+        Query query = em.createQuery("FROM Manufacturer WHERE isActive = true AND name = 'TestConstructor'");
+        List<Manufacturer> manufacturers = query.getResultList();
 
-        assertEquals(1, constructors.size());
+        assertEquals(1, manufacturers.size());
 
-        if (constructors.size() == 1) {
-            constructor = constructors.get(0);
+        if (manufacturers.size() == 1) {
+            manufacturer = manufacturers.get(0);
         }
 
         em.close();
@@ -88,20 +88,20 @@ public class t1_ConstructorTest {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
         EntityManager em = emf.createEntityManager();
 
-        if (constructor != null) {
+        if (manufacturer != null) {
             Response response = given()
                     .urlEncodingEnabled(true)
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
-                    .get(ROUTE + constructor.id);
+                    .get(ROUTE + manufacturer.id);
             assertEquals(200, response.getStatusCode());
 
             ValidatableResponse validatableResponse = response.then();
 
             validatableResponse
                     .assertThat().body("status", Matchers.equalTo("OK"))
-                    .assertThat().body("constructor", Matchers.notNullValue());
+                    .assertThat().body("manufacturer", Matchers.notNullValue());
 
             em.close();
             emf.close();
@@ -117,7 +117,7 @@ public class t1_ConstructorTest {
         EntityManager em = emf.createEntityManager();
 
         // Récupération du nombre de constructors dans la base de données
-        Query query = em.createQuery("SELECT COUNT(c.id) FROM Constructor c WHERE isActive = true");
+        Query query = em.createQuery("SELECT COUNT(c.id) FROM Manufacturer c WHERE isActive = true");
         List<Long> constructors = query.getResultList();
         Long size = constructors.get(0);
 
@@ -134,13 +134,13 @@ public class t1_ConstructorTest {
         validatableResponse.assertThat().body("status", Matchers.equalTo("OK"));
         if (size > 0) {
             validatableResponse
-                    .assertThat().body("constructors", Matchers.notNullValue());
+                    .assertThat().body("manufacturers", Matchers.notNullValue());
         }
         if (size > 1) {
             validatableResponse
-                    .assertThat().body("constructors", Matchers.hasSize(size.intValue()));
+                    .assertThat().body("manufacturers", Matchers.hasSize(size.intValue()));
         } else if (size == 0) {
-            validatableResponse.assertThat().body("constructors", Matchers.nullValue());
+            validatableResponse.assertThat().body("manufacturers", Matchers.nullValue());
         }
 
         em.close();
@@ -149,13 +149,13 @@ public class t1_ConstructorTest {
 
     @Test
     public void t4_update() {
-        if (constructor != null) {
+        if (manufacturer != null) {
             Response response = given()
                     .urlEncodingEnabled(true)
                     .header("Content-type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
-                    .formParam("id", constructor.id)
+                    .formParam("id", manufacturer.id)
                     .formParam("name", "TestConstructorNew")
                     .put(ROUTE);
 
@@ -169,14 +169,14 @@ public class t1_ConstructorTest {
             EntityManager em = emf.createEntityManager();
 
             // Vérification de la modification
-            Query query = em.createQuery("FROM Constructor WHERE isActive = true AND name = 'TestConstructorNew'");
-            List<Constructor> constructors = query.getResultList();
+            Query query = em.createQuery("FROM Manufacturer WHERE isActive = true AND name = 'TestConstructorNew'");
+            List<Manufacturer> manufacturers = query.getResultList();
 
-            assertEquals(1, constructors.size());
+            assertEquals(1, manufacturers.size());
 
-            if (constructors.size() == 1) {
-                assertEquals(constructor.id, constructors.get(0).id);
-                assertEquals("TestConstructorNew", constructors.get(0).name);
+            if (manufacturers.size() == 1) {
+                assertEquals(manufacturer.id, manufacturers.get(0).id);
+                assertEquals("TestConstructorNew", manufacturers.get(0).name);
             }
 
             em.close();
@@ -188,13 +188,13 @@ public class t1_ConstructorTest {
 
     @Test
     public void t5_delete() {
-        if (constructor != null) {
+        if (manufacturer != null) {
             Response response = given()
                     .urlEncodingEnabled(true)
                     .header("Content-type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
-                    .formParam("id", constructor.id)
+                    .formParam("id", manufacturer.id)
                     .delete(ROUTE);
 
             assertEquals(200, response.getStatusCode());
@@ -207,15 +207,15 @@ public class t1_ConstructorTest {
             EntityManager em = emf.createEntityManager();
 
             // Vérification de la modification
-            Query query = em.createQuery("FROM Constructor WHERE isActive = false AND id = :id");
-            query.setParameter("id", constructor.id);
-            List<Constructor> constructors = query.getResultList();
+            Query query = em.createQuery("FROM Manufacturer WHERE isActive = false AND id = :id");
+            query.setParameter("id", manufacturer.id);
+            List<Manufacturer> manufacturers = query.getResultList();
 
-            assertEquals(1, constructors.size());
+            assertEquals(1, manufacturers.size());
 
-            if (constructors.size() == 1) {
-                assertEquals(constructor.id, constructors.get(0).id);
-                assertEquals("TestConstructorNew", constructors.get(0).name);
+            if (manufacturers.size() == 1) {
+                assertEquals(manufacturer.id, manufacturers.get(0).id);
+                assertEquals("TestConstructorNew", manufacturers.get(0).name);
             }
 
             em.close();

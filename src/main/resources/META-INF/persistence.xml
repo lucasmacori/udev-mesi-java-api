@@ -5,7 +5,7 @@
              version="2.0">
 	<persistence-unit name="udevmesi" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <class>main.java.com.udev.mesi.entities.Constructor</class>
+        <class>main.java.com.udev.mesi.entities.Manufacturer</class>
 		<class>main.java.com.udev.mesi.entities.Model</class>
         <class>main.java.com.udev.mesi.entities.Language</class>
         <class>main.java.com.udev.mesi.entities.Message</class>

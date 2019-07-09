@@ -8,7 +8,7 @@ import java.util.List;
 @XmlRootElement
 public class WsModel {
     public Long id;
-    public WsConstructor constructor;
+    public WsManufacturer manufacturer;
     public String name;
     private boolean isActive;
     public int countEcoSlots;
@@ -17,9 +17,9 @@ public class WsModel {
     public WsModel() {
     }
 
-    public WsModel(long id, WsConstructor constructor, String name, boolean isActive, int countEcoSlots, int countBusinessSlots) {
+    public WsModel(long id, WsManufacturer manufacturer, String name, boolean isActive, int countEcoSlots, int countBusinessSlots) {
         this.id = id;
-        this.constructor = constructor;
+        this.manufacturer = manufacturer;
         this.name = name;
         this.isActive = isActive;
         this.countEcoSlots = countEcoSlots;

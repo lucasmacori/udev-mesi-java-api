@@ -14,7 +14,7 @@ public class Model implements IEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    public Constructor constructor;
+    public Manufacturer manufacturer;
 
     @Column(nullable = false, length = 50)
     public String name;
@@ -33,6 +33,6 @@ public class Model implements IEntity {
 
     @Override
     public WsModel toWs() {
-        return new WsModel(id, constructor.toWs(), name, isActive, countEcoSlots, countBusinessSlots);
+        return new WsModel(id, manufacturer.toWs(), name, isActive, countEcoSlots, countBusinessSlots);
     }
 }

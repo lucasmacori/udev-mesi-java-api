@@ -18,15 +18,15 @@ VALUES ('is_not_an_integer', 'fr', 'n''est pas un nombre entier'),
 
 -- Constructeurs
 INSERT INTO message (code, language_code, text)
-VALUES ('invalid_constructor', 'fr', 'Le constructeur est invalide, veuillez renseigner les valeurs suivantes:'),
-       ('constructor_already_exists', 'fr', 'Le constructeur existe déjà'),
-       ('constructor_does_not_exist', 'fr', 'Le constructeur n''existe pas'),
-       ('invalid_constructor', 'en', 'The constructor is invalid, please provide the following values:'),
-       ('constructor_already_exists', 'en', 'The constructor already exists'),
-       ('constructor_does_not_exist', 'en', 'The constructor does not exist'),
-       ('invalid_constructor', 'it', 'Il costruttore non è valido, inserire i seguenti valori:'),
-       ('constructor_already_exists', 'it', 'Il costruttore esiste già'),
-       ('constructor_does_not_exist', 'it', 'Il costruttore non esiste');
+VALUES ('invalid_manufacturer', 'fr', 'Le constructeur est invalide, veuillez renseigner les valeurs suivantes:'),
+       ('manufacturer_already_exists', 'fr', 'Le constructeur existe déjà'),
+       ('manufacturer_does_not_exist', 'fr', 'Le constructeur n''existe pas'),
+       ('invalid_manufacturer', 'en', 'The manufacturer is invalid, please provide the following values:'),
+       ('manufacturer_already_exists', 'en', 'The manufacturer already exists'),
+       ('manufacturer_does_not_exist', 'en', 'The manufacturer does not exist'),
+       ('invalid_manufacturer', 'it', 'Il costruttore non è valido, inserire i seguenti valori:'),
+       ('manufacturer_already_exists', 'it', 'Il costruttore esiste già'),
+       ('manufacturer_does_not_exist', 'it', 'Il costruttore non esiste');
 
 -- Modèles
 INSERT INTO message (code, language_code, text)

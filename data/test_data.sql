@@ -1,10 +1,10 @@
 -- Constructeurs
-INSERT INTO Constructor (id, isactive, name)
+INSERT INTO Manufacturer (id, isactive, name)
 VALUES (1, true, 'Airbus'),
        (2, true, 'Boeing');
 
 -- Modèles
-INSERT INTO Model (id, countbusinessslots, countecoslots, isactive, name, constructor_id)
+INSERT INTO Model (id, countbusinessslots, countecoslots, isactive, name, manufacturer_id)
 VALUES (1, 300, 150, true, 'A380', 1),
        (2, 200, 90, true, 'A320', 1),
        (3, 300, 150, true, '745', 2),

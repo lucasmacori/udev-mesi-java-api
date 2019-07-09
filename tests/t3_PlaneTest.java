@@ -2,7 +2,7 @@ import com.udev.mesi.Database;
 import config.APIConfig;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import main.java.com.udev.mesi.entities.Constructor;
+import main.java.com.udev.mesi.entities.Manufacturer;
 import main.java.com.udev.mesi.entities.Model;
 import main.java.com.udev.mesi.entities.Plane;
 import org.hamcrest.CoreMatchers;
@@ -29,7 +29,7 @@ public class t3_PlaneTest {
     private static final String ROUTE = APIConfig.PATH + "plane/";
     static Plane plane;
     static int modelCount = 0;
-    static int constructorCount = 0;
+    static int manufacturerCount = 0;
 
     @BeforeClass
     public static void prepare() {
@@ -40,16 +40,16 @@ public class t3_PlaneTest {
         em.getTransaction().begin();
 
         // Création d'un constructeur si aucun n'existe
-        Query query = em.createQuery("SELECT COUNT(c.id) FROM Constructor c WHERE isActive = true");
+        Query query = em.createQuery("SELECT COUNT(c.id) FROM Manufacturer c WHERE isActive = true");
         int count = Integer.parseInt(query.getResultList().get(0).toString());
 
         if (count == 0) {
-            Constructor constructor = new Constructor();
-            constructor.name = "TestConstructor";
-            constructor.isActive = true;
+            Manufacturer manufacturer = new Manufacturer();
+            manufacturer.name = "TestConstructor";
+            manufacturer.isActive = true;
             em.flush();
-            em.persist(constructor);
-            constructorCount++;
+            em.persist(manufacturer);
+            manufacturerCount++;
         }
 
         // Création d'un model si aucun n'existe
@@ -59,15 +59,15 @@ public class t3_PlaneTest {
         while (count < 2) {
 
             // Récupération du dernier constructeur
-            query = em.createQuery("FROM Constructor WHERE id = ( SELECT MAX(c.id) FROM Constructor c WHERE isActive = true)");
-            List<Constructor> constructors = query.getResultList();
+            query = em.createQuery("FROM Manufacturer WHERE id = ( SELECT MAX(c.id) FROM Manufacturer c WHERE isActive = true)");
+            List<Manufacturer> manufacturers = query.getResultList();
 
-            if (constructors.size() == 1) {
+            if (manufacturers.size() == 1) {
                 Model model = new Model();
                 model.name = "TestModel" + count;
                 model.countBusinessSlots = 300;
                 model.countEcoSlots = 150;
-                model.constructor = constructors.get(0);
+                model.manufacturer = manufacturers.get(0);
                 model.isActive = true;
                 em.flush();
                 em.persist(model);
@@ -107,11 +107,11 @@ public class t3_PlaneTest {
         }
 
         // Suppression du constructeur
-        while (constructorCount > 0) {
-            query = em.createQuery("DELETE FROM Constructor WHERE name = 'TestConstructor' AND id = (SELECT MAX(c.id) FROM Constructor c)");
+        while (manufacturerCount > 0) {
+            query = em.createQuery("DELETE FROM Manufacturer WHERE name = 'TestConstructor' AND id = (SELECT MAX(c.id) FROM Manufacturer c)");
             query.executeUpdate();
             em.flush();
-            constructorCount--;
+            manufacturerCount--;
         }
 
         em.getTransaction().commit();

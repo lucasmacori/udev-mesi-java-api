@@ -1,9 +1,9 @@
 package com.udev.mesi;
 
-import com.udev.mesi.messages.WsGetConstructors;
-import com.udev.mesi.messages.WsGetSingleConstructor;
+import com.udev.mesi.messages.WsGetManufacturers;
+import com.udev.mesi.messages.WsGetSingleManufacturer;
 import com.udev.mesi.messages.WsResponse;
-import com.udev.mesi.services.ConstructorService;
+import com.udev.mesi.services.ManufacturerService;
 import org.json.JSONException;
 
 import javax.ws.rs.*;
@@ -11,13 +11,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-@Path("/constructor")
-public class ConstructorServlet {
+@Path("/manufacturer")
+public class ManufacturerServlet {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response get() throws JSONException {
-		WsGetConstructors response = ConstructorService.read();
+		WsGetManufacturers response = ManufacturerService.read();
 		return Response.status(response.getCode()).entity(response).build();
 	}
 
@@ -25,7 +25,7 @@ public class ConstructorServlet {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getByPk(@PathParam("id") final long id, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
-		WsGetSingleConstructor response = ConstructorService.readOne(id, acceptLanguage);
+		WsGetSingleManufacturer response = ManufacturerService.readOne(id, acceptLanguage);
 		return Response.status(response.getCode()).entity(response).build();
 	}
 	
@@ -33,7 +33,7 @@ public class ConstructorServlet {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response create(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
-		WsResponse response = ConstructorService.create(acceptLanguage, formParams);
+		WsResponse response = ManufacturerService.create(acceptLanguage, formParams);
 		return Response.status(response.getCode()).entity(response).build();
 	}
 
@@ -41,7 +41,7 @@ public class ConstructorServlet {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response update(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
-		WsResponse response = ConstructorService.update(acceptLanguage, formParams);
+		WsResponse response = ManufacturerService.update(acceptLanguage, formParams);
 		return Response.status(response.getCode()).entity(response).build();
 	}
 
@@ -49,7 +49,7 @@ public class ConstructorServlet {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response delete(@HeaderParam("Accept-Language") final String acceptLanguage, MultivaluedMap<String, String> formParams) throws JSONException {
-		WsResponse response = ConstructorService.delete(acceptLanguage, formParams);
+		WsResponse response = ManufacturerService.delete(acceptLanguage, formParams);
 		return Response.status(response.getCode()).entity(response).build();
 	}
 }

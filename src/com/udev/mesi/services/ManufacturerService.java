@@ -2,10 +2,10 @@ package com.udev.mesi.services;
 
 import com.udev.mesi.Database;
 import com.udev.mesi.exceptions.MessageException;
-import com.udev.mesi.messages.WsGetConstructors;
-import com.udev.mesi.messages.WsGetSingleConstructor;
+import com.udev.mesi.messages.WsGetManufacturers;
+import com.udev.mesi.messages.WsGetSingleManufacturer;
 import com.udev.mesi.messages.WsResponse;
-import main.java.com.udev.mesi.entities.Constructor;
+import main.java.com.udev.mesi.entities.Manufacturer;
 import org.json.JSONException;
 
 import javax.persistence.EntityManager;
@@ -16,17 +16,17 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.sql.Timestamp;
 import java.util.List;
 
-public class ConstructorService {
+public class ManufacturerService {
 
-    public static WsGetConstructors read() throws JSONException {
+    public static WsGetManufacturers read() throws JSONException {
 
         // Initialisation de la réponse
-        WsGetConstructors response;
+        WsGetManufacturers response;
         String status = "KO";
         String message = null;
         int code = 500;
 
-        List<Constructor> constructors = null;
+        List<Manufacturer> manufacturers = null;
 
         try {
             // Création du gestionnaire d'entités
@@ -34,29 +34,29 @@ public class ConstructorService {
             EntityManager em = emf.createEntityManager();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Constructor WHERE isActive = true");
-            constructors = query.getResultList();
+            Query query = em.createQuery("FROM Manufacturer WHERE isActive = true");
+            manufacturers = query.getResultList();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-            response = new WsGetConstructors(status, message, code, constructors);
+            response = new WsGetManufacturers(status, message, code, manufacturers);
 
             // Fermeture du gestionnaire d'entités
             em.close();
             emf.close();
         } catch (Exception e) {
             message = e.getMessage();
-            response = new WsGetConstructors(status, message, code, null);
+            response = new WsGetManufacturers(status, message, code, null);
         }
 
         return response;
     }
 
-    public static WsGetSingleConstructor readOne(final long id, final String acceptLanguage) throws JSONException {
+    public static WsGetSingleManufacturer readOne(final long id, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
-        WsGetSingleConstructor response;
+        WsGetSingleManufacturer response;
         String status = "KO";
         String message;
         int code = 500;
@@ -64,7 +64,7 @@ public class ConstructorService {
         // Récupération de la langue de l'utilisateur
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
-        Constructor constructor = null;
+        Manufacturer manufacturer = null;
 
         try {
             // Création du gestionnaire d'entités
@@ -72,25 +72,25 @@ public class ConstructorService {
             EntityManager em = emf.createEntityManager();
 
             // Récupération des constructeurs depuis la base de données
-            constructor = em.find(Constructor.class, id);
+            manufacturer = em.find(Manufacturer.class, id);
 
             // Vérification de l'existence du constructeur
-            if (constructor == null || !constructor.isActive) {
+            if (manufacturer == null || !manufacturer.isActive) {
                 code = 400;
-                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
+                throw new Exception(MessageService.getMessageFromCode("manufacturer_does_not_exist", languageCode).text);
             }
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-            response = new WsGetSingleConstructor(status, null, code, constructor);
+            response = new WsGetSingleManufacturer(status, null, code, manufacturer);
 
             // Fermeture du gestionnaire d'entités
             em.close();
             emf.close();
         } catch (Exception e) {
             message = e.getMessage();
-            response = new WsGetSingleConstructor(status, message, code, null);
+            response = new WsGetSingleManufacturer(status, message, code, null);
         }
 
         return response;
@@ -106,13 +106,13 @@ public class ConstructorService {
         // Récupération de la langue de l'utilisateur
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
-        Constructor constructor;
+        Manufacturer manufacturer;
 
         try {
             // Vérification des paramètres
-            if (!isValidConstructor(formParams, false)) {
+            if (!isValidManufacturer(formParams, false)) {
                 code = 400;
-                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", languageCode).text + " 'name'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_manufacturer", languageCode).text + " 'name'");
             }
 
             String name = formParams.get("name").get(0);
@@ -122,36 +122,36 @@ public class ConstructorService {
             EntityManager em = emf.createEntityManager();
 
             // Vérification de l'existence du constructeur
-            Query query = em.createQuery("FROM Constructor WHERE name = :name");
+            Query query = em.createQuery("FROM Manufacturer WHERE name = :name");
             query.setParameter("name", name);
-            List<Constructor> constructors = query.getResultList();
+            List<Manufacturer> manufacturers = query.getResultList();
 
             em.getTransaction().begin();
 
-            if (constructors.size() == 1) {
-                constructor = constructors.get(0);
-                if (constructor.isActive) {
+            if (manufacturers.size() == 1) {
+                manufacturer = manufacturers.get(0);
+                if (manufacturer.isActive) {
                     code = 400;
-                    throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", languageCode).text);
+                    throw new Exception(MessageService.getMessageFromCode("manufacturer_already_exists", languageCode).text);
                 } else {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                    constructor.name += "_old_" + timestamp.getTime();
-                    em.persist(constructor);
+                    manufacturer.name += "_old_" + timestamp.getTime();
+                    em.persist(manufacturer);
                     em.flush();
 
                     // Création du constructeur
-                    constructor = new Constructor();
-                    constructor.name = name;
+                    manufacturer = new Manufacturer();
+                    manufacturer.name = name;
                 }
             } else {
                 // Création du constructeur
-                constructor = new Constructor();
-                constructor.name = name;
+                manufacturer = new Manufacturer();
+                manufacturer.name = name;
             }
-            constructor.isActive = true;
+            manufacturer.isActive = true;
 
             // Validation des changements
-            em.persist(constructor);
+            em.persist(manufacturer);
             em.flush();
             em.getTransaction().commit();
 
@@ -180,9 +180,9 @@ public class ConstructorService {
 
         try {
             // Vérification des paramètres
-            if (!isValidConstructor(formParams, true)) {
+            if (!isValidManufacturer(formParams, true)) {
                 code = 400;
-                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", languageCode).text + " 'id', 'name'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_manufacturer", languageCode).text + " 'id', 'name'");
             }
 
             long id = Long.parseLong(formParams.get("id").get(0));
@@ -193,39 +193,39 @@ public class ConstructorService {
             EntityManager em = emf.createEntityManager();
 
             // Récupération du constructeur
-            Constructor constructor = em.find(Constructor.class, id);
+            Manufacturer manufacturer = em.find(Manufacturer.class, id);
 
-            if (constructor == null || !constructor.isActive) {
+            if (manufacturer == null || !manufacturer.isActive) {
                 code = 400;
-                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
+                throw new Exception(MessageService.getMessageFromCode("manufacturer_does_not_exist", languageCode).text);
             }
 
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Constructor WHERE name = :name");
+            Query query = em.createQuery("FROM Manufacturer WHERE name = :name");
             query.setParameter("name", name);
-            List<Constructor> constructors = query.getResultList();
+            List<Manufacturer> manufacturers = query.getResultList();
 
             em.getTransaction().begin();
 
             // Vérification de l'existence du constructeur
-            if (constructors.size() == 1) {
-                Constructor oldConstructor = constructors.get(0);
-                if (oldConstructor.isActive) {
+            if (manufacturers.size() == 1) {
+                Manufacturer oldManufacturer = manufacturers.get(0);
+                if (oldManufacturer.isActive) {
                     code = 400;
-                    throw new Exception(MessageService.getMessageFromCode("constructor_already_exists", languageCode).text);
+                    throw new Exception(MessageService.getMessageFromCode("manufacturer_already_exists", languageCode).text);
                 } else {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                    oldConstructor.name += "_old_" + timestamp.getTime();
-                    em.persist(oldConstructor);
+                    oldManufacturer.name += "_old_" + timestamp.getTime();
+                    em.persist(oldManufacturer);
                     em.flush();
                 }
             }
 
             // Modification du constructeur
-            constructor.name = name;
+            manufacturer.name = name;
 
             // Persistence du constructeur
-            em.persist(constructor);
+            em.persist(manufacturer);
             em.flush();
             em.getTransaction().commit();
 
@@ -259,8 +259,8 @@ public class ConstructorService {
         // Récupération de la langue de l'utilisateur
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
-        List<Constructor> constructors = null;
-        Constructor constructor = null;
+        List<Manufacturer> manufacturers = null;
+        Manufacturer manufacturer = null;
 
         try {
             // Création du gestionnaire d'entités
@@ -270,28 +270,28 @@ public class ConstructorService {
             // Vérification des paramètres
             if (!formParams.containsKey("id")) {
                 code = 400;
-                throw new Exception(MessageService.getMessageFromCode("invalid_constructor", languageCode).text + " 'id'");
+                throw new Exception(MessageService.getMessageFromCode("invalid_manufacturer", languageCode).text + " 'id'");
             }
 
             long id = Long.parseLong(formParams.get("id").get(0));
 
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Constructor WHERE isActive = true AND id = :id");
+            Query query = em.createQuery("FROM Manufacturer WHERE isActive = true AND id = :id");
             query.setParameter("id", id);
-            constructors = query.getResultList();
+            manufacturers = query.getResultList();
 
             // Vérification de l'existence du constructeur
-            if (constructors.size() == 0) {
+            if (manufacturers.size() == 0) {
                 code = 400;
-                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text);
+                throw new Exception(MessageService.getMessageFromCode("manufacturer_does_not_exist", languageCode).text);
             }
 
-            constructor = constructors.get(0);
-            constructor.isActive = false;
+            manufacturer = manufacturers.get(0);
+            manufacturer.isActive = false;
 
             // Persistence du constructeur
             em.getTransaction().begin();
-            em.persist(constructor);
+            em.persist(manufacturer);
             em.flush();
             em.getTransaction().commit();
 
@@ -316,21 +316,21 @@ public class ConstructorService {
         return new WsResponse(status, message, code);
     }
 
-    private static boolean isValidConstructor(final MultivaluedMap<String, String> formParams, boolean isUpdate) {
+    private static boolean isValidManufacturer(final MultivaluedMap<String, String> formParams, boolean isUpdate) {
         if (isUpdate && !formParams.containsKey("id")) return false;
         return formParams.containsKey("name");
     }
 
-    public static Constructor exists(long pk) {
+    public static Manufacturer exists(long pk) {
         // Création du gestionnaire d'entités
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
         EntityManager em = emf.createEntityManager();
 
         // Récupération du constructeur
-        Constructor constructor = em.find(Constructor.class, pk);
-        if (constructor == null || !constructor.isActive) {
+        Manufacturer manufacturer = em.find(Manufacturer.class, pk);
+        if (manufacturer == null || !manufacturer.isActive) {
             return null;
         }
-        return constructor;
+        return manufacturer;
     }
 }

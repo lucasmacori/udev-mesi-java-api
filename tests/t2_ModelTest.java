@@ -2,7 +2,7 @@ import com.udev.mesi.Database;
 import config.APIConfig;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import main.java.com.udev.mesi.entities.Constructor;
+import main.java.com.udev.mesi.entities.Manufacturer;
 import main.java.com.udev.mesi.entities.Model;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -35,16 +35,16 @@ public class t2_ModelTest {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
         EntityManager em = emf.createEntityManager();
 
-        Query query = em.createQuery("SELECT COUNT(c.id) FROM Constructor c WHERE isActive = true");
+        Query query = em.createQuery("SELECT COUNT(c.id) FROM Manufacturer c WHERE isActive = true");
         int count = Integer.parseInt(query.getResultList().get(0).toString());
 
         if (count == 0) {
-            Constructor constructor = new Constructor();
-            constructor.name = "TestConstructor";
-            constructor.isActive = true;
+            Manufacturer manufacturer = new Manufacturer();
+            manufacturer.name = "TestConstructor";
+            manufacturer.isActive = true;
             em.getTransaction().begin();
             em.flush();
-            em.persist(constructor);
+            em.persist(manufacturer);
             em.getTransaction().commit();
         }
     }
@@ -66,7 +66,7 @@ public class t2_ModelTest {
             em.flush();
 
             // Suppression du constructeur
-            query = em.createQuery("DELETE FROM Constructor WHERE name = 'TestConstructor' AND id = (SELECT MAX(c.id) FROM Constructor c)");
+            query = em.createQuery("DELETE FROM Manufacturer WHERE name = 'TestConstructor' AND id = (SELECT MAX(c.id) FROM Manufacturer c)");
             query.executeUpdate();
         }
         em.getTransaction().commit();
@@ -81,11 +81,11 @@ public class t2_ModelTest {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
         EntityManager em = emf.createEntityManager();
 
-        Query query = em.createQuery("FROM Constructor WHERE id = ( SELECT MAX(c.id) FROM Constructor c WHERE isActive = true)");
-        List<Constructor> constructors = query.getResultList();
+        Query query = em.createQuery("FROM Manufacturer WHERE id = ( SELECT MAX(c.id) FROM Manufacturer c WHERE isActive = true)");
+        List<Manufacturer> manufacturers = query.getResultList();
 
-        if (constructors.size() == 1) {
-            Constructor constructor = constructors.get(0);
+        if (manufacturers.size() == 1) {
+            Manufacturer manufacturer = manufacturers.get(0);
 
             Response response = given()
                     .urlEncodingEnabled(true)
@@ -93,7 +93,7 @@ public class t2_ModelTest {
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
                     .formParam("name", "TestModel")
-                    .formParam("constructor", constructor.id)
+                    .formParam("manufacturer", manufacturer.id)
                     .formParam("countEcoSlots", 300)
                     .formParam("countBusinessSlots", 100)
                     .post(ROUTE);

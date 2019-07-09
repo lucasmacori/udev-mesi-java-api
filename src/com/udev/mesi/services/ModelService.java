@@ -5,7 +5,7 @@ import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetModels;
 import com.udev.mesi.messages.WsGetSingleModel;
 import com.udev.mesi.messages.WsResponse;
-import main.java.com.udev.mesi.entities.Constructor;
+import main.java.com.udev.mesi.entities.Manufacturer;
 import main.java.com.udev.mesi.entities.Model;
 import org.json.JSONException;
 
@@ -117,10 +117,10 @@ public class ModelService {
             if (!isValidModel(formParams, false)) {
                 code = 400;
                 throw new Exception(MessageService.getMessageFromCode("invalid_model", languageCode).text +
-                        "'constructor', 'name', 'countEcoSlots', 'countBusinessSlots'");
+                        "'manufacturer', 'name', 'countEcoSlots', 'countBusinessSlots'");
             }
 
-            long constructor_id = Long.parseLong(formParams.get("constructor").get(0));
+            long manufacturer_id = Long.parseLong(formParams.get("manufacturer").get(0));
             conversion_step++;
             String name = formParams.get("name").get(0);
             int countEcoSlots = Integer.parseInt(formParams.get("countEcoSlots").get(0));
@@ -134,15 +134,15 @@ public class ModelService {
             em.getTransaction().begin();
 
             // Récupération du constructeur
-            Constructor constructor = ConstructorService.exists(constructor_id);
-            if (constructor == null) {
-                throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text + " 'id'");
+            Manufacturer manufacturer = ManufacturerService.exists(manufacturer_id);
+            if (manufacturer == null) {
+                throw new Exception(MessageService.getMessageFromCode("manufacturer_does_not_exist", languageCode).text + " 'id'");
             }
 
             // Création du modèle
             model = new Model();
             model.name = name;
-            model.constructor = constructor;
+            model.manufacturer = manufacturer;
             model.countEcoSlots = countEcoSlots;
             model.countBusinessSlots = countBusinessSlots;
             model.isActive = true;
@@ -190,14 +190,14 @@ public class ModelService {
             }
 
             long id = Long.parseLong(formParams.get("id").get(0));
-            long constructor_id = -1;
+            long manufacturer_id = -1;
             String name = null;
             int countEcoSlots = -1;
             int countBusinessSlots = -1; // = Integer.parseInt(formParams.get("countBusinessSlots").get(0));
 
             // Récupération des paramètres
-            if (formParams.containsKey("constructor"))
-                constructor_id = Long.parseLong(formParams.get("constructor").get(0));
+            if (formParams.containsKey("manufacturer"))
+                manufacturer_id = Long.parseLong(formParams.get("manufacturer").get(0));
             conversion_step++;
             if (formParams.containsKey("name")) name = formParams.get("name").get(0);
             if (formParams.containsKey("countEcoSlots"))
@@ -219,11 +219,11 @@ public class ModelService {
             }
 
             // Modification du modèle
-            if (constructor_id > 0) {
+            if (manufacturer_id > 0) {
                 // Récupération du constructeur
-                model.constructor = ConstructorService.exists(id);
-                if (model.constructor == null) {
-                    throw new Exception(MessageService.getMessageFromCode("constructor_does_not_exist", languageCode).text + " 'id'");
+                model.manufacturer = ManufacturerService.exists(id);
+                if (model.manufacturer == null) {
+                    throw new Exception(MessageService.getMessageFromCode("manufacturer_does_not_exist", languageCode).text + " 'id'");
                 }
             }
             if (name != null && name.trim() != "") model.name = name;
@@ -324,7 +324,7 @@ public class ModelService {
 
     private static boolean isValidModel(final MultivaluedMap<String, String> formParams, boolean isUpdate) {
         if (isUpdate && !formParams.containsKey("id")) return false;
-        return formParams.containsKey("name") && formParams.containsKey("constructor")
+        return formParams.containsKey("name") && formParams.containsKey("manufacturer")
                 && formParams.containsKey("countEcoSlots") && formParams.containsKey("countBusinessSlots");
     }
 
