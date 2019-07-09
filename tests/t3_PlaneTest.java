@@ -272,8 +272,7 @@ public class t3_PlaneTest {
                     .header("Content-type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
-                    .formParam("ARN", plane.ARN)
-                    .delete(ROUTE);
+                    .delete(ROUTE + plane.ARN);
 
             assertEquals(200, response.getStatusCode());
             response

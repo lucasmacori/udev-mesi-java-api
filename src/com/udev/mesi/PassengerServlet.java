@@ -70,10 +70,10 @@ public class PassengerServlet {
     }
 
     @DELETE
+    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response delete(@HeaderParam("Accept-Language") final String acceptLanguage, MultivaluedMap<String, String> formParams) throws JSONException {
-        WsResponse response = PassengerService.delete(acceptLanguage, formParams);
+    public Response delete(@PathParam("id") final long id, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
+        WsResponse response = PassengerService.delete(acceptLanguage, id);
         return Response.status(response.getCode()).entity(response).build();
     }
 }

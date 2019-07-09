@@ -264,7 +264,7 @@ public class PlaneService {
         return new WsResponse(status, message, code);
     }
 
-    public static WsResponse delete(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse delete(final String acceptLanguage, final String ARN) throws JSONException {
 
         // Initialisation de la réponse
         String status = "KO";
@@ -280,14 +280,6 @@ public class PlaneService {
             // Création du gestionnaire d'entités
             EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
             EntityManager em = emf.createEntityManager();
-
-            // Vérification des paramètres
-            if (!isValidPlane(formParams, true)) {
-                code = 400;
-                throw new Exception(MessageService.getMessageFromCode("invalid_plane", languageCode).text + " 'ARN'");
-            }
-
-            String ARN = formParams.get("ARN").get(0);
 
             plane = em.find(Plane.class, ARN);
 

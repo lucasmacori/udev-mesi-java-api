@@ -192,8 +192,7 @@ public class t4_FlightTest {
                     .header("Content-type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
-                    .formParam("id", flight.id)
-                    .delete(ROUTE);
+                    .delete(ROUTE + flight.id);
 
             assertEquals(200, response.getStatusCode());
             response

@@ -194,8 +194,7 @@ public class t1_ManufacturerTest {
                     .header("Content-type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
-                    .formParam("id", manufacturer.id)
-                    .delete(ROUTE);
+                    .delete(ROUTE + manufacturer.id);
 
             assertEquals(200, response.getStatusCode());
             response

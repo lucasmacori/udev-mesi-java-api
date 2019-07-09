@@ -46,10 +46,10 @@ public class ReservationServlet {
     }
 
     @DELETE
+    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response delete(@HeaderParam("Accept-Language") final String acceptLanguage, MultivaluedMap<String, String> formParams) throws JSONException {
-        WsResponse response = ReservationService.delete(acceptLanguage, formParams);
+    public Response delete(@HeaderParam("Accept-Language") final String acceptLanguage, final Long id) throws JSONException {
+        WsResponse response = ReservationService.delete(acceptLanguage, id);
         return Response.status(response.getCode()).entity(response).build();
     }
 }

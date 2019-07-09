@@ -46,10 +46,10 @@ public class ModelServlet {
     }
 
     @DELETE
+    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response delete(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
-        WsResponse response = ModelService.delete(acceptLanguage, formParams);
+    public Response delete(@PathParam("id") final long id, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
+        WsResponse response = ModelService.delete(acceptLanguage, id);
         return Response.status(response.getCode()).entity(response).build();
     }
 }

@@ -230,8 +230,7 @@ public class t2_ModelTest {
                     .header("Content-type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
-                    .formParam("id", model.id)
-                    .delete(ROUTE);
+                    .delete(ROUTE + model.id);
 
             assertEquals(200, response.getStatusCode());
             response

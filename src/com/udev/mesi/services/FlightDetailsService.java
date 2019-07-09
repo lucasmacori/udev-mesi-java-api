@@ -295,7 +295,7 @@ public class FlightDetailsService {
         return new WsResponse(status, message, code);
     }
 
-    public static WsResponse delete(final String acceptLanguage, MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse delete(final String acceptLanguage, final Long id) throws JSONException {
 
         // Initialisation de la réponse
         String status = "KO";
@@ -311,14 +311,6 @@ public class FlightDetailsService {
             // Création du gestionnaire d'entités
             EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
             EntityManager em = emf.createEntityManager();
-
-            // Vérification des paramètres
-            if (!areValidFlightDetails(formParams, true)) {
-                code = 400;
-                throw new Exception(MessageService.getMessageFromCode("invalid_flight_details", languageCode).text + " 'id'");
-            }
-
-            long id = Long.parseLong(formParams.get("id").get(0));
 
             // Récupération des constructeurs depuis la base de données
             flightDetails = em.find(FlightDetails.class, id);

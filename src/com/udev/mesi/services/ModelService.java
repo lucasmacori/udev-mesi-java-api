@@ -255,7 +255,7 @@ public class ModelService {
         return new WsResponse(status, message, code);
     }
 
-    public static WsResponse delete(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse delete(final String acceptLanguage, final Long id) throws JSONException {
 
         // Initialisation de la réponse
         String status = "KO";
@@ -272,14 +272,6 @@ public class ModelService {
             // Création du gestionnaire d'entités
             EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
             EntityManager em = emf.createEntityManager();
-
-            // Vérification des paramètres
-            if (!formParams.containsKey("id")) {
-                code = 400;
-                throw new Exception(MessageService.getMessageFromCode("invalid_model", languageCode).text + " 'id'");
-            }
-
-            long id = Long.parseLong(formParams.get("id").get(0));
 
             // Récupération des modèles depuis la base de données
             Query query = em.createQuery("FROM Model WHERE isActive = true AND id = :id");

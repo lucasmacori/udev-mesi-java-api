@@ -267,8 +267,7 @@ public class t7_ReservationTest {
                     .header("Content-type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
-                    .formParam("id", reservation.id)
-                    .delete(ROUTE);
+                    .delete(ROUTE + reservation.id);
 
             assertEquals(200, response.getStatusCode());
             response

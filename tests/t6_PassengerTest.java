@@ -206,8 +206,7 @@ public class t6_PassengerTest {
                     .header("Content-type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
-                    .formParam("id", passenger.id)
-                    .delete(ROUTE);
+                    .delete(ROUTE + passenger.id);
 
             assertEquals(200, response.getStatusCode());
             response

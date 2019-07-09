@@ -326,8 +326,7 @@ public class t5_FlightDetailsTest {
                     .header("Content-type", "application/x-www-form-urlencoded")
                     .header("Accept", "application/json")
                     .contentType("application/x-www-form-urlencoded")
-                    .formParam("id", flightDetails.id)
-                    .delete(ROUTE);
+                    .delete(ROUTE + flightDetails.id);
 
             assertEquals(200, response.getStatusCode());
             response
