@@ -34,7 +34,7 @@ public class ManufacturerService {
             EntityManager em = emf.createEntityManager();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Manufacturer WHERE isActive = true");
+            Query query = em.createQuery("FROM Manufacturer WHERE isActive = true ORDER BY name");
             manufacturers = query.getResultList();
 
             // Création de la réponse JSON

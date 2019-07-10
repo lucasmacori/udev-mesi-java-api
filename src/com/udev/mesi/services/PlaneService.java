@@ -33,7 +33,7 @@ public class PlaneService {
             EntityManager em = emf.createEntityManager();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Plane WHERE isActive = true");
+            Query query = em.createQuery("SELECT p FROM Plane p, Model m WHERE m.id = p.model AND p.isActive = true AND m.isActive = true ORDER BY p.ARN");
             planes = query.getResultList();
 
             // Création de la réponse JSON

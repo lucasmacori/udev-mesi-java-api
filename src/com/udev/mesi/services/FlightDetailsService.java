@@ -37,7 +37,7 @@ public class FlightDetailsService {
             EntityManager em = emf.createEntityManager();
 
             // Récupération des modèles depuis la base de données
-            Query query = em.createQuery("FROM FlightDetails WHERE isActive = true");
+            Query query = em.createQuery("SELECT fd FROM FlightDetails fd, Flight f, Plane p WHERE f.id = fd.flight AND p.id = fd.plane AND fd.isActive = true AND f.isActive = true AND p.isActive ORDER BY fd.departureDateTime DESC, fd.arrivaleDateTime DESC, f.departureCity, f.arrivalCity, p.ARN");
             flightDetails = query.getResultList();
 
             // Création de la réponse JSON

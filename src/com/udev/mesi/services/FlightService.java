@@ -32,7 +32,7 @@ public class FlightService {
             EntityManager em = emf.createEntityManager();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Flight WHERE isActive = true");
+            Query query = em.createQuery("FROM Flight WHERE isActive = true ORDER BY departureCity, arrivalCity");
             flights = query.getResultList();
 
             // Création de la réponse JSON

@@ -37,7 +37,7 @@ public class ReservationService {
             EntityManager em = emf.createEntityManager();
 
             // Récupération des reservations depuis la base de données
-            Query query = em.createQuery("FROM Reservation WHERE isActive = true");
+            Query query = em.createQuery("SELECT r FROM Reservation r, Passenger p WHERE p.id = r.passenger AND r.isActive = true AND p.isActive = true ORDER BY r.reservationDate DESC, r.reservationClass");
             reservations = query.getResultList();
 
             // Création de la réponse JSON

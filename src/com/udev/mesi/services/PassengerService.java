@@ -425,7 +425,7 @@ public class PassengerService {
             EntityManager em = emf.createEntityManager();
 
             // Récupération des passagers depuis la base de données
-            Query query = em.createQuery("FROM Passenger WHERE isActive = true AND id = :id");
+            Query query = em.createQuery("FROM Passenger WHERE isActive = true AND id = :id ORDER BY lastName, firstName, email");
             query.setParameter("id", id);
             passengers = query.getResultList();
 

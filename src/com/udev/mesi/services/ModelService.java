@@ -34,7 +34,7 @@ public class ModelService {
             EntityManager em = emf.createEntityManager();
 
             // Récupération des modèles depuis la base de données
-            Query query = em.createQuery("FROM Model WHERE isActive = true");
+            Query query = em.createQuery("SELECT m FROM Model m, Manufacturer c WHERE c.id = m.manufacturer AND m.isActive = true AND c.isActive = true ORDER BY m.name, c.name");
             models = query.getResultList();
 
             // Création de la réponse JSON
