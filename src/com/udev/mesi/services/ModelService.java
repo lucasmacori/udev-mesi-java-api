@@ -221,7 +221,7 @@ public class ModelService {
             // Modification du modèle
             if (manufacturer_id > 0) {
                 // Récupération du constructeur
-                model.manufacturer = ManufacturerService.exists(id);
+                model.manufacturer = ManufacturerService.exists(manufacturer_id);
                 if (model.manufacturer == null) {
                     throw new Exception(MessageService.getMessageFromCode("manufacturer_does_not_exist", languageCode).text + " 'id'");
                 }
