@@ -1,7 +1,7 @@
 package com.udev.mesi.services;
 
-import com.udev.mesi.Database;
 import com.udev.mesi.config.APIFormat;
+import com.udev.mesi.config.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetFlightDetails;
 import com.udev.mesi.messages.WsGetSingleFlightDetails;
@@ -11,9 +11,6 @@ import main.java.com.udev.mesi.entities.FlightDetails;
 import main.java.com.udev.mesi.entities.Plane;
 import org.json.JSONException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
 import java.text.ParseException;
@@ -32,22 +29,14 @@ public class FlightDetailsService {
         List<FlightDetails> flightDetails = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des modèles depuis la base de données
-            Query query = em.createQuery("SELECT fd FROM FlightDetails fd, Flight f, Plane p WHERE f.id = fd.flight AND p.id = fd.plane AND fd.isActive = true AND f.isActive = true AND p.isActive ORDER BY fd.departureDateTime DESC, fd.arrivaleDateTime DESC, f.departureCity, f.arrivalCity, p.ARN");
+            Query query = Database.em.createQuery("SELECT fd FROM FlightDetails fd, Flight f, Plane p WHERE f.id = fd.flight AND p.id = fd.plane AND fd.isActive = true AND f.isActive = true AND p.isActive ORDER BY fd.departureDateTime DESC, fd.arrivaleDateTime DESC, f.departureCity, f.arrivalCity, p.ARN");
             flightDetails = query.getResultList();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
             response = new WsGetFlightDetails(status, message, code, flightDetails);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetFlightDetails(status, message, code, null);
@@ -70,12 +59,8 @@ public class FlightDetailsService {
         FlightDetails flightDetails = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des constructeurs depuis la base de données
-            flightDetails = em.find(FlightDetails.class, id);
+            flightDetails = Database.em.find(FlightDetails.class, id);
 
             // Vérification de l'existence du constructeur
             if (flightDetails == null || !flightDetails.isActive) {
@@ -87,10 +72,6 @@ public class FlightDetailsService {
             status = "OK";
             code = 200;
             response = new WsGetSingleFlightDetails(status, null, code, flightDetails);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleFlightDetails(status, message, code, null);
@@ -130,11 +111,7 @@ public class FlightDetailsService {
             conversion_step++;
             Date arrivalDateTime = APIFormat.DATETIME_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             // Récupération du vol
             Flight flight = null;
@@ -163,13 +140,9 @@ public class FlightDetailsService {
             flightDetails.isActive = true;
 
             // Validation des changements
-            em.persist(flightDetails);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(flightDetails);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 201;
@@ -227,12 +200,8 @@ public class FlightDetailsService {
                 arrivalDateTime = APIFormat.DATETIME_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
             }
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération du détail du vol
-            FlightDetails flightDetails = em.find(FlightDetails.class, id);
+            FlightDetails flightDetails = Database.em.find(FlightDetails.class, id);
             if (flightDetails == null || !flightDetails.isActive) {
                 code = 400;
                 throw new Exception(MessageService.getMessageFromCode("flight_details_do_not_exist", languageCode).text);
@@ -257,7 +226,7 @@ public class FlightDetailsService {
             }
 
             // Persistence du constructeur
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
             if (flight != null) {
                 flightDetails.flight = flight;
             }
@@ -270,13 +239,9 @@ public class FlightDetailsService {
             if (arrivalDateTime != null) {
                 flightDetails.arrivaleDateTime = arrivalDateTime;
             }
-            em.persist(flightDetails);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(flightDetails);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -308,12 +273,8 @@ public class FlightDetailsService {
         FlightDetails flightDetails = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des constructeurs depuis la base de données
-            flightDetails = em.find(FlightDetails.class, id);
+            flightDetails = Database.em.find(FlightDetails.class, id);
 
             // Vérification de l'existence du constructeur
             if (flightDetails == null || !flightDetails.isActive) {
@@ -322,18 +283,14 @@ public class FlightDetailsService {
             }
 
             // Suppression du détail du vol
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
             flightDetails.isActive = false;
-            em.flush();
-            em.getTransaction().commit();
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (NumberFormatException e) {
             code = 400;
             try {
@@ -369,12 +326,8 @@ public class FlightDetailsService {
     }
 
     public static FlightDetails exists(long pk) {
-        // Création du gestionnaire d'entités
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-        EntityManager em = emf.createEntityManager();
-
         // Récupération du constructeur
-        FlightDetails flightDetails = em.find(FlightDetails.class, pk);
+        FlightDetails flightDetails = Database.em.find(FlightDetails.class, pk);
         if (flightDetails == null || !flightDetails.isActive) {
             return null;
         }

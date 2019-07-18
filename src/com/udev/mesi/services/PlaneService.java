@@ -1,6 +1,6 @@
 package com.udev.mesi.services;
 
-import com.udev.mesi.Database;
+import com.udev.mesi.config.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetPlanes;
 import com.udev.mesi.messages.WsGetSinglePlane;
@@ -9,9 +9,6 @@ import main.java.com.udev.mesi.entities.Model;
 import main.java.com.udev.mesi.entities.Plane;
 import org.json.JSONException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
@@ -28,22 +25,14 @@ public class PlaneService {
         List<Plane> planes = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("SELECT p FROM Plane p, Model m WHERE m.id = p.model AND p.isActive = true AND m.isActive = true ORDER BY p.ARN");
+            Query query = Database.em.createQuery("SELECT p FROM Plane p, Model m WHERE m.id = p.model AND p.isActive = true AND m.isActive = true ORDER BY p.ARN");
             planes = query.getResultList();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
             response = new WsGetPlanes(status, message, code, planes);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetPlanes(status, message, code, null);
@@ -64,12 +53,8 @@ public class PlaneService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération de l'avion depuis la base de données
-            Query query = em.createQuery("From Plane WHERE isActive = true AND ARN = :ARN");
+            Query query = Database.em.createQuery("From Plane WHERE isActive = true AND ARN = :ARN");
             query.setParameter("ARN", ARN);
             List<Plane> planes = query.getResultList();
 
@@ -83,10 +68,6 @@ public class PlaneService {
             status = "OK";
             code = 200;
             response = new WsGetSinglePlane(status, null, code, planes.get(0));
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSinglePlane(status, message, code, null);
@@ -117,22 +98,18 @@ public class PlaneService {
             String ARN = formParams.get("ARN").get(0);
             long model_id = Long.parseLong(formParams.get("model").get(0));
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Vérification de l'existence du modèle
-            Model model = em.find(Model.class, model_id);
+            Model model = Database.em.find(Model.class, model_id);
             if (model == null || !model.isActive) {
                 throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
             }
 
             // Vérification de l'existence de l'avion
-            Query query = em.createQuery("FROM Plane WHERE ARN = :arn");
+            Query query = Database.em.createQuery("FROM Plane WHERE ARN = :arn");
             query.setParameter("arn", ARN);
             List<Plane> planes = query.getResultList();
 
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             if (planes.size() == 1) {
                 plane = planes.get(0);
@@ -152,13 +129,9 @@ public class PlaneService {
             plane.isActive = true;
 
             // Validation des changements
-            em.persist(plane);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(plane);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 201;
@@ -215,12 +188,8 @@ public class PlaneService {
                 }
             }
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération de l'avion
-            Plane plane = em.find(Plane.class, ARN);
+            Plane plane = Database.em.find(Plane.class, ARN);
 
             if (plane == null || !plane.isActive) {
                 code = 400;
@@ -239,14 +208,10 @@ public class PlaneService {
             if (isUnderMaintenance != null) plane.isUnderMaintenance = isUnderMaintenance;
 
             // Persistence du constructeur
-            em.getTransaction().begin();
-            em.persist(plane);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.getTransaction().begin();
+            Database.em.persist(plane);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -277,11 +242,7 @@ public class PlaneService {
         Plane plane = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
-            plane = em.find(Plane.class, ARN);
+            plane = Database.em.find(Plane.class, ARN);
 
             // Vérification de l'existence du modèle
             if (plane == null || !plane.isActive) {
@@ -291,18 +252,14 @@ public class PlaneService {
             plane.isActive = false;
 
             // Persistence du model
-            em.getTransaction().begin();
-            em.persist(plane);
-            em.flush();
-            em.getTransaction().commit();
+            Database.em.getTransaction().begin();
+            Database.em.persist(plane);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
         }
@@ -318,12 +275,8 @@ public class PlaneService {
     }
 
     public static Plane exists(String pk) {
-        // Création du gestionnaire d'entités
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-        EntityManager em = emf.createEntityManager();
-
         // Récupération du vol
-        Query query = em.createQuery("FROM Plane WHERE ARN = :ARN");
+        Query query = Database.em.createQuery("FROM Plane WHERE ARN = :ARN");
         query.setParameter("ARN", pk);
         List<Plane> planes = query.getResultList();
         if (planes.size() != 1 || !planes.get(0).isActive) {

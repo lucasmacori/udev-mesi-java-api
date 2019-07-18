@@ -1,6 +1,6 @@
 package com.udev.mesi.services;
 
-import com.udev.mesi.Database;
+import com.udev.mesi.config.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetFlights;
 import com.udev.mesi.messages.WsGetSingleFlight;
@@ -8,9 +8,6 @@ import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Flight;
 import org.json.JSONException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
@@ -27,22 +24,14 @@ public class FlightService {
         List<Flight> flights = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Flight WHERE isActive = true ORDER BY departureCity, arrivalCity");
+            Query query = Database.em.createQuery("FROM Flight WHERE isActive = true ORDER BY departureCity, arrivalCity");
             flights = query.getResultList();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
             response = new WsGetFlights(status, message, code, flights);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetFlights(status, message, code, null);
@@ -65,12 +54,8 @@ public class FlightService {
         Flight flight = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des constructeurs depuis la base de données
-            flight = em.find(Flight.class, id);
+            flight = Database.em.find(Flight.class, id);
 
             // Vérification de l'existence du constructeur
             if (flight == null || !flight.isActive) {
@@ -82,10 +67,6 @@ public class FlightService {
             status = "OK";
             code = 200;
             response = new WsGetSingleFlight(status, null, code, flight);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleFlight(status, message, code, null);
@@ -116,17 +97,13 @@ public class FlightService {
             String departureCity = formParams.get("departureCity").get(0);
             String arrivalCity = formParams.get("arrivalCity").get(0);
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Vérification de l'existence du constructeur
-            Query query = em.createQuery("FROM Flight WHERE departureCity = :departureCity AND arrivalCity = :arrivalCity");
+            Query query = Database.em.createQuery("FROM Flight WHERE departureCity = :departureCity AND arrivalCity = :arrivalCity");
             query.setParameter("departureCity", departureCity);
             query.setParameter("arrivalCity", arrivalCity);
             List<Flight> flights = query.getResultList();
 
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             if (flights.size() == 1) {
                 flight = flights.get(0);
@@ -148,13 +125,9 @@ public class FlightService {
             flight.isActive = true;
 
             // Validation des changements
-            em.persist(flight);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(flight);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 201;
@@ -192,18 +165,14 @@ public class FlightService {
                 departureCity = formParams.get("departureCity").get(0);
             }
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération du vol
-            Flight flight = em.find(Flight.class, id);
+            Flight flight = Database.em.find(Flight.class, id);
 
             if (flight == null || !flight.isActive) {
                 code = 400;
                 throw new Exception(MessageService.getMessageFromCode("flight_does_not_exist", languageCode).text);
             }
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             // Modification du vol
             if (departureCity != null) {
@@ -214,13 +183,9 @@ public class FlightService {
             }
 
             // Persistence du flight
-            em.persist(flight);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(flight);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -252,12 +217,8 @@ public class FlightService {
         Flight flight = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Flight WHERE isActive = true AND id = :id");
+            Query query = Database.em.createQuery("FROM Flight WHERE isActive = true AND id = :id");
             query.setParameter("id", id);
             flights = query.getResultList();
 
@@ -271,18 +232,14 @@ public class FlightService {
             flight.isActive = false;
 
             // Persistence du constructeur
-            em.getTransaction().begin();
-            em.persist(flight);
-            em.flush();
-            em.getTransaction().commit();
+            Database.em.getTransaction().begin();
+            Database.em.persist(flight);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (NumberFormatException e) {
             try {
                 message = "'id': " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;
@@ -305,12 +262,8 @@ public class FlightService {
     }
 
     public static Flight exists(long pk) {
-        // Création du gestionnaire d'entités
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-        EntityManager em = emf.createEntityManager();
-
         // Récupération du vol
-        Flight flight = em.find(Flight.class, pk);
+        Flight flight = Database.em.find(Flight.class, pk);
         if (flight == null || !flight.isActive) {
             return null;
         }

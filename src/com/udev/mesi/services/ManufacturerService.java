@@ -1,6 +1,6 @@
 package com.udev.mesi.services;
 
-import com.udev.mesi.Database;
+import com.udev.mesi.config.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetManufacturers;
 import com.udev.mesi.messages.WsGetSingleManufacturer;
@@ -8,9 +8,6 @@ import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Manufacturer;
 import org.json.JSONException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
 import java.sql.Timestamp;
@@ -29,22 +26,15 @@ public class ManufacturerService {
         List<Manufacturer> manufacturers = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Manufacturer WHERE isActive = true ORDER BY name");
+            Query query = Database.em.createQuery("FROM Manufacturer WHERE isActive = true ORDER BY name");
             manufacturers = query.getResultList();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
             response = new WsGetManufacturers(status, message, code, manufacturers);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetManufacturers(status, message, code, null);
@@ -67,12 +57,8 @@ public class ManufacturerService {
         Manufacturer manufacturer = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des constructeurs depuis la base de données
-            manufacturer = em.find(Manufacturer.class, id);
+            manufacturer = Database.em.find(Manufacturer.class, id);
 
             // Vérification de l'existence du constructeur
             if (manufacturer == null || !manufacturer.isActive) {
@@ -84,10 +70,6 @@ public class ManufacturerService {
             status = "OK";
             code = 200;
             response = new WsGetSingleManufacturer(status, null, code, manufacturer);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleManufacturer(status, message, code, null);
@@ -117,16 +99,12 @@ public class ManufacturerService {
 
             String name = formParams.get("name").get(0);
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Vérification de l'existence du constructeur
-            Query query = em.createQuery("FROM Manufacturer WHERE name = :name");
+            Query query = Database.em.createQuery("FROM Manufacturer WHERE name = :name");
             query.setParameter("name", name);
             List<Manufacturer> manufacturers = query.getResultList();
 
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             if (manufacturers.size() == 1) {
                 manufacturer = manufacturers.get(0);
@@ -136,8 +114,8 @@ public class ManufacturerService {
                 } else {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                     manufacturer.name += "_old_" + timestamp.getTime();
-                    em.persist(manufacturer);
-                    em.flush();
+                    Database.em.persist(manufacturer);
+                    Database.em.flush();
 
                     // Création du constructeur
                     manufacturer = new Manufacturer();
@@ -151,13 +129,9 @@ public class ManufacturerService {
             manufacturer.isActive = true;
 
             // Validation des changements
-            em.persist(manufacturer);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(manufacturer);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 201;
@@ -188,12 +162,8 @@ public class ManufacturerService {
             long id = Long.parseLong(formParams.get("id").get(0));
             String name = formParams.get("name").get(0);
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération du constructeur
-            Manufacturer manufacturer = em.find(Manufacturer.class, id);
+            Manufacturer manufacturer = Database.em.find(Manufacturer.class, id);
 
             if (manufacturer == null || !manufacturer.isActive) {
                 code = 400;
@@ -201,11 +171,11 @@ public class ManufacturerService {
             }
 
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Manufacturer WHERE name = :name");
+            Query query = Database.em.createQuery("FROM Manufacturer WHERE name = :name");
             query.setParameter("name", name);
             List<Manufacturer> manufacturers = query.getResultList();
 
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             // Vérification de l'existence du constructeur
             if (manufacturers.size() == 1) {
@@ -216,8 +186,8 @@ public class ManufacturerService {
                 } else {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                     oldManufacturer.name += "_old_" + timestamp.getTime();
-                    em.persist(oldManufacturer);
-                    em.flush();
+                    Database.em.persist(oldManufacturer);
+                    Database.em.flush();
                 }
             }
 
@@ -225,13 +195,9 @@ public class ManufacturerService {
             manufacturer.name = name;
 
             // Persistence du constructeur
-            em.persist(manufacturer);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(manufacturer);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -263,12 +229,9 @@ public class ManufacturerService {
         Manufacturer manufacturer = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Manufacturer WHERE isActive = true AND id = :id");
+            Query query = Database.em.createQuery("FROM Manufacturer WHERE isActive = true AND id = :id");
             query.setParameter("id", id);
             manufacturers = query.getResultList();
 
@@ -282,18 +245,14 @@ public class ManufacturerService {
             manufacturer.isActive = false;
 
             // Persistence du constructeur
-            em.getTransaction().begin();
-            em.persist(manufacturer);
-            em.flush();
-            em.getTransaction().commit();
+            Database.em.getTransaction().begin();
+            Database.em.persist(manufacturer);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (NumberFormatException e) {
             try {
                 message = "'id': " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;
@@ -314,12 +273,8 @@ public class ManufacturerService {
     }
 
     public static Manufacturer exists(long pk) {
-        // Création du gestionnaire d'entités
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-        EntityManager em = emf.createEntityManager();
-
         // Récupération du constructeur
-        Manufacturer manufacturer = em.find(Manufacturer.class, pk);
+        Manufacturer manufacturer = Database.em.find(Manufacturer.class, pk);
         if (manufacturer == null || !manufacturer.isActive) {
             return null;
         }

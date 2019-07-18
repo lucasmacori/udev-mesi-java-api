@@ -1,6 +1,6 @@
 package com.udev.mesi.services;
 
-import com.udev.mesi.Database;
+import com.udev.mesi.config.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetModels;
 import com.udev.mesi.messages.WsGetSingleModel;
@@ -9,9 +9,6 @@ import main.java.com.udev.mesi.entities.Manufacturer;
 import main.java.com.udev.mesi.entities.Model;
 import org.json.JSONException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.List;
@@ -29,22 +26,14 @@ public class ModelService {
         List<Model> models = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des modèles depuis la base de données
-            Query query = em.createQuery("SELECT m FROM Model m, Manufacturer c WHERE c.id = m.manufacturer AND m.isActive = true AND c.isActive = true ORDER BY m.name, c.name");
+            Query query = Database.em.createQuery("SELECT m FROM Model m, Manufacturer c WHERE c.id = m.manufacturer AND m.isActive = true AND c.isActive = true ORDER BY m.name, c.name");
             models = query.getResultList();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
             response = new WsGetModels(status, message, code, models, true);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetModels(status, message, code, null, true);
@@ -67,12 +56,8 @@ public class ModelService {
         Model model = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération du modèle depuis la base de données
-            model = em.find(Model.class, id);
+            model = Database.em.find(Model.class, id);
 
             // Vérification de l'existence du modèle
             if (model == null || !model.isActive) {
@@ -84,10 +69,6 @@ public class ModelService {
             status = "OK";
             code = 200;
             response = new WsGetSingleModel(status, null, code, model);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleModel(status, message, code, null);
@@ -127,11 +108,7 @@ public class ModelService {
             conversion_step++;
             int countBusinessSlots = Integer.parseInt(formParams.get("countBusinessSlots").get(0));
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             // Récupération du constructeur
             Manufacturer manufacturer = ManufacturerService.exists(manufacturer_id);
@@ -148,13 +125,9 @@ public class ModelService {
             model.isActive = true;
 
             // Validation des changements
-            em.persist(model);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(model);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 201;
@@ -206,12 +179,8 @@ public class ModelService {
             if (formParams.containsKey("countBusinessSlots"))
                 countBusinessSlots = Integer.parseInt(formParams.get("countBusinessSlots").get(0));
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération du modèle
-            Model model = em.find(Model.class, id);
+            Model model = Database.em.find(Model.class, id);
 
             if (model == null || !model.isActive) {
                 code = 400;
@@ -231,14 +200,10 @@ public class ModelService {
             if (countBusinessSlots > -1) model.countBusinessSlots = countBusinessSlots;
 
             // Persistence du constructeur
-            em.getTransaction().begin();
-            em.persist(model);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.getTransaction().begin();
+            Database.em.persist(model);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -269,12 +234,8 @@ public class ModelService {
         Model model = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des modèles depuis la base de données
-            Query query = em.createQuery("FROM Model WHERE isActive = true AND id = :id");
+            Query query = Database.em.createQuery("FROM Model WHERE isActive = true AND id = :id");
             query.setParameter("id", id);
             models = query.getResultList();
 
@@ -288,18 +249,14 @@ public class ModelService {
             model.isActive = false;
 
             // Persistence du model
-            em.getTransaction().begin();
-            em.persist(model);
-            em.flush();
-            em.getTransaction().commit();
+            Database.em.getTransaction().begin();
+            Database.em.persist(model);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (NumberFormatException e) {
             try {
                 message = "'id': " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;
@@ -338,12 +295,8 @@ public class ModelService {
     }
 
     public static Model exists(long pk) {
-        // Création du gestionnaire d'entités
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-        EntityManager em = emf.createEntityManager();
-
         // Récupération du constructeur
-        Model model = em.find(Model.class, pk);
+        Model model = Database.em.find(Model.class, pk);
         if (model == null || !model.isActive) {
             return null;
         }

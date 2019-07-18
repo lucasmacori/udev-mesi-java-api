@@ -1,7 +1,7 @@
 package com.udev.mesi.services;
 
-import com.udev.mesi.Database;
 import com.udev.mesi.config.APIFormat;
+import com.udev.mesi.config.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetReservations;
 import com.udev.mesi.messages.WsGetSingleReservation;
@@ -11,9 +11,6 @@ import main.java.com.udev.mesi.entities.Passenger;
 import main.java.com.udev.mesi.entities.Reservation;
 import org.json.JSONException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.Date;
@@ -32,22 +29,14 @@ public class ReservationService {
         List<Reservation> reservations = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des reservations depuis la base de données
-            Query query = em.createQuery("SELECT r FROM Reservation r, Passenger p WHERE p.id = r.passenger AND r.isActive = true AND p.isActive = true ORDER BY r.reservationDate DESC, r.reservationClass");
+            Query query = Database.em.createQuery("SELECT r FROM Reservation r, Passenger p WHERE p.id = r.passenger AND r.isActive = true AND p.isActive = true ORDER BY r.reservationDate DESC, r.reservationClass");
             reservations = query.getResultList();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
             response = new WsGetReservations(status, message, code, reservations);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetReservations(status, message, code, null);
@@ -70,12 +59,8 @@ public class ReservationService {
         Reservation reservation = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des constructeurs depuis la base de données
-            reservation = em.find(Reservation.class, id);
+            reservation = Database.em.find(Reservation.class, id);
 
             // Vérification de l'existence du constructeur
             if (reservation == null || !reservation.isActive) {
@@ -87,10 +72,6 @@ public class ReservationService {
             status = "OK";
             code = 200;
             response = new WsGetSingleReservation(status, null, code, reservation);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleReservation(status, message, code, null);
@@ -122,17 +103,13 @@ public class ReservationService {
             Long flightDetails_id = Long.parseLong(formParams.get("flightDetails").get(0));
             char reservationClass = formParams.get("reservationClass").get(0).charAt(0);
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Vérification de l'existence de la réservation
-            Query query = em.createQuery("FROM Reservation r, FlightDetails fd, Passenger p WHERE fd.id = r.flightDetails AND p.id = r.passenger AND fd.id = :fd_id AND p.id = :p_id");
+            Query query = Database.em.createQuery("FROM Reservation r, FlightDetails fd, Passenger p WHERE fd.id = r.flightDetails AND p.id = r.passenger AND fd.id = :fd_id AND p.id = :p_id");
             query.setParameter("fd_id", flightDetails_id);
             query.setParameter("p_id", passenger_id);
             List<Reservation> reservations = query.getResultList();
 
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             if (reservations.size() == 1) {
                 reservation = reservations.get(0);
@@ -165,13 +142,9 @@ public class ReservationService {
             reservation.isActive = true;
 
             // Validation des changements
-            em.persist(reservation);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(reservation);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 201;
@@ -202,31 +175,23 @@ public class ReservationService {
             long id = Long.parseLong(formParams.get("id").get(0));
             char reservationClass = formParams.get("reservationClass").get(0).charAt(0);
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération de la réservation
-            Reservation reservation = em.find(Reservation.class, id);
+            Reservation reservation = Database.em.find(Reservation.class, id);
 
             if (reservation == null || !reservation.isActive) {
                 code = 400;
                 throw new Exception(MessageService.getMessageFromCode("reservation_does_not_exist", languageCode).text);
             }
 
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             // Modification de la réservation
             reservation.reservationClass = reservationClass;
 
             // Persistence de la réservation
-            em.persist(reservation);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(reservation);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -255,29 +220,21 @@ public class ReservationService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération de la réservation depuis la base de données
-            Reservation reservation = em.find(Reservation.class, id);
+            Reservation reservation = Database.em.find(Reservation.class, id);
 
             // Suppression de la réservation
             reservation.isActive = false;
 
             // Persistence de la reservation
-            em.getTransaction().begin();
-            em.persist(reservation);
-            em.flush();
-            em.getTransaction().commit();
+            Database.em.getTransaction().begin();
+            Database.em.persist(reservation);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (NumberFormatException e) {
             try {
                 message = "'id': " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;

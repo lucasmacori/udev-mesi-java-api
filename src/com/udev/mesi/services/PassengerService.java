@@ -1,7 +1,7 @@
 package com.udev.mesi.services;
 
-import com.udev.mesi.Database;
 import com.udev.mesi.config.APIFormat;
+import com.udev.mesi.config.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsExists;
 import com.udev.mesi.messages.WsGetPassengers;
@@ -10,9 +10,6 @@ import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Passenger;
 import org.json.JSONException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.Date;
@@ -31,22 +28,14 @@ public class PassengerService {
         List<Passenger> passengers = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des constructeurs depuis la base de données
-            Query query = em.createQuery("FROM Passenger WHERE isActive = true");
+            Query query = Database.em.createQuery("FROM Passenger WHERE isActive = true");
             passengers = query.getResultList();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
             response = new WsGetPassengers(status, message, code, passengers);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetPassengers(status, message, code, null);
@@ -69,12 +58,8 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Vérification de l'existence de l'email
-            Query query = em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.email = :email");
+            Query query = Database.em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.email = :email");
             query.setParameter("email", email);
             int count = Integer.parseInt(query.getResultList().get(0).toString());
 
@@ -82,10 +67,6 @@ public class PassengerService {
             status = "OK";
             code = 200;
             response = new WsExists(status, null, code, (count == 1));
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsExists(status, message, code, false);
@@ -108,12 +89,8 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Vérification de l'existence du numéro de téléphone
-            Query query = em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.phoneNumber = :phoneNumber");
+            Query query = Database.em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.phoneNumber = :phoneNumber");
             query.setParameter("phoneNumber", phoneNumber);
             int count = Integer.parseInt(query.getResultList().get(0).toString());
 
@@ -121,10 +98,6 @@ public class PassengerService {
             status = "OK";
             code = 200;
             response = new WsExists(status, null, code, (count == 1));
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsExists(status, message, code, false);
@@ -147,12 +120,8 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Vérification de l'existence du numéro de téléphone
-            Query query = em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.IDNumber = :IDNumber");
+            Query query = Database.em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.IDNumber = :IDNumber");
             query.setParameter("IDNumber", IDNumber);
             int count = Integer.parseInt(query.getResultList().get(0).toString());
 
@@ -160,10 +129,6 @@ public class PassengerService {
             status = "OK";
             code = 200;
             response = new WsExists(status, null, code, (count == 1));
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsExists(status, message, code, false);
@@ -186,12 +151,8 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des passagers depuis la base de données
-            passenger = em.find(Passenger.class, id);
+            passenger = Database.em.find(Passenger.class, id);
 
             // Vérification de l'existence du passager
             if (passenger == null || !passenger.isActive) {
@@ -203,10 +164,6 @@ public class PassengerService {
             status = "OK";
             code = 200;
             response = new WsGetSinglePassenger(status, null, code, passenger);
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSinglePassenger(status, message, code, null);
@@ -244,18 +201,14 @@ public class PassengerService {
             String phoneNumber = formParams.get("phoneNumber").get(0);
             String IDNumber = formParams.get("IDNumber").get(0);
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Vérification de l'existence du passager
-            Query query = em.createQuery("FROM Passenger WHERE email = :email OR phoneNumber = :phoneNumber OR IDNumber = :IDNumber");
+            Query query = Database.em.createQuery("FROM Passenger WHERE email = :email OR phoneNumber = :phoneNumber OR IDNumber = :IDNumber");
             query.setParameter("email", email);
             query.setParameter("phoneNumber", phoneNumber);
             query.setParameter("IDNumber", IDNumber);
             List<Passenger> passengers = query.getResultList();
 
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             if (passengers.size() == 1) {
                 if (passengers.get(0).isActive) {
@@ -276,13 +229,9 @@ public class PassengerService {
             passenger.isActive = true;
 
             // Validation des changements
-            em.persist(passenger);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(passenger);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 201;
@@ -345,12 +294,8 @@ public class PassengerService {
                 IDNumber = formParams.get("IDNumber").get(0);
             }
 
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération du passager
-            Passenger passenger = em.find(Passenger.class, id);
+            Passenger passenger = Database.em.find(Passenger.class, id);
 
             if (passenger == null || !passenger.isActive) {
                 code = 400;
@@ -358,13 +303,13 @@ public class PassengerService {
             }
 
             // Récupération des passagers depuis la base de données
-            Query query = em.createQuery("FROM Passenger WHERE email = :email OR phoneNumber = :phoneNumber OR IDNumber = :IDNumber");
+            Query query = Database.em.createQuery("FROM Passenger WHERE email = :email OR phoneNumber = :phoneNumber OR IDNumber = :IDNumber");
             query.setParameter("email", email);
             query.setParameter("phoneNumber", phoneNumber);
             query.setParameter("IDNumber", IDNumber);
             List<Passenger> passengers = query.getResultList();
 
-            em.getTransaction().begin();
+            Database.em.getTransaction().begin();
 
             // Vérification de l'existence du passager
             if (passengers.size() == 1) {
@@ -382,13 +327,9 @@ public class PassengerService {
             if (IDNumber != null) passenger.IDNumber = IDNumber;
 
             // Persistence du passager
-            em.persist(passenger);
-            em.flush();
-            em.getTransaction().commit();
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
+            Database.em.persist(passenger);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -420,12 +361,8 @@ public class PassengerService {
         Passenger passager = null;
 
         try {
-            // Création du gestionnaire d'entités
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-            EntityManager em = emf.createEntityManager();
-
             // Récupération des passagers depuis la base de données
-            Query query = em.createQuery("FROM Passenger WHERE isActive = true AND id = :id ORDER BY lastName, firstName, email");
+            Query query = Database.em.createQuery("FROM Passenger WHERE isActive = true AND id = :id ORDER BY lastName, firstName, email");
             query.setParameter("id", id);
             passengers = query.getResultList();
 
@@ -439,18 +376,14 @@ public class PassengerService {
             passager.isActive = false;
 
             // Persistence du passager
-            em.getTransaction().begin();
-            em.persist(passager);
-            em.flush();
-            em.getTransaction().commit();
+            Database.em.getTransaction().begin();
+            Database.em.persist(passager);
+            Database.em.flush();
+            Database.em.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-
-            // Fermeture du gestionnaire d'entités
-            em.close();
-            emf.close();
         } catch (NumberFormatException e) {
             try {
                 message = "'id': " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;
@@ -485,12 +418,8 @@ public class PassengerService {
     }
 
     public static Passenger exists(long pk) {
-        // Création du gestionnaire d'entités
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(Database.UNIT_NAME);
-        EntityManager em = emf.createEntityManager();
-
         // Récupération du constructeur
-        Passenger passenger = em.find(Passenger.class, pk);
+        Passenger passenger = Database.em.find(Passenger.class, pk);
         if (passenger == null || !passenger.isActive) {
             return null;
         }
