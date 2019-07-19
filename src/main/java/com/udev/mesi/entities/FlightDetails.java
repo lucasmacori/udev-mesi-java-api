@@ -18,10 +18,12 @@ public class FlightDetails implements IEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
+    @org.hibernate.annotations.Index(name = "flightIndex")
     public Flight flight;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
+    @org.hibernate.annotations.Index(name = "planeIndex")
     public Plane plane;
 
     @Column(nullable = false)

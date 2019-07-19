@@ -20,10 +20,12 @@ public class Reservation implements IEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
+    @org.hibernate.annotations.Index(name = "flightDetailsIndex")
     public FlightDetails flightDetails;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
+    @org.hibernate.annotations.Index(name = "passengerIndex")
     public Passenger passenger;
 
     @Column(nullable = false, columnDefinition = "bool default true")

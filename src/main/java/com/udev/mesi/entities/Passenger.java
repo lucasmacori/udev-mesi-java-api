@@ -18,6 +18,7 @@ public class Passenger implements IEntity {
     public String email;
 
     @Column(length = 255)
+    @org.hibernate.annotations.Index(name = "hashIndex")
     public String hash;
 
     @Column(length = 35, nullable = false)
