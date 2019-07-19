@@ -156,6 +156,7 @@ public class FlightDetailsService {
             message = getMessageFromConversionStep(conversion_step, languageCode);
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);
@@ -255,6 +256,7 @@ public class FlightDetailsService {
             message = getMessageFromConversionStep(conversion_step, languageCode);
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);
@@ -299,6 +301,7 @@ public class FlightDetailsService {
             }
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);

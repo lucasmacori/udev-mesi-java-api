@@ -139,6 +139,7 @@ public class ModelService {
             }
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);
@@ -215,6 +216,7 @@ public class ModelService {
             }
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);
@@ -266,6 +268,7 @@ public class ModelService {
             }
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);
