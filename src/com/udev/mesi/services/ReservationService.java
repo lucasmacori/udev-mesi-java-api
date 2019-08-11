@@ -150,6 +150,7 @@ public class ReservationService {
             code = 201;
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);
@@ -204,6 +205,7 @@ public class ReservationService {
             }
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);
@@ -244,6 +246,7 @@ public class ReservationService {
             }
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);

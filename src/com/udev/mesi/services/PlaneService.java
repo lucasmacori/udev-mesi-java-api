@@ -148,6 +148,7 @@ public class PlaneService {
 
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);
@@ -224,6 +225,7 @@ public class PlaneService {
             }
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);
@@ -262,6 +264,7 @@ public class PlaneService {
             code = 200;
         } catch (Exception e) {
             message = e.getMessage();
+            Database.em.getTransaction().rollback();
         }
 
         return new WsResponse(status, message, code);

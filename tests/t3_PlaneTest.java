@@ -246,7 +246,8 @@ public class t3_PlaneTest {
             EntityManager em = emf.createEntityManager();
 
             // Vérification de la modification
-            Query query = em.createQuery("FROM Plane WHERE isActive = true AND isUnderMaintenance = true");
+            Query query = em.createQuery("FROM Plane WHERE isActive = true AND isUnderMaintenance = true AND ARN = :ARN");
+            query.setParameter("ARN", plane.ARN);
             List<Plane> planes = query.getResultList();
 
             assertEquals(1, planes.size());
