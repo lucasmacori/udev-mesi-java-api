@@ -67,14 +67,14 @@ VALUES ('invalid_flight', 'fr', 'Le vol est invalide, veuillez renseigner les va
 -- Détail de vol
 INSERT INTO message (code, language_code, text)
 VALUES ('invalid_flight_details', 'fr', 'Le détail du vol est invalide, veuillez renseigner les valeurs suivantes:'),
-       ('flight_details_already_exists', 'fr', 'Le détail du vol existe déjà'),
-       ('flight_details_does_not_exist', 'fr', 'Le détail du vol n''existe pas'),
+       ('flight_details_already_exist', 'fr', 'Le détail du vol existe déjà'),
+       ('flight_details_do_not_exist', 'fr', 'Le détail du vol n''existe pas'),
        ('invalid_flight_details', 'en', 'The flight details are invalid, please provide the following values:'),
-       ('flight_details_already_exists', 'en', 'The flight details already exist'),
-       ('flight_details_does_not_exist', 'en', 'The flight details do not exist'),
+       ('flight_details_already_exist', 'en', 'The flight details already exist'),
+       ('flight_details_do_not_exist', 'en', 'The flight details do not exist'),
        ('invalid_flight_details', 'it', 'I dettagli del volo non sono validi, inserire i seguenti valori:'),
-       ('flight_details_already_exists', 'it', 'I dettagli del volo esistono già'),
-       ('flight_details_does_not_exist', 'it', 'I dettagli del volo non esistono');
+       ('flight_details_already_exist', 'it', 'I dettagli del volo esistono già'),
+       ('flight_details_do_not_exist', 'it', 'I dettagli del volo non esistono');
 
 -- Passagers
 INSERT INTO message (code, language_code, text)
