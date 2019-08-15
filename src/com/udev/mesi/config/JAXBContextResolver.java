@@ -3,7 +3,6 @@ package com.udev.mesi.config;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
 import com.udev.mesi.messages.*;
-import com.udev.mesi.models.WsFlightDetails;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
@@ -16,7 +15,7 @@ import java.util.Set;
 public class JAXBContextResolver implements ContextResolver<JAXBContext> {
     private final JAXBContext context;
     private final Set<Class> types;
-    private Class[] ctypes = {WsResponse.class, WsGetManufacturers.class, WsGetModels.class, WsGetPlanes.class, WsGetFlights.class, WsFlightDetails.class, WsGetPassengers.class, WsGetReservations.class}; //your pojo class
+    private Class[] ctypes = {WsResponse.class, WsGetManufacturers.class, WsGetModels.class, WsGetPlanes.class, WsGetFlights.class, WsGetFlightDetails.class, WsGetPassengers.class, WsGetReservations.class}; //your pojo class
 
     public JAXBContextResolver() throws Exception {
         this.types = new HashSet(Arrays.asList(ctypes));
