@@ -2,10 +2,12 @@ package com.udev.mesi.services;
 
 import com.udev.mesi.config.Database;
 import com.udev.mesi.exceptions.MessageException;
+import com.udev.mesi.messages.WsGetFlightDetails;
 import com.udev.mesi.messages.WsGetFlights;
 import com.udev.mesi.messages.WsGetSingleFlight;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Flight;
+import main.java.com.udev.mesi.entities.FlightDetails;
 import org.json.JSONException;
 
 import javax.persistence.Query;
@@ -70,6 +72,34 @@ public class FlightService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleFlight(status, message, code, null);
+        }
+
+        return response;
+    }
+
+    public static WsGetFlightDetails readFlightDetails(final long id, final String acceptLanguage) throws JSONException {
+
+        // Initialisation de la réponse
+        WsGetFlightDetails response;
+        String status = "KO";
+        String message = null;
+        int code = 500;
+
+        List<FlightDetails> flightDetails = null;
+
+        try {
+            // Récupération des constructeurs depuis la base de données
+            Query query = Database.em.createQuery("SELECT fd FROM FlightDetails fd, Flight f WHERE f.isActive = true AND fd.isActive = true AND fd.flight = f AND f.id = :flightId ORDER BY fd.departureDateTime, fd.arrivaleDateTime");
+            query.setParameter("flightId", id);
+            flightDetails = query.getResultList();
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+            response = new WsGetFlightDetails(status, message, code, flightDetails);
+        } catch (Exception e) {
+            message = e.getMessage();
+            response = new WsGetFlightDetails(status, message, code, null);
         }
 
         return response;
