@@ -65,7 +65,7 @@ public class FlightDetailsService {
             // Vérification de l'existence du constructeur
             if (flightDetails == null || !flightDetails.isActive) {
                 code = 400;
-                throw new Exception(MessageService.getMessageFromCode("flight_details_does_not_exist", languageCode).text);
+                throw new Exception(MessageService.getMessageFromCode("flight_details_do_not_exist", languageCode).text);
             }
 
             // Création de la réponse JSON

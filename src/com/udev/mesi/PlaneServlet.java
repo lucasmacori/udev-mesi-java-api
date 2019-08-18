@@ -1,5 +1,6 @@
 package com.udev.mesi;
 
+import com.udev.mesi.messages.WsGetFlightDetails;
 import com.udev.mesi.messages.WsGetPlanes;
 import com.udev.mesi.messages.WsGetSinglePlane;
 import com.udev.mesi.messages.WsResponse;
@@ -25,6 +26,14 @@ public class PlaneServlet {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getByPk(@PathParam("id") final String ARN, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
         WsGetSinglePlane response = PlaneService.readOne(ARN, acceptLanguage);
+        return Response.status(response.getCode()).entity(response).build();
+    }
+
+    @GET
+    @Path("{id}/flightDetails")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFlightDetails(@PathParam("id") final String ARN, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
+        WsGetFlightDetails response = PlaneService.readFlightDetails(ARN, acceptLanguage);
         return Response.status(response.getCode()).entity(response).build();
     }
 
