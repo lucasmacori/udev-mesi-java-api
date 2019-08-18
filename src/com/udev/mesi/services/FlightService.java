@@ -89,7 +89,7 @@ public class FlightService {
 
         try {
             // Récupération des constructeurs depuis la base de données
-            Query query = Database.em.createQuery("SELECT fd FROM FlightDetails fd, Flight f WHERE f.isActive = true AND fd.isActive = true AND fd.flight = f AND f.id = :flightId AND fd.arrivaleDateTime >= NOW() ORDER BY fd.departureDateTime, fd.arrivaleDateTime");
+            Query query = Database.em.createQuery("SELECT fd FROM FlightDetails fd, Flight f, Plane p WHERE f.isActive = true AND fd.isActive = true AND p.isActive = true AND fd.flight = f AND fd.plane = p AND f.id = :flightId AND fd.arrivaleDateTime >= NOW() ORDER BY fd.departureDateTime, fd.arrivaleDateTime");
             query.setParameter("flightId", id);
             flightDetails = query.getResultList();
 
