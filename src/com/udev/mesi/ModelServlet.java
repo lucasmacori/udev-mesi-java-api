@@ -1,6 +1,7 @@
 package com.udev.mesi;
 
 import com.udev.mesi.messages.WsGetModels;
+import com.udev.mesi.messages.WsGetPlanes;
 import com.udev.mesi.messages.WsGetSingleModel;
 import com.udev.mesi.messages.WsResponse;
 import com.udev.mesi.services.ModelService;
@@ -26,6 +27,14 @@ public class ModelServlet {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getByPk(@PathParam("id") final long id, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
         WsGetSingleModel response = ModelService.readOne(id, acceptLanguage);
+        return Response.status(response.getCode()).entity(response).build();
+    }
+
+    @GET
+    @Path("{id}/planes")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFlightDetails(@PathParam("id") final long id, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
+        WsGetPlanes response = ModelService.readPlanes(id, acceptLanguage);
         return Response.status(response.getCode()).entity(response).build();
     }
 

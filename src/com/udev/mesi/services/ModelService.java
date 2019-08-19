@@ -3,10 +3,12 @@ package com.udev.mesi.services;
 import com.udev.mesi.config.Database;
 import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetModels;
+import com.udev.mesi.messages.WsGetPlanes;
 import com.udev.mesi.messages.WsGetSingleModel;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Manufacturer;
 import main.java.com.udev.mesi.entities.Model;
+import main.java.com.udev.mesi.entities.Plane;
 import org.json.JSONException;
 
 import javax.persistence.Query;
@@ -72,6 +74,34 @@ public class ModelService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleModel(status, message, code, null);
+        }
+
+        return response;
+    }
+
+    public static WsGetPlanes readPlanes(final long id, final String acceptLanguage) throws JSONException {
+
+        // Initialisation de la réponse
+        WsGetPlanes response;
+        String status = "KO";
+        String message = null;
+        int code = 500;
+
+        List<Plane> planes = null;
+
+        try {
+            // Récupération des constructeurs depuis la base de données
+            Query query = Database.em.createQuery("SELECT p FROM Plane p, Model m WHERE p.isActive = true AND m.isActive = true AND p.model = m AND m.id = :id ORDER BY p.ARN");
+            query.setParameter("id", id);
+            planes = query.getResultList();
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+            response = new WsGetPlanes(status, message, code, planes);
+        } catch (Exception e) {
+            message = e.getMessage();
+            response = new WsGetPlanes(status, message, code, null);
         }
 
         return response;
