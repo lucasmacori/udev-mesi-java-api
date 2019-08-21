@@ -12,6 +12,7 @@ import org.json.JSONException;
 
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -214,6 +215,16 @@ public class PassengerService {
                 if (passengers.get(0).isActive) {
                     code = 400;
                     throw new Exception(MessageService.getMessageFromCode("passenger_already_exists", languageCode).text);
+                } else {
+                    // Archivage du passager
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    passengers.get(0).email = timestamp.toString() + "";
+                    passengers.get(0).phoneNumber = timestamp.getTime() + "";
+                    passengers.get(0).IDNumber = timestamp.getTime() + "";
+
+                    // Sauvegarde du passager
+                    Database.em.persist(passengers.get(0));
+                    Database.em.flush();
                 }
             }
             // Création du passager
@@ -304,10 +315,11 @@ public class PassengerService {
             }
 
             // Récupération des passagers depuis la base de données
-            Query query = Database.em.createQuery("FROM Passenger WHERE email = :email OR phoneNumber = :phoneNumber OR IDNumber = :IDNumber");
+            Query query = Database.em.createQuery("FROM Passenger WHERE (email = :email OR phoneNumber = :phoneNumber OR IDNumber = :IDNumber) AND id <> :id");
             query.setParameter("email", email);
             query.setParameter("phoneNumber", phoneNumber);
             query.setParameter("IDNumber", IDNumber);
+            query.setParameter("id", id);
             List<Passenger> passengers = query.getResultList();
 
             Database.em.getTransaction().begin();

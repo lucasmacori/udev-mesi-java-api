@@ -131,6 +131,7 @@ public class PlaneService {
             // Vérification de l'existence du modèle
             Model model = Database.em.find(Model.class, model_id);
             if (model == null || !model.isActive) {
+                code = 400;
                 throw new Exception(MessageService.getMessageFromCode("model_does_not_exist", languageCode).text);
             }
 
