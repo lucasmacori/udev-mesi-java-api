@@ -104,7 +104,7 @@ public class ReservationService {
             char reservationClass = formParams.get("reservationClass").get(0).charAt(0);
 
             // Vérification de l'existence de la réservation
-            Query query = Database.em.createQuery("FROM Reservation r, FlightDetails fd, Passenger p WHERE fd.id = r.flightDetails AND p.id = r.passenger AND fd.id = :fd_id AND p.id = :p_id");
+            Query query = Database.em.createQuery("SELECT r FROM Reservation r, FlightDetails fd, Passenger p WHERE fd.id = r.flightDetails AND p.id = r.passenger AND fd.id = :fd_id AND p.id = :p_id");
             query.setParameter("fd_id", flightDetails_id);
             query.setParameter("p_id", passenger_id);
             List<Reservation> reservations = query.getResultList();

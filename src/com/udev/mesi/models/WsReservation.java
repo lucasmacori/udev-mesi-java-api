@@ -10,13 +10,13 @@ import java.util.List;
 public class WsReservation {
     public Long id;
     public Date reservationDate;
-    public char reservationClass;
+    public String reservationClass;
     public boolean isActive;
 
     public WsReservation() {
     }
 
-    public WsReservation(Long id, Date reservationDate, char reservationClass, boolean isActive) {
+    public WsReservation(Long id, Date reservationDate, String reservationClass, boolean isActive) {
         this.id = id;
         this.reservationDate = reservationDate;
         this.reservationClass = reservationClass;

@@ -33,6 +33,6 @@ public class Reservation implements IEntity {
 
     @Override
     public WsReservation toWs() {
-        return new WsReservation(id, reservationDate, reservationClass, isActive);
+        return new WsReservation(id, reservationDate, reservationClass + "", isActive);
     }
 }
