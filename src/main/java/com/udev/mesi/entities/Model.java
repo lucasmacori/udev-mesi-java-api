@@ -8,11 +8,11 @@ import java.util.List;
 @Entity
 public class Model implements IEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     public Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     @org.hibernate.annotations.Index(name = "manufacturerIndex")
     public Manufacturer manufacturer;
@@ -30,7 +30,7 @@ public class Model implements IEntity {
     @Column(nullable = false, columnDefinition = "int default 0")
     public int countBusinessSlots;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "model")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "model")
     public List<Plane> planes;
 
     @Override

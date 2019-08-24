@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 public class Flight implements IEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     public Long id;
 
@@ -21,7 +21,7 @@ public class Flight implements IEntity {
     @Column(nullable = false, columnDefinition = "bool default true")
     public boolean isActive;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "flight")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "flight")
     public List<FlightDetails> flightsDetails;
 
     @Override

@@ -8,7 +8,7 @@ import java.util.Date;
 @Entity
 public class Reservation implements IEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     public Long id;
 
@@ -18,12 +18,12 @@ public class Reservation implements IEntity {
     @Column(nullable = false)
     public char reservationClass;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     @org.hibernate.annotations.Index(name = "flightDetailsIndex")
     public FlightDetails flightDetails;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     @org.hibernate.annotations.Index(name = "passengerIndex")
     public Passenger passenger;

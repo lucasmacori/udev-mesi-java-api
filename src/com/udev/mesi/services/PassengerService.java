@@ -8,6 +8,7 @@ import com.udev.mesi.messages.WsGetPassengers;
 import com.udev.mesi.messages.WsGetSinglePassenger;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Passenger;
+import org.hibernate.Session;
 import org.json.JSONException;
 
 import javax.persistence.Query;
@@ -21,6 +22,7 @@ public class PassengerService {
     public static WsGetPassengers read() throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetPassengers response;
         String status = "KO";
         String message = null;
@@ -29,10 +31,10 @@ public class PassengerService {
         List<Passenger> passengers = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = Database.em.createQuery("FROM Passenger WHERE isActive = true");
+            Query query = session.createQuery("FROM Passenger WHERE isActive = true");
             passengers = query.getResultList();
 
             // Création de la réponse JSON
@@ -42,6 +44,10 @@ public class PassengerService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetPassengers(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -50,6 +56,7 @@ public class PassengerService {
     public static WsExists emailExists(final String email, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsExists response;
         String status = "KO";
         String message;
@@ -61,10 +68,10 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification de l'existence de l'email
-            Query query = Database.em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.email = :email");
+            Query query = session.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.email = :email");
             query.setParameter("email", email);
             int count = Integer.parseInt(query.getResultList().get(0).toString());
 
@@ -75,6 +82,10 @@ public class PassengerService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsExists(status, message, code, false);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -83,6 +94,7 @@ public class PassengerService {
     public static WsExists phoneNumberExists(final String phoneNumber, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsExists response;
         String status = "KO";
         String message;
@@ -94,10 +106,10 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification de l'existence du numéro de téléphone
-            Query query = Database.em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.phoneNumber = :phoneNumber");
+            Query query = session.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.phoneNumber = :phoneNumber");
             query.setParameter("phoneNumber", phoneNumber);
             int count = Integer.parseInt(query.getResultList().get(0).toString());
 
@@ -108,6 +120,10 @@ public class PassengerService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsExists(status, message, code, false);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -116,6 +132,7 @@ public class PassengerService {
     public static WsExists IDNumberExists(final String IDNumber, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsExists response;
         String status = "KO";
         String message;
@@ -127,10 +144,10 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification de l'existence du numéro de téléphone
-            Query query = Database.em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.IDNumber = :IDNumber");
+            Query query = session.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.IDNumber = :IDNumber");
             query.setParameter("IDNumber", IDNumber);
             int count = Integer.parseInt(query.getResultList().get(0).toString());
 
@@ -141,6 +158,10 @@ public class PassengerService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsExists(status, message, code, false);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -149,6 +170,7 @@ public class PassengerService {
     public static WsGetSinglePassenger readOne(final long id, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetSinglePassenger response;
         String status = "KO";
         String message;
@@ -160,10 +182,10 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des passagers depuis la base de données
-            passenger = Database.em.find(Passenger.class, id);
+            passenger = session.find(Passenger.class, id);
 
             // Vérification de l'existence du passager
             if (passenger == null || !passenger.isActive) {
@@ -178,6 +200,10 @@ public class PassengerService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSinglePassenger(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -186,6 +212,7 @@ public class PassengerService {
     public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -196,7 +223,7 @@ public class PassengerService {
         Passenger passenger;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!isValidPassenger(formParams, false)) {
@@ -215,13 +242,13 @@ public class PassengerService {
             String IDNumber = formParams.get("IDNumber").get(0);
 
             // Vérification de l'existence du passager
-            Query query = Database.em.createQuery("FROM Passenger WHERE email = :email OR phoneNumber = :phoneNumber OR IDNumber = :IDNumber");
+            Query query = session.createQuery("FROM Passenger WHERE email = :email OR phoneNumber = :phoneNumber OR IDNumber = :IDNumber");
             query.setParameter("email", email);
             query.setParameter("phoneNumber", phoneNumber);
             query.setParameter("IDNumber", IDNumber);
             List<Passenger> passengers = query.getResultList();
 
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
 
             if (passengers.size() == 1) {
                 if (passengers.get(0).isActive) {
@@ -235,8 +262,8 @@ public class PassengerService {
                     passengers.get(0).IDNumber = timestamp.getTime() + "";
 
                     // Sauvegarde du passager
-                    Database.em.persist(passengers.get(0));
-                    Database.em.flush();
+                    session.persist(passengers.get(0));
+                    session.flush();
                 }
             }
             // Création du passager
@@ -252,15 +279,19 @@ public class PassengerService {
             passenger.isActive = true;
 
             // Validation des changements
-            Database.em.persist(passenger);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(passenger);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 201;
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -269,6 +300,7 @@ public class PassengerService {
     public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -277,7 +309,7 @@ public class PassengerService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!isValidPassenger(formParams, true)) {
@@ -321,7 +353,7 @@ public class PassengerService {
             }
 
             // Récupération du passager
-            Passenger passenger = Database.em.find(Passenger.class, id);
+            Passenger passenger = session.find(Passenger.class, id);
 
             if (passenger == null || !passenger.isActive) {
                 code = 400;
@@ -329,14 +361,14 @@ public class PassengerService {
             }
 
             // Récupération des passagers depuis la base de données
-            Query query = Database.em.createQuery("FROM Passenger WHERE (email = :email OR phoneNumber = :phoneNumber OR IDNumber = :IDNumber) AND id <> :id");
+            Query query = session.createQuery("FROM Passenger WHERE (email = :email OR phoneNumber = :phoneNumber OR IDNumber = :IDNumber) AND id <> :id");
             query.setParameter("email", email);
             query.setParameter("phoneNumber", phoneNumber);
             query.setParameter("IDNumber", IDNumber);
             query.setParameter("id", id);
             List<Passenger> passengers = query.getResultList();
 
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
 
             // Vérification de l'existence du passager
             if (passengers.size() == 1) {
@@ -354,9 +386,9 @@ public class PassengerService {
             if (IDNumber != null) passenger.IDNumber = IDNumber;
 
             // Persistence du passager
-            Database.em.persist(passenger);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(passenger);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -369,7 +401,11 @@ public class PassengerService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -378,6 +414,7 @@ public class PassengerService {
     public static WsResponse delete(final String acceptLanguage, final Long id) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -389,10 +426,10 @@ public class PassengerService {
         Passenger passager = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des passagers depuis la base de données
-            Query query = Database.em.createQuery("FROM Passenger WHERE isActive = true AND id = :id ORDER BY lastName, firstName, email");
+            Query query = session.createQuery("FROM Passenger WHERE isActive = true AND id = :id ORDER BY lastName, firstName, email");
             query.setParameter("id", id);
             passengers = query.getResultList();
 
@@ -406,10 +443,10 @@ public class PassengerService {
             passager.isActive = false;
 
             // Persistence du passager
-            Database.em.getTransaction().begin();
-            Database.em.persist(passager);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.getTransaction().begin();
+            session.persist(passager);
+            session.flush();
+            session.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
@@ -423,7 +460,11 @@ public class PassengerService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -449,13 +490,23 @@ public class PassengerService {
     }
 
     public static Passenger exists(long pk) {
-        Database.em.clear();
+        Session session = null;
 
-        // Récupération du constructeur
-        Passenger passenger = Database.em.find(Passenger.class, pk);
-        if (passenger == null || !passenger.isActive) {
+        try {
+            session = Database.sessionFactory.openSession();
+
+            // Récupération du constructeur
+            Passenger passenger = session.find(Passenger.class, pk);
+            if (passenger == null || !passenger.isActive) {
+                return null;
+            }
+            return passenger;
+        } catch (Exception e) {
             return null;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
-        return passenger;
     }
 }

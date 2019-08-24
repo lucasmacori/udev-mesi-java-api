@@ -6,6 +6,7 @@ import com.udev.mesi.messages.WsGetManufacturers;
 import com.udev.mesi.messages.WsGetSingleManufacturer;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Manufacturer;
+import org.hibernate.Session;
 import org.json.JSONException;
 
 import javax.persistence.Query;
@@ -18,6 +19,7 @@ public class ManufacturerService {
     public static WsGetManufacturers read() throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetManufacturers response;
         String status = "KO";
         String message = null;
@@ -26,10 +28,10 @@ public class ManufacturerService {
         List<Manufacturer> manufacturers = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = Database.em.createQuery("FROM Manufacturer WHERE isActive = true ORDER BY name");
+            Query query = session.createQuery("FROM Manufacturer WHERE isActive = true ORDER BY name");
             manufacturers = query.getResultList();
 
             // Création de la réponse JSON
@@ -39,6 +41,10 @@ public class ManufacturerService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetManufacturers(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -47,6 +53,7 @@ public class ManufacturerService {
     public static WsGetSingleManufacturer readOne(final long id, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetSingleManufacturer response;
         String status = "KO";
         String message;
@@ -58,10 +65,10 @@ public class ManufacturerService {
         Manufacturer manufacturer = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            manufacturer = Database.em.find(Manufacturer.class, id);
+            manufacturer = session.find(Manufacturer.class, id);
 
             // Vérification de l'existence du constructeur
             if (manufacturer == null || !manufacturer.isActive) {
@@ -76,6 +83,10 @@ public class ManufacturerService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleManufacturer(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -84,6 +95,7 @@ public class ManufacturerService {
     public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -94,7 +106,7 @@ public class ManufacturerService {
         Manufacturer manufacturer;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!isValidManufacturer(formParams, false)) {
@@ -105,11 +117,11 @@ public class ManufacturerService {
             String name = formParams.get("name").get(0);
 
             // Vérification de l'existence du constructeur
-            Query query = Database.em.createQuery("FROM Manufacturer WHERE name = :name");
+            Query query = session.createQuery("FROM Manufacturer WHERE name = :name");
             query.setParameter("name", name);
             List<Manufacturer> manufacturers = query.getResultList();
 
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
 
             if (manufacturers.size() == 1) {
                 manufacturer = manufacturers.get(0);
@@ -119,8 +131,8 @@ public class ManufacturerService {
                 } else {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                     manufacturer.name += "_old_" + timestamp.getTime();
-                    Database.em.persist(manufacturer);
-                    Database.em.flush();
+                    session.persist(manufacturer);
+                    session.flush();
 
                     // Création du constructeur
                     manufacturer = new Manufacturer();
@@ -134,15 +146,19 @@ public class ManufacturerService {
             manufacturer.isActive = true;
 
             // Validation des changements
-            Database.em.persist(manufacturer);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(manufacturer);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 201;
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -151,6 +167,7 @@ public class ManufacturerService {
     public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -159,7 +176,7 @@ public class ManufacturerService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!isValidManufacturer(formParams, true)) {
@@ -171,7 +188,7 @@ public class ManufacturerService {
             String name = formParams.get("name").get(0);
 
             // Récupération du constructeur
-            Manufacturer manufacturer = Database.em.find(Manufacturer.class, id);
+            Manufacturer manufacturer = session.find(Manufacturer.class, id);
 
             if (manufacturer == null || !manufacturer.isActive) {
                 code = 400;
@@ -179,11 +196,11 @@ public class ManufacturerService {
             }
 
             // Récupération des constructeurs depuis la base de données
-            Query query = Database.em.createQuery("FROM Manufacturer WHERE name = :name");
+            Query query = session.createQuery("FROM Manufacturer WHERE name = :name");
             query.setParameter("name", name);
             List<Manufacturer> manufacturers = query.getResultList();
 
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
 
             // Vérification de l'existence du constructeur
             if (manufacturers.size() == 1) {
@@ -194,8 +211,8 @@ public class ManufacturerService {
                 } else {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                     oldManufacturer.name += "_old_" + timestamp.getTime();
-                    Database.em.persist(oldManufacturer);
-                    Database.em.flush();
+                    session.persist(oldManufacturer);
+                    session.flush();
                 }
             }
 
@@ -203,9 +220,9 @@ public class ManufacturerService {
             manufacturer.name = name;
 
             // Persistence du constructeur
-            Database.em.persist(manufacturer);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(manufacturer);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -218,7 +235,11 @@ public class ManufacturerService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -227,6 +248,7 @@ public class ManufacturerService {
     public static WsResponse delete(final String acceptLanguage, final Long id) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -238,10 +260,10 @@ public class ManufacturerService {
         Manufacturer manufacturer = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = Database.em.createQuery("FROM Manufacturer WHERE isActive = true AND id = :id");
+            Query query = session.createQuery("FROM Manufacturer WHERE isActive = true AND id = :id");
             query.setParameter("id", id);
             manufacturers = query.getResultList();
 
@@ -255,10 +277,10 @@ public class ManufacturerService {
             manufacturer.isActive = false;
 
             // Persistence du constructeur
-            Database.em.getTransaction().begin();
-            Database.em.persist(manufacturer);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.getTransaction().begin();
+            session.persist(manufacturer);
+            session.flush();
+            session.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
@@ -272,7 +294,11 @@ public class ManufacturerService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -284,13 +310,23 @@ public class ManufacturerService {
     }
 
     public static Manufacturer exists(long pk) {
-        Database.em.clear();
+        Session session = null;
 
-        // Récupération du constructeur
-        Manufacturer manufacturer = Database.em.find(Manufacturer.class, pk);
-        if (manufacturer == null || !manufacturer.isActive) {
+        try {
+            session = Database.sessionFactory.openSession();
+
+            // Récupération du constructeur
+            Manufacturer manufacturer = session.find(Manufacturer.class, pk);
+            if (manufacturer == null || !manufacturer.isActive) {
+                return null;
+            }
+            return manufacturer;
+        } catch (Exception e) {
             return null;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
-        return manufacturer;
     }
 }

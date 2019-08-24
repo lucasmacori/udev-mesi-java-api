@@ -10,7 +10,7 @@ import java.util.List;
 public class Passenger implements IEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     public Long id;
 
@@ -39,7 +39,7 @@ public class Passenger implements IEntity {
     @Column(nullable = false, unique = true, length = 20)
     public String IDNumber;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "passenger")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "passenger")
     public List<Reservation> reservations;
 
     @Column(nullable = false, columnDefinition = "bool default true")

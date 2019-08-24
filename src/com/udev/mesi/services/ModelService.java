@@ -9,6 +9,7 @@ import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Manufacturer;
 import main.java.com.udev.mesi.entities.Model;
 import main.java.com.udev.mesi.entities.Plane;
+import org.hibernate.Session;
 import org.json.JSONException;
 
 import javax.persistence.Query;
@@ -20,6 +21,7 @@ public class ModelService {
     public static WsGetModels read() throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetModels response;
         String status = "KO";
         String message = null;
@@ -28,10 +30,10 @@ public class ModelService {
         List<Model> models = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des modèles depuis la base de données
-            Query query = Database.em.createQuery("SELECT m FROM Model m, Manufacturer c WHERE c.id = m.manufacturer AND m.isActive = true AND c.isActive = true ORDER BY m.name, c.name");
+            Query query = session.createQuery("SELECT m FROM Model m, Manufacturer c WHERE c.id = m.manufacturer AND m.isActive = true AND c.isActive = true ORDER BY m.name, c.name");
             models = query.getResultList();
 
             // Création de la réponse JSON
@@ -41,6 +43,10 @@ public class ModelService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetModels(status, message, code, null, true);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -49,6 +55,7 @@ public class ModelService {
     public static WsGetSingleModel readOne(final long id, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetSingleModel response;
         String status = "KO";
         String message;
@@ -60,10 +67,10 @@ public class ModelService {
         Model model = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération du modèle depuis la base de données
-            model = Database.em.find(Model.class, id);
+            model = session.find(Model.class, id);
 
             // Vérification de l'existence du modèle
             if (model == null || !model.isActive) {
@@ -78,6 +85,10 @@ public class ModelService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleModel(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -86,6 +97,7 @@ public class ModelService {
     public static WsGetPlanes readPlanes(final long id, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetPlanes response;
         String status = "KO";
         String message = null;
@@ -94,10 +106,10 @@ public class ModelService {
         List<Plane> planes = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = Database.em.createQuery("SELECT p FROM Plane p, Model m WHERE p.isActive = true AND m.isActive = true AND p.model = m AND m.id = :id ORDER BY p.ARN");
+            Query query = session.createQuery("SELECT p FROM Plane p, Model m WHERE p.isActive = true AND m.isActive = true AND p.model = m AND m.id = :id ORDER BY p.ARN");
             query.setParameter("id", id);
             planes = query.getResultList();
 
@@ -108,6 +120,10 @@ public class ModelService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetPlanes(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -116,6 +132,7 @@ public class ModelService {
     public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -130,7 +147,7 @@ public class ModelService {
         int conversion_step = 0;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!isValidModel(formParams, false)) {
@@ -146,7 +163,7 @@ public class ModelService {
             conversion_step++;
             int countBusinessSlots = Integer.parseInt(formParams.get("countBusinessSlots").get(0));
 
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
 
             // Récupération du constructeur
             Manufacturer manufacturer = ManufacturerService.exists(manufacturer_id);
@@ -163,9 +180,9 @@ public class ModelService {
             model.isActive = true;
 
             // Validation des changements
-            Database.em.persist(model);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(model);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 201;
@@ -177,7 +194,11 @@ public class ModelService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -186,6 +207,7 @@ public class ModelService {
     public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -195,7 +217,7 @@ public class ModelService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!formParams.containsKey("id")) {
@@ -221,7 +243,7 @@ public class ModelService {
                 countBusinessSlots = Integer.parseInt(formParams.get("countBusinessSlots").get(0));
 
             // Récupération du modèle
-            Model model = Database.em.find(Model.class, id);
+            Model model = session.find(Model.class, id);
 
             if (model == null || !model.isActive) {
                 code = 400;
@@ -241,10 +263,10 @@ public class ModelService {
             if (countBusinessSlots > -1) model.countBusinessSlots = countBusinessSlots;
 
             // Persistence du constructeur
-            Database.em.getTransaction().begin();
-            Database.em.persist(model);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.getTransaction().begin();
+            session.persist(model);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -256,7 +278,11 @@ public class ModelService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -265,6 +291,7 @@ public class ModelService {
     public static WsResponse delete(final String acceptLanguage, final Long id) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -276,10 +303,10 @@ public class ModelService {
         Model model = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des modèles depuis la base de données
-            Query query = Database.em.createQuery("FROM Model WHERE isActive = true AND id = :id");
+            Query query = session.createQuery("FROM Model WHERE isActive = true AND id = :id");
             query.setParameter("id", id);
             models = query.getResultList();
 
@@ -293,10 +320,10 @@ public class ModelService {
             model.isActive = false;
 
             // Persistence du model
-            Database.em.getTransaction().begin();
-            Database.em.persist(model);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.getTransaction().begin();
+            session.persist(model);
+            session.flush();
+            session.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
@@ -310,7 +337,11 @@ public class ModelService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -340,13 +371,23 @@ public class ModelService {
     }
 
     public static Model exists(long pk) {
-        Database.em.clear();
+        Session session = null;
 
-        // Récupération du constructeur
-        Model model = Database.em.find(Model.class, pk);
-        if (model == null || !model.isActive) {
+        try {
+            session = Database.sessionFactory.openSession();
+
+            // Récupération du constructeur
+            Model model = session.find(Model.class, pk);
+            if (model == null || !model.isActive) {
+                return null;
+            }
+            return model;
+        } catch (Exception e) {
             return null;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
-        return model;
     }
 }

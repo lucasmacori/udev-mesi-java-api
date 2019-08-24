@@ -9,6 +9,7 @@ import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.FlightDetails;
 import main.java.com.udev.mesi.entities.Passenger;
 import main.java.com.udev.mesi.entities.Reservation;
+import org.hibernate.Session;
 import org.json.JSONException;
 
 import javax.persistence.Query;
@@ -21,6 +22,7 @@ public class ReservationService {
     public static WsGetReservations read() throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetReservations response;
         String status = "KO";
         String message = null;
@@ -29,10 +31,10 @@ public class ReservationService {
         List<Reservation> reservations = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des reservations depuis la base de données
-            Query query = Database.em.createQuery("SELECT r FROM Reservation r, Passenger p WHERE p.id = r.passenger AND r.isActive = true AND p.isActive = true ORDER BY r.reservationDate DESC, r.reservationClass");
+            Query query = session.createQuery("SELECT r FROM Reservation r, Passenger p WHERE p.id = r.passenger AND r.isActive = true AND p.isActive = true ORDER BY r.reservationDate DESC, r.reservationClass");
             reservations = query.getResultList();
 
             // Création de la réponse JSON
@@ -42,6 +44,10 @@ public class ReservationService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetReservations(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -50,6 +56,7 @@ public class ReservationService {
     public static WsGetSingleReservation readOne(final long id, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetSingleReservation response;
         String status = "KO";
         String message;
@@ -61,10 +68,10 @@ public class ReservationService {
         Reservation reservation = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            reservation = Database.em.find(Reservation.class, id);
+            reservation = session.find(Reservation.class, id);
 
             // Vérification de l'existence du constructeur
             if (reservation == null || !reservation.isActive) {
@@ -79,6 +86,10 @@ public class ReservationService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleReservation(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -87,6 +98,7 @@ public class ReservationService {
     public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -97,7 +109,7 @@ public class ReservationService {
         Reservation reservation;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!isValidReservation(formParams, false)) {
@@ -110,12 +122,12 @@ public class ReservationService {
             char reservationClass = formParams.get("reservationClass").get(0).charAt(0);
 
             // Vérification de l'existence de la réservation
-            Query query = Database.em.createQuery("SELECT r FROM Reservation r, FlightDetails fd, Passenger p WHERE fd.id = r.flightDetails AND p.id = r.passenger AND fd.id = :fd_id AND p.id = :p_id");
+            Query query = session.createQuery("SELECT r FROM Reservation r, FlightDetails fd, Passenger p WHERE fd.id = r.flightDetails AND p.id = r.passenger AND fd.id = :fd_id AND p.id = :p_id");
             query.setParameter("fd_id", flightDetails_id);
             query.setParameter("p_id", passenger_id);
             List<Reservation> reservations = query.getResultList();
 
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
 
             if (reservations.size() == 1) {
                 reservation = reservations.get(0);
@@ -148,15 +160,19 @@ public class ReservationService {
             reservation.isActive = true;
 
             // Validation des changements
-            Database.em.persist(reservation);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(reservation);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 201;
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -165,6 +181,7 @@ public class ReservationService {
     public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -173,7 +190,7 @@ public class ReservationService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!isValidReservation(formParams, true)) {
@@ -185,22 +202,22 @@ public class ReservationService {
             char reservationClass = formParams.get("reservationClass").get(0).charAt(0);
 
             // Récupération de la réservation
-            Reservation reservation = Database.em.find(Reservation.class, id);
+            Reservation reservation = session.find(Reservation.class, id);
 
             if (reservation == null || !reservation.isActive) {
                 code = 400;
                 throw new Exception(MessageService.getMessageFromCode("reservation_does_not_exist", languageCode).text);
             }
 
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
 
             // Modification de la réservation
             reservation.reservationClass = reservationClass;
 
             // Persistence de la réservation
-            Database.em.persist(reservation);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(reservation);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -213,7 +230,11 @@ public class ReservationService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -222,6 +243,7 @@ public class ReservationService {
     public static WsResponse delete(final String acceptLanguage, final Long id) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -230,19 +252,19 @@ public class ReservationService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération de la réservation depuis la base de données
-            Reservation reservation = Database.em.find(Reservation.class, id);
+            Reservation reservation = session.find(Reservation.class, id);
 
             // Suppression de la réservation
             reservation.isActive = false;
 
             // Persistence de la reservation
-            Database.em.getTransaction().begin();
-            Database.em.persist(reservation);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.getTransaction().begin();
+            session.persist(reservation);
+            session.flush();
+            session.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
@@ -256,7 +278,11 @@ public class ReservationService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);

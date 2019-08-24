@@ -8,6 +8,7 @@ import com.udev.mesi.messages.WsGetSingleFlight;
 import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Flight;
 import main.java.com.udev.mesi.entities.FlightDetails;
+import org.hibernate.Session;
 import org.json.JSONException;
 
 import javax.persistence.Query;
@@ -18,6 +19,7 @@ public class FlightService {
     public static WsGetFlights read() throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetFlights response;
         String status = "KO";
         String message = null;
@@ -26,10 +28,10 @@ public class FlightService {
         List<Flight> flights = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = Database.em.createQuery("FROM Flight WHERE isActive = true ORDER BY departureCity, arrivalCity");
+            Query query = session.createQuery("FROM Flight WHERE isActive = true ORDER BY departureCity, arrivalCity");
             flights = query.getResultList();
 
             // Création de la réponse JSON
@@ -39,6 +41,10 @@ public class FlightService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetFlights(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -47,6 +53,7 @@ public class FlightService {
     public static WsGetSingleFlight readOne(final long id, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetSingleFlight response;
         String status = "KO";
         String message;
@@ -58,10 +65,10 @@ public class FlightService {
         Flight flight = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            flight = Database.em.find(Flight.class, id);
+            flight = session.find(Flight.class, id);
 
             // Vérification de l'existence du constructeur
             if (flight == null || !flight.isActive) {
@@ -76,6 +83,10 @@ public class FlightService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleFlight(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -84,6 +95,7 @@ public class FlightService {
     public static WsGetFlightDetails readFlightDetails(final long id, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetFlightDetails response;
         String status = "KO";
         String message = null;
@@ -92,10 +104,10 @@ public class FlightService {
         List<FlightDetails> flightDetails = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = Database.em.createQuery("SELECT fd FROM FlightDetails fd, Flight f, Plane p WHERE f.isActive = true AND fd.isActive = true AND p.isActive = true AND fd.flight = f AND fd.plane = p AND f.id = :flightId AND fd.arrivaleDateTime >= NOW() ORDER BY fd.departureDateTime, fd.arrivaleDateTime");
+            Query query = session.createQuery("SELECT fd FROM FlightDetails fd, Flight f, Plane p WHERE f.isActive = true AND fd.isActive = true AND p.isActive = true AND fd.flight = f AND fd.plane = p AND f.id = :flightId AND fd.arrivaleDateTime >= NOW() ORDER BY fd.departureDateTime, fd.arrivaleDateTime");
             query.setParameter("flightId", id);
             flightDetails = query.getResultList();
 
@@ -106,6 +118,10 @@ public class FlightService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetFlightDetails(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -114,6 +130,7 @@ public class FlightService {
     public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -124,7 +141,7 @@ public class FlightService {
         Flight flight;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!isValidFlight(formParams, false)) {
@@ -136,12 +153,12 @@ public class FlightService {
             String arrivalCity = formParams.get("arrivalCity").get(0);
 
             // Vérification de l'existence du constructeur
-            Query query = Database.em.createQuery("FROM Flight WHERE departureCity = :departureCity AND arrivalCity = :arrivalCity");
+            Query query = session.createQuery("FROM Flight WHERE departureCity = :departureCity AND arrivalCity = :arrivalCity");
             query.setParameter("departureCity", departureCity);
             query.setParameter("arrivalCity", arrivalCity);
             List<Flight> flights = query.getResultList();
 
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
 
             if (flights.size() == 1) {
                 flight = flights.get(0);
@@ -163,15 +180,19 @@ public class FlightService {
             flight.isActive = true;
 
             // Validation des changements
-            Database.em.persist(flight);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(flight);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 201;
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -180,6 +201,7 @@ public class FlightService {
     public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -188,7 +210,7 @@ public class FlightService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!isValidFlight(formParams, true)) {
@@ -207,13 +229,13 @@ public class FlightService {
             }
 
             // Récupération du vol
-            Flight flight = Database.em.find(Flight.class, id);
+            Flight flight = session.find(Flight.class, id);
 
             if (flight == null || !flight.isActive) {
                 code = 400;
                 throw new Exception(MessageService.getMessageFromCode("flight_does_not_exist", languageCode).text);
             }
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
 
             // Modification du vol
             if (departureCity != null) {
@@ -224,9 +246,9 @@ public class FlightService {
             }
 
             // Persistence du flight
-            Database.em.persist(flight);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(flight);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -239,7 +261,11 @@ public class FlightService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -248,6 +274,7 @@ public class FlightService {
     public static WsResponse delete(final String acceptLanguage, final Long id) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -259,10 +286,10 @@ public class FlightService {
         Flight flight = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = Database.em.createQuery("FROM Flight WHERE isActive = true AND id = :id");
+            Query query = session.createQuery("FROM Flight WHERE isActive = true AND id = :id");
             query.setParameter("id", id);
             flights = query.getResultList();
 
@@ -276,10 +303,10 @@ public class FlightService {
             flight.isActive = false;
 
             // Persistence du constructeur
-            Database.em.getTransaction().begin();
-            Database.em.persist(flight);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.getTransaction().begin();
+            session.persist(flight);
+            session.flush();
+            session.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
@@ -293,7 +320,11 @@ public class FlightService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -307,13 +338,22 @@ public class FlightService {
     }
 
     public static Flight exists(long pk) {
-        Database.em.clear();
+        Session session = null;
+        try {
+            session = Database.sessionFactory.openSession();
 
-        // Récupération du vol
-        Flight flight = Database.em.find(Flight.class, pk);
-        if (flight == null || !flight.isActive) {
+            // Récupération du vol
+            Flight flight = session.find(Flight.class, pk);
+            if (flight == null || !flight.isActive) {
+                return null;
+            }
+            return flight;
+        } catch (Exception e) {
             return null;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
-        return flight;
     }
 }

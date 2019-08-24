@@ -14,7 +14,7 @@ public class Message implements IEntity {
     @Column(updatable = false, nullable = false)
     public String code;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     public Language language;
 

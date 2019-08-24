@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 public class Manufacturer implements IEntity {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false, nullable = false)
 	public Long id;
 
@@ -18,7 +18,7 @@ public class Manufacturer implements IEntity {
 	@Column(nullable = false, columnDefinition = "bool default true")
 	public boolean isActive;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "manufacturer")
 	public List<Model> models;
 
 	@Override

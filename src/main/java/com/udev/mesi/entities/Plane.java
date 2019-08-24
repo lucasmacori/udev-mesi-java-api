@@ -12,7 +12,7 @@ public class Plane implements IEntity {
     @Column(nullable = false, length = 10)
     public String ARN;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     public Model model;
 
@@ -22,7 +22,7 @@ public class Plane implements IEntity {
     @Column(nullable = false, columnDefinition = "bool default true")
     public boolean isActive;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "plane")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "plane")
     public List<FlightDetails> flightDetails;
 
     @Override

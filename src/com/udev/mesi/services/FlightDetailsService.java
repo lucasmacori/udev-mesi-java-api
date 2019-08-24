@@ -9,6 +9,7 @@ import com.udev.mesi.messages.WsResponse;
 import main.java.com.udev.mesi.entities.Flight;
 import main.java.com.udev.mesi.entities.FlightDetails;
 import main.java.com.udev.mesi.entities.Plane;
+import org.hibernate.Session;
 import org.json.JSONException;
 
 import javax.persistence.Query;
@@ -21,6 +22,7 @@ public class FlightDetailsService {
     public static WsGetFlightDetails read() throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetFlightDetails response;
         String status = "KO";
         String message = null;
@@ -29,10 +31,10 @@ public class FlightDetailsService {
         List<FlightDetails> flightDetails = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des modèles depuis la base de données
-            Query query = Database.em.createQuery("SELECT fd FROM FlightDetails fd, Flight f, Plane p WHERE f.id = fd.flight AND p.id = fd.plane AND fd.isActive = true AND f.isActive = true AND p.isActive = true ORDER BY fd.departureDateTime DESC, fd.arrivaleDateTime DESC, f.departureCity, f.arrivalCity, p.ARN");
+            Query query = session.createQuery("SELECT fd FROM FlightDetails fd, Flight f, Plane p WHERE f.id = fd.flight AND p.id = fd.plane AND fd.isActive = true AND f.isActive = true AND p.isActive = true ORDER BY fd.departureDateTime DESC, fd.arrivaleDateTime DESC, f.departureCity, f.arrivalCity, p.ARN");
             flightDetails = query.getResultList();
 
             // Création de la réponse JSON
@@ -42,6 +44,10 @@ public class FlightDetailsService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetFlightDetails(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -50,6 +56,7 @@ public class FlightDetailsService {
     public static WsGetSingleFlightDetails readOne(final long id, final String acceptLanguage) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         WsGetSingleFlightDetails response;
         String status = "KO";
         String message;
@@ -61,10 +68,10 @@ public class FlightDetailsService {
         FlightDetails flightDetails = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            flightDetails = Database.em.find(FlightDetails.class, id);
+            flightDetails = session.find(FlightDetails.class, id);
 
             // Vérification de l'existence du constructeur
             if (flightDetails == null || !flightDetails.isActive) {
@@ -79,6 +86,10 @@ public class FlightDetailsService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSingleFlightDetails(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return response;
@@ -87,6 +98,7 @@ public class FlightDetailsService {
     public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -101,7 +113,7 @@ public class FlightDetailsService {
         int conversion_step = 0;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!areValidFlightDetails(formParams, false)) {
@@ -117,7 +129,7 @@ public class FlightDetailsService {
             conversion_step++;
             Date arrivalDateTime = APIFormat.DATETIME_FORMAT.parse(formParams.get("arrivalDateTime").get(0));
 
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
 
             // Récupération du vol
             Flight flight = null;
@@ -146,9 +158,9 @@ public class FlightDetailsService {
             flightDetails.isActive = true;
 
             // Validation des changements
-            Database.em.persist(flightDetails);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(flightDetails);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 201;
@@ -162,7 +174,11 @@ public class FlightDetailsService {
             message = getMessageFromConversionStep(conversion_step, languageCode);
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -171,6 +187,7 @@ public class FlightDetailsService {
     public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -180,7 +197,7 @@ public class FlightDetailsService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
             if (!areValidFlightDetails(formParams, true)) {
@@ -210,7 +227,7 @@ public class FlightDetailsService {
             }
 
             // Récupération du détail du vol
-            FlightDetails flightDetails = Database.em.find(FlightDetails.class, id);
+            FlightDetails flightDetails = session.find(FlightDetails.class, id);
             if (flightDetails == null || !flightDetails.isActive) {
                 code = 400;
                 throw new Exception(MessageService.getMessageFromCode("flight_details_do_not_exist", languageCode).text);
@@ -235,7 +252,7 @@ public class FlightDetailsService {
             }
 
             // Persistence du constructeur
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
             if (flight != null) {
                 flightDetails.flight = flight;
             }
@@ -248,9 +265,9 @@ public class FlightDetailsService {
             if (arrivalDateTime != null) {
                 flightDetails.arrivaleDateTime = arrivalDateTime;
             }
-            Database.em.persist(flightDetails);
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.persist(flightDetails);
+            session.flush();
+            session.getTransaction().commit();
 
             status = "OK";
             code = 200;
@@ -264,7 +281,11 @@ public class FlightDetailsService {
             message = getMessageFromConversionStep(conversion_step, languageCode);
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -273,6 +294,7 @@ public class FlightDetailsService {
     public static WsResponse delete(final String acceptLanguage, final Long id) throws JSONException {
 
         // Initialisation de la réponse
+        Session session = null;
         String status = "KO";
         String message = null;
         int code = 500;
@@ -283,10 +305,10 @@ public class FlightDetailsService {
         FlightDetails flightDetails = null;
 
         try {
-            Database.em.clear();
+            session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            flightDetails = Database.em.find(FlightDetails.class, id);
+            flightDetails = session.find(FlightDetails.class, id);
 
             // Vérification de l'existence du constructeur
             if (flightDetails == null || !flightDetails.isActive) {
@@ -295,10 +317,10 @@ public class FlightDetailsService {
             }
 
             // Suppression du détail du vol
-            Database.em.getTransaction().begin();
+            session.getTransaction().begin();
             flightDetails.isActive = false;
-            Database.em.flush();
-            Database.em.getTransaction().commit();
+            session.flush();
+            session.getTransaction().commit();
 
             // Création de la réponse JSON
             status = "OK";
@@ -311,7 +333,11 @@ public class FlightDetailsService {
             }
         } catch (Exception e) {
             message = e.getMessage();
-            Database.em.getTransaction().rollback();
+            session.getTransaction().rollback();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
 
         return new WsResponse(status, message, code);
@@ -339,13 +365,23 @@ public class FlightDetailsService {
     }
 
     public static FlightDetails exists(long pk) {
-        Database.em.clear();
+        Session session = null;
 
-        // Récupération du constructeur
-        FlightDetails flightDetails = Database.em.find(FlightDetails.class, pk);
-        if (flightDetails == null || !flightDetails.isActive) {
+        try {
+            session = Database.sessionFactory.openSession();
+
+            // Récupération du constructeur
+            FlightDetails flightDetails = session.find(FlightDetails.class, pk);
+            if (flightDetails == null || !flightDetails.isActive) {
+                return null;
+            }
+            return flightDetails;
+        } catch (Exception e) {
             return null;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
-        return flightDetails;
     }
 }

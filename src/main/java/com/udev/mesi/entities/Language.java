@@ -14,7 +14,7 @@ public class Language implements IEntity {
     @Column(nullable = false, unique = true, length = 25)
     public String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "language")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "language")
     public List<Message> messages;
 
     @Override

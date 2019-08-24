@@ -9,19 +9,19 @@ import java.util.List;
 @Entity
 public class FlightDetails implements IEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     public Long id;
 
     @Column(nullable = false, columnDefinition = "bool default true")
     public boolean isActive;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     @org.hibernate.annotations.Index(name = "flightIndex")
     public Flight flight;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     @org.hibernate.annotations.Index(name = "planeIndex")
     public Plane plane;
@@ -32,7 +32,7 @@ public class FlightDetails implements IEntity {
     @Column(nullable = false)
     public Date arrivaleDateTime;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "flightDetails")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "flightDetails")
     public List<Reservation> reservations;
 
     @Override
