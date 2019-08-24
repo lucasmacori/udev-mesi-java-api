@@ -29,6 +29,8 @@ public class PassengerService {
         List<Passenger> passengers = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             Query query = Database.em.createQuery("FROM Passenger WHERE isActive = true");
             passengers = query.getResultList();
@@ -59,6 +61,8 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
+            Database.em.clear();
+
             // Vérification de l'existence de l'email
             Query query = Database.em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.email = :email");
             query.setParameter("email", email);
@@ -90,6 +94,8 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
+            Database.em.clear();
+
             // Vérification de l'existence du numéro de téléphone
             Query query = Database.em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.phoneNumber = :phoneNumber");
             query.setParameter("phoneNumber", phoneNumber);
@@ -121,6 +127,8 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
+            Database.em.clear();
+
             // Vérification de l'existence du numéro de téléphone
             Query query = Database.em.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.IDNumber = :IDNumber");
             query.setParameter("IDNumber", IDNumber);
@@ -152,6 +160,8 @@ public class PassengerService {
         Passenger passenger = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des passagers depuis la base de données
             passenger = Database.em.find(Passenger.class, id);
 
@@ -186,6 +196,8 @@ public class PassengerService {
         Passenger passenger;
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidPassenger(formParams, false)) {
                 code = 400;
@@ -265,6 +277,8 @@ public class PassengerService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidPassenger(formParams, true)) {
                 code = 400;
@@ -375,6 +389,8 @@ public class PassengerService {
         Passenger passager = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des passagers depuis la base de données
             Query query = Database.em.createQuery("FROM Passenger WHERE isActive = true AND id = :id ORDER BY lastName, firstName, email");
             query.setParameter("id", id);
@@ -433,6 +449,8 @@ public class PassengerService {
     }
 
     public static Passenger exists(long pk) {
+        Database.em.clear();
+
         // Récupération du constructeur
         Passenger passenger = Database.em.find(Passenger.class, pk);
         if (passenger == null || !passenger.isActive) {

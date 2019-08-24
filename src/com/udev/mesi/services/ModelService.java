@@ -28,6 +28,8 @@ public class ModelService {
         List<Model> models = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des modèles depuis la base de données
             Query query = Database.em.createQuery("SELECT m FROM Model m, Manufacturer c WHERE c.id = m.manufacturer AND m.isActive = true AND c.isActive = true ORDER BY m.name, c.name");
             models = query.getResultList();
@@ -58,6 +60,8 @@ public class ModelService {
         Model model = null;
 
         try {
+            Database.em.clear();
+
             // Récupération du modèle depuis la base de données
             model = Database.em.find(Model.class, id);
 
@@ -90,6 +94,8 @@ public class ModelService {
         List<Plane> planes = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             Query query = Database.em.createQuery("SELECT p FROM Plane p, Model m WHERE p.isActive = true AND m.isActive = true AND p.model = m AND m.id = :id ORDER BY p.ARN");
             query.setParameter("id", id);
@@ -124,6 +130,8 @@ public class ModelService {
         int conversion_step = 0;
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidModel(formParams, false)) {
                 code = 400;
@@ -187,6 +195,8 @@ public class ModelService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!formParams.containsKey("id")) {
                 code = 400;
@@ -266,6 +276,8 @@ public class ModelService {
         Model model = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des modèles depuis la base de données
             Query query = Database.em.createQuery("FROM Model WHERE isActive = true AND id = :id");
             query.setParameter("id", id);
@@ -328,6 +340,8 @@ public class ModelService {
     }
 
     public static Model exists(long pk) {
+        Database.em.clear();
+
         // Récupération du constructeur
         Model model = Database.em.find(Model.class, pk);
         if (model == null || !model.isActive) {

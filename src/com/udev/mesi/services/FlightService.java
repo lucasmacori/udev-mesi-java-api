@@ -26,6 +26,8 @@ public class FlightService {
         List<Flight> flights = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             Query query = Database.em.createQuery("FROM Flight WHERE isActive = true ORDER BY departureCity, arrivalCity");
             flights = query.getResultList();
@@ -56,6 +58,8 @@ public class FlightService {
         Flight flight = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             flight = Database.em.find(Flight.class, id);
 
@@ -88,6 +92,8 @@ public class FlightService {
         List<FlightDetails> flightDetails = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             Query query = Database.em.createQuery("SELECT fd FROM FlightDetails fd, Flight f, Plane p WHERE f.isActive = true AND fd.isActive = true AND p.isActive = true AND fd.flight = f AND fd.plane = p AND f.id = :flightId AND fd.arrivaleDateTime >= NOW() ORDER BY fd.departureDateTime, fd.arrivaleDateTime");
             query.setParameter("flightId", id);
@@ -118,6 +124,8 @@ public class FlightService {
         Flight flight;
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidFlight(formParams, false)) {
                 code = 400;
@@ -180,6 +188,8 @@ public class FlightService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidFlight(formParams, true)) {
                 code = 400;
@@ -249,6 +259,8 @@ public class FlightService {
         Flight flight = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             Query query = Database.em.createQuery("FROM Flight WHERE isActive = true AND id = :id");
             query.setParameter("id", id);
@@ -295,6 +307,8 @@ public class FlightService {
     }
 
     public static Flight exists(long pk) {
+        Database.em.clear();
+
         // Récupération du vol
         Flight flight = Database.em.find(Flight.class, pk);
         if (flight == null || !flight.isActive) {

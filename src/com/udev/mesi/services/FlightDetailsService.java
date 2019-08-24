@@ -29,6 +29,8 @@ public class FlightDetailsService {
         List<FlightDetails> flightDetails = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des modèles depuis la base de données
             Query query = Database.em.createQuery("SELECT fd FROM FlightDetails fd, Flight f, Plane p WHERE f.id = fd.flight AND p.id = fd.plane AND fd.isActive = true AND f.isActive = true AND p.isActive = true ORDER BY fd.departureDateTime DESC, fd.arrivaleDateTime DESC, f.departureCity, f.arrivalCity, p.ARN");
             flightDetails = query.getResultList();
@@ -59,6 +61,8 @@ public class FlightDetailsService {
         FlightDetails flightDetails = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             flightDetails = Database.em.find(FlightDetails.class, id);
 
@@ -97,6 +101,8 @@ public class FlightDetailsService {
         int conversion_step = 0;
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!areValidFlightDetails(formParams, false)) {
                 code = 400;
@@ -174,6 +180,8 @@ public class FlightDetailsService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!areValidFlightDetails(formParams, true)) {
                 code = 400;
@@ -275,6 +283,8 @@ public class FlightDetailsService {
         FlightDetails flightDetails = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             flightDetails = Database.em.find(FlightDetails.class, id);
 
@@ -329,6 +339,8 @@ public class FlightDetailsService {
     }
 
     public static FlightDetails exists(long pk) {
+        Database.em.clear();
+
         // Récupération du constructeur
         FlightDetails flightDetails = Database.em.find(FlightDetails.class, pk);
         if (flightDetails == null || !flightDetails.isActive) {

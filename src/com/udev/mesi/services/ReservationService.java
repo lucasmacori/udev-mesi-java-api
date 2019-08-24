@@ -29,6 +29,8 @@ public class ReservationService {
         List<Reservation> reservations = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des reservations depuis la base de données
             Query query = Database.em.createQuery("SELECT r FROM Reservation r, Passenger p WHERE p.id = r.passenger AND r.isActive = true AND p.isActive = true ORDER BY r.reservationDate DESC, r.reservationClass");
             reservations = query.getResultList();
@@ -59,6 +61,8 @@ public class ReservationService {
         Reservation reservation = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             reservation = Database.em.find(Reservation.class, id);
 
@@ -93,6 +97,8 @@ public class ReservationService {
         Reservation reservation;
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidReservation(formParams, false)) {
                 code = 400;
@@ -167,6 +173,8 @@ public class ReservationService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidReservation(formParams, true)) {
                 code = 400;
@@ -222,6 +230,8 @@ public class ReservationService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            Database.em.clear();
+
             // Récupération de la réservation depuis la base de données
             Reservation reservation = Database.em.find(Reservation.class, id);
 

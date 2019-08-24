@@ -26,6 +26,7 @@ public class ManufacturerService {
         List<Manufacturer> manufacturers = null;
 
         try {
+            Database.em.clear();
 
             // Récupération des constructeurs depuis la base de données
             Query query = Database.em.createQuery("FROM Manufacturer WHERE isActive = true ORDER BY name");
@@ -57,6 +58,8 @@ public class ManufacturerService {
         Manufacturer manufacturer = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             manufacturer = Database.em.find(Manufacturer.class, id);
 
@@ -91,6 +94,8 @@ public class ManufacturerService {
         Manufacturer manufacturer;
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidManufacturer(formParams, false)) {
                 code = 400;
@@ -154,6 +159,8 @@ public class ManufacturerService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidManufacturer(formParams, true)) {
                 code = 400;
@@ -231,6 +238,7 @@ public class ManufacturerService {
         Manufacturer manufacturer = null;
 
         try {
+            Database.em.clear();
 
             // Récupération des constructeurs depuis la base de données
             Query query = Database.em.createQuery("FROM Manufacturer WHERE isActive = true AND id = :id");
@@ -276,6 +284,8 @@ public class ManufacturerService {
     }
 
     public static Manufacturer exists(long pk) {
+        Database.em.clear();
+
         // Récupération du constructeur
         Manufacturer manufacturer = Database.em.find(Manufacturer.class, pk);
         if (manufacturer == null || !manufacturer.isActive) {

@@ -27,6 +27,8 @@ public class PlaneService {
         List<Plane> planes = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             Query query = Database.em.createQuery("SELECT p FROM Plane p, Model m WHERE m.id = p.model AND p.isActive = true AND m.isActive = true ORDER BY p.ARN");
             planes = query.getResultList();
@@ -55,6 +57,8 @@ public class PlaneService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            Database.em.clear();
+
             // Récupération de l'avion depuis la base de données
             Query query = Database.em.createQuery("From Plane WHERE isActive = true AND ARN = :ARN");
             query.setParameter("ARN", ARN);
@@ -89,6 +93,8 @@ public class PlaneService {
         List<FlightDetails> flightDetails = null;
 
         try {
+            Database.em.clear();
+
             // Récupération des constructeurs depuis la base de données
             Query query = Database.em.createQuery("SELECT fd FROM FlightDetails fd, Plane p, Flight f WHERE p.isActive = true AND fd.isActive = true AND f.isActive = true AND fd.plane = p AND fd.flight = f AND p.ARN = :ARN AND fd.arrivaleDateTime >= NOW() ORDER BY fd.departureDateTime, fd.arrivaleDateTime");
             query.setParameter("ARN", ARN);
@@ -119,6 +125,8 @@ public class PlaneService {
         Plane plane;
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidPlane(formParams, false)) {
                 code = 400;
@@ -197,6 +205,8 @@ public class PlaneService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            Database.em.clear();
+
             // Vérification des paramètres
             if (!isValidPlane(formParams, true)) {
                 code = 400;
@@ -275,6 +285,8 @@ public class PlaneService {
         Plane plane = null;
 
         try {
+            Database.em.clear();
+
             plane = Database.em.find(Plane.class, ARN);
 
             // Vérification de l'existence de l'avion
@@ -309,6 +321,8 @@ public class PlaneService {
     }
 
     public static Plane exists(String pk) {
+        Database.em.clear();
+
         // Récupération du vol
         Query query = Database.em.createQuery("FROM Plane WHERE ARN = :ARN");
         query.setParameter("ARN", pk);

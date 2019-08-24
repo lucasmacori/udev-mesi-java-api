@@ -16,6 +16,8 @@ public class MessageService {
 
     public static WsMessage getMessageFromCode(String messageCode, String languageCode) throws MessageException {
         try {
+            Database.em.clear();
+
             // Récupération du message
             Query query = Database.em.createQuery("SELECT m FROM Message m, Language l WHERE l.id = m.language AND m.code = :messageCode AND l.code = :languageCode");
             query.setParameter("messageCode", messageCode);
@@ -33,6 +35,8 @@ public class MessageService {
 
     public static String processAcceptLanguage(String acceptLanguage) {
         try {
+            Database.em.clear();
+
             // Vérification de l'existence de la language
             Query query = Database.em.createQuery("FROM Language WHERE code = :code");
             query.setParameter("code", acceptLanguage);
