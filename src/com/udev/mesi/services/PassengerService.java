@@ -34,7 +34,7 @@ public class PassengerService {
             session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = session.createQuery("FROM Passenger WHERE isActive = true");
+            Query query = session.createQuery("FROM Passenger WHERE isActive = true ORDER BY lastName, firstName");
             passengers = query.getResultList();
 
             // Création de la réponse JSON
