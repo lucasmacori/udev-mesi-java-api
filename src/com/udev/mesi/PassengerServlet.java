@@ -1,9 +1,6 @@
 package com.udev.mesi;
 
-import com.udev.mesi.messages.WsExists;
-import com.udev.mesi.messages.WsGetPassengers;
-import com.udev.mesi.messages.WsGetSinglePassenger;
-import com.udev.mesi.messages.WsResponse;
+import com.udev.mesi.messages.*;
 import com.udev.mesi.services.PassengerService;
 import org.json.JSONException;
 
@@ -50,6 +47,14 @@ public class PassengerServlet {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getIDNumberExists(@PathParam("IDNumber") final String IDNumber, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
         WsExists response = PassengerService.IDNumberExists(IDNumber, acceptLanguage);
+        return Response.status(response.getCode()).entity(response).build();
+    }
+
+    @GET
+    @Path("{id}/reservations")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFlightDetails(@PathParam("id") final long id, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
+        WsGetReservations response = PassengerService.readReservations(id, acceptLanguage);
         return Response.status(response.getCode()).entity(response).build();
     }
 

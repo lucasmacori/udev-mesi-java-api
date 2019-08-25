@@ -3,11 +3,9 @@ package com.udev.mesi.services;
 import com.udev.mesi.config.APIFormat;
 import com.udev.mesi.config.Database;
 import com.udev.mesi.exceptions.MessageException;
-import com.udev.mesi.messages.WsExists;
-import com.udev.mesi.messages.WsGetPassengers;
-import com.udev.mesi.messages.WsGetSinglePassenger;
-import com.udev.mesi.messages.WsResponse;
+import com.udev.mesi.messages.*;
 import main.java.com.udev.mesi.entities.Passenger;
+import main.java.com.udev.mesi.entities.Reservation;
 import org.hibernate.Session;
 import org.json.JSONException;
 
@@ -200,6 +198,41 @@ public class PassengerService {
         } catch (Exception e) {
             message = e.getMessage();
             response = new WsGetSinglePassenger(status, message, code, null);
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+        return response;
+    }
+
+    public static WsGetReservations readReservations(final long id, final String acceptLanguage) throws JSONException {
+
+        // Initialisation de la réponse
+        Session session = null;
+        WsGetReservations response;
+        String status = "KO";
+        String message = null;
+        int code = 500;
+
+        List<Reservation> reservations = null;
+
+        try {
+            session = Database.sessionFactory.openSession();
+
+            // Récupération des constructeurs depuis la base de données
+            Query query = session.createQuery("SELECT r FROM Reservation r, Passenger p, FlightDetails fd, Flight f WHERE r.isActive = true AND p.isActive = true AND fd.isActive = true AND f.isActive = true AND r.passenger = p AND r.flightDetails = fd AND fd.flight = f AND p.id = :passengerId ORDER BY fd.departureDateTime, fd.arrivaleDateTime, f.departureCity, f.arrivalCity");
+            query.setParameter("passengerId", id);
+            reservations = query.getResultList();
+
+            // Création de la réponse JSON
+            status = "OK";
+            code = 200;
+            response = new WsGetReservations(status, message, code, reservations);
+        } catch (Exception e) {
+            message = e.getMessage();
+            response = new WsGetReservations(status, message, code, null);
         } finally {
             if (session != null && session.isOpen()) {
                 session.close();
