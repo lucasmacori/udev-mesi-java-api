@@ -20,7 +20,7 @@
             <property name="hibernate.connection.username" value="udev"/>
             <property name="hibernate.connection.password" value="udev"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
-            <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.query.substitutions" value="org.hibernate.hql.ast.origin.hql.parse.HQLParser"/>
             <property name="connection.autocommit" value="true"/>
         </properties>

@@ -169,6 +169,7 @@ public class FlightDetailsService {
                 message = "'flight_id' " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;
                 code = 400;
             } catch (MessageException me) {
+                code = 500;
             }
         } catch (ParseException e) {
             message = getMessageFromConversionStep(conversion_step, languageCode);
@@ -276,6 +277,7 @@ public class FlightDetailsService {
             try {
                 message = "'id' " + MessageService.getMessageFromCode("is_not_an_integer", languageCode).text;
             } catch (MessageException me) {
+                code = 500;
             }
         } catch (ParseException e) {
             message = getMessageFromConversionStep(conversion_step, languageCode);
