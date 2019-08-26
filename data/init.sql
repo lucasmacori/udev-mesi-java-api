@@ -307,3 +307,9 @@ VALUES ('invalid_report', 'fr', 'Le rapport est invalide, veuillez renseigner le
        ('report_does_not_exist', 'it', 'Il relazione non esiste');
 
 -- Rapports (requêtes SQL)
+-- Réservations sur une période donnée
+INSERT INTO Report (code, description, isActive, query)
+VALUES ('reservations_periode', 'Récupère les réservations sur une période donnée', true,
+        'SELECT COUNT(*) AS Nombre FROM Reservation WHERE reservationDate >= :minDate AND reservationDate <= :maxDate GROUP BY reservationDate ORDER BY reservationDate');
+
+

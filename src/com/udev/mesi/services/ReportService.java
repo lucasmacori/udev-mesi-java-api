@@ -134,8 +134,14 @@ public class ReportService {
             query = session.createNativeQuery(report.query);
 
             // Récupération des valeurs de sortie
+            String[] fields;
             String select = report.query.substring(6, report.query.toUpperCase().indexOf("FROM"));
-            String[] fields = select.trim().split(",");
+            if (select.contains(",")) {
+                fields = select.trim().split(",");
+            } else {
+                fields = new String[1];
+                fields[0] = select.trim();
+            }
             for (int i = 0; i < fields.length; i++) {
                 fields[i] = fields[i].trim();
                 if (fields[i].toUpperCase().contains(" AS ")) {
@@ -168,9 +174,14 @@ public class ReportService {
             List resultList = query.getResultList();
             String[][] object = new String[resultList.size()][fields.length];
             for (int i = 0; i < resultList.size(); i++) {
-                Object[] currentObject = (Object[]) resultList.get(i);
-                for (int j = 0; j < fields.length; j++) {
-                    object[i][j] = String.valueOf(currentObject[j]);
+                if (fields.length > 1) {
+                    Object[] currentObject = (Object[]) resultList.get(i);
+                    for (int j = 0; j < fields.length; j++) {
+                        object[i][j] = String.valueOf(currentObject[j]);
+                    }
+                } else {
+                    Object currentObject = resultList.get(i);
+                    object[i][0] = String.valueOf(currentObject);
                 }
             }
 
