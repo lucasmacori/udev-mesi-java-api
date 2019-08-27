@@ -322,3 +322,8 @@ INSERT INTO Report (code, description, isActive, query)
 VALUES ('nombre_passagers_reservations_periode',
         'Récupère le nombre de passagers ayant effectué au moins une réservation dans une période donnée', true,
         'SELECT SUM(Compteur) AS Nombre FROM (SELECT COUNT(DISTINCT passenger_id) AS Compteur FROM Reservation WHERE reservationDate >= :minDate AND reservationDate <= :maxDate ) AS requete');
+
+-- Nombre d'annulations sur une période donnée
+INSERT INTO Report (code, description, isActive, query)
+VALUES ('nombre_annulations_periode', 'Récupère le nombre d''annulations sur une période donnée', true,
+        'SELECT COUNT(*) AS Nombre FROM Reservation WHERE isActive = false AND reservationDate >= :minDate AND reservationdate <= :maxDate ');
