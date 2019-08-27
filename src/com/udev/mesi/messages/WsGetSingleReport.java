@@ -20,4 +20,9 @@ public class WsGetSingleReport extends WsResponse {
             this.report = report.toWs();
         }
     }
+
+    public WsGetSingleReport(String status, String message, int code, WsReport report) {
+        super(status, message, code);
+        this.report = report;
+    }
 }

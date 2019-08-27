@@ -11,6 +11,7 @@ public class WsReport {
     public String description;
     public String query;
     public boolean isActive;
+    public String[] parameters;
 
     public WsReport() {
     }
@@ -20,6 +21,14 @@ public class WsReport {
         this.description = description;
         this.query = query;
         this.isActive = isActive;
+    }
+
+    public WsReport(String code, String description, String query, boolean isActive, String[] parameters) {
+        this.code = code;
+        this.description = description;
+        this.query = query;
+        this.isActive = isActive;
+        this.parameters = parameters;
     }
 
     public static WsReport[] getArrayFromList(List<Report> reports) {

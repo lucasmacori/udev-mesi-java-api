@@ -6,6 +6,7 @@ import com.udev.mesi.exceptions.MessageException;
 import com.udev.mesi.messages.WsGetReportResults;
 import com.udev.mesi.messages.WsGetReports;
 import com.udev.mesi.messages.WsGetSingleReport;
+import com.udev.mesi.models.WsReport;
 import com.udev.mesi.models.WsReportResults;
 import main.java.com.udev.mesi.entities.Report;
 import org.hibernate.Session;
@@ -14,6 +15,7 @@ import org.json.JSONException;
 import javax.persistence.Query;
 import javax.ws.rs.core.MultivaluedMap;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReportService {
@@ -57,6 +59,7 @@ public class ReportService {
         // Initialisation de la réponse
         Session session = null;
         WsGetSingleReport response;
+        WsReport report = null;
         String status = "KO";
         String message;
         int code = 500;
@@ -77,14 +80,18 @@ public class ReportService {
                 code = 400;
                 throw new Exception(MessageService.getMessageFromCode("report_does_not_exist", languageCode).text);
             }
+            report = reports.get(0).toWs();
+
+            // Récupération des paramètres
+            report.parameters = getParameters(report.query);
 
             // Création de la réponse JSON
             status = "OK";
             code = 200;
-            response = new WsGetSingleReport(status, null, code, reports.get(0));
+            response = new WsGetSingleReport(status, null, code, report);
         } catch (Exception e) {
             message = e.getMessage();
-            response = new WsGetSingleReport(status, message, code, null);
+            response = new WsGetSingleReport(status, message, code, report);
         } finally {
             if (session != null && session.isOpen()) {
                 session.close();
@@ -209,5 +216,25 @@ public class ReportService {
         }
 
         return response;
+    }
+
+    private static String[] getParameters(String sqlQuery) {
+        List<String> parameters = new ArrayList<String>();
+
+        // Récupération des paramètres à injecter
+        while (sqlQuery.contains(":")) {
+            int index = sqlQuery.indexOf(':');
+            sqlQuery = sqlQuery.substring(index + 1);
+            String parameter = sqlQuery.substring(0, sqlQuery.indexOf(' '));
+            parameters.add(parameter);
+        }
+
+        // Transformation de la liste en tableau
+        String[] parametersArray = new String[parameters.size()];
+        for (int i = 0; i < parameters.size(); i++) {
+            parametersArray[i] = parameters.get(i);
+        }
+
+        return parametersArray;
     }
 }
