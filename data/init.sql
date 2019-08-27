@@ -312,4 +312,13 @@ INSERT INTO Report (code, description, isActive, query)
 VALUES ('reservations_periode', 'Récupère les réservations sur une période donnée', true,
         'SELECT COUNT(*) AS Nombre FROM Reservation WHERE reservationDate >= :minDate AND reservationDate <= :maxDate GROUP BY reservationDate ORDER BY reservationDate');
 
+-- Passagers enregistrés dans la base
+INSERT INTO Report (code, description, isActive, query)
+VALUES ('nombre_passagers_enregistres', 'Récupère le nombre de passagers enregistrés', true,
+        'SELECT COUNT(*) AS Nombre FROM Passenger');
 
+-- Passagers ayant effectué une réservation dans une période donnée
+INSERT INTO Report (code, description, isActive, query)
+VALUES ('nombre_passagers_reservations_periode',
+        'Récupère le nombre de passagers ayant effectué au moins une réservation dans une période donnée', true,
+        'SELECT SUM(Compteur) AS Nombre FROM (SELECT COUNT(DISTINCT passenger_id) AS Compteur FROM Reservation WHERE reservationDate >= :minDate AND reservationDate <= :maxDate ) AS requete');

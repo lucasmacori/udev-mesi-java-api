@@ -159,6 +159,7 @@ public class ReportService {
 
                 // Vérification du paramètre actuel
                 if (!formParams.containsKey(parameter)) {
+                    code = 400;
                     throw new Exception(MessageService.getMessageFromCode("invalid_report", languageCode).text + " '" + parameter + "'");
                 }
 

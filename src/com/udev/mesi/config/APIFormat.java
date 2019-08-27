@@ -31,7 +31,8 @@ public class APIFormat {
     // Email
     public static boolean isValidEmail(String email) {
         email = email.trim();
-        return (email.length() < 51 && email.contains("@") && email.indexOf("@") > 0 && email.contains(".") && email.indexOf(".") > 1 && email.length() > 3);
+        // return (email.length() < 51 && email.contains("@") && email.indexOf("@") > 0 && email.contains(".") && email.indexOf(".") > 1 && email.length() > 3);
+        return (email.length() <= 50 && email.contains("@") && email.length() > 3);
     }
 
     // String
