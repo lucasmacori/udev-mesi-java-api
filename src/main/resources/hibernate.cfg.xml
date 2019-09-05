@@ -36,5 +36,7 @@
         <mapping class="main.java.com.udev.mesi.entities.Language"/>
         <mapping class="main.java.com.udev.mesi.entities.Message"/>
         <mapping class="main.java.com.udev.mesi.entities.Report"/>
+        <mapping class="main.java.com.udev.mesi.entities.AppUser"/>
+        <mapping class="main.java.com.udev.mesi.entities.Token"/>
     </session-factory>
 </hibernate-configuration>

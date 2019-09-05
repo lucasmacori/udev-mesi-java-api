@@ -69,7 +69,7 @@ public class PassengerService {
             session = Database.sessionFactory.openSession();
 
             // Vérification de l'existence de l'email
-            Query query = session.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.email = :email");
+            Query query = session.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.email = :email AND p.isActive = true");
             query.setParameter("email", email);
             int count = Integer.parseInt(query.getResultList().get(0).toString());
 
@@ -107,7 +107,7 @@ public class PassengerService {
             session = Database.sessionFactory.openSession();
 
             // Vérification de l'existence du numéro de téléphone
-            Query query = session.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.phoneNumber = :phoneNumber");
+            Query query = session.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.phoneNumber = :phoneNumber AND p.isActive = true");
             query.setParameter("phoneNumber", phoneNumber);
             int count = Integer.parseInt(query.getResultList().get(0).toString());
 
@@ -145,7 +145,7 @@ public class PassengerService {
             session = Database.sessionFactory.openSession();
 
             // Vérification de l'existence du numéro de téléphone
-            Query query = session.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.IDNumber = :IDNumber");
+            Query query = session.createQuery("SELECT COUNT(p.id) FROM Passenger p WHERE p.IDNumber = :IDNumber AND p.isActive = true");
             query.setParameter("IDNumber", IDNumber);
             int count = Integer.parseInt(query.getResultList().get(0).toString());
 

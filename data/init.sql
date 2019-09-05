@@ -306,6 +306,16 @@ VALUES ('invalid_report', 'fr', 'Le rapport est invalide, veuillez renseigner le
        ('report_already_exists', 'it', 'Il relazione esiste già'),
        ('report_does_not_exist', 'it', 'Il relazione non esiste');
 
+-- Connexion
+INSERT INTO message (code, language_code, text)
+VALUES ('invalid_auth', 'fr', 'Les données de connexion sont invalides, veuillez renseigner les valeurs suivantes:'),
+       ('invalid_auth', 'en', 'The authentication data is invalid, please provide the following values:'),
+       ('invalid_auth', 'it', 'I dati della connessione non sono validi, inserire i seguenti valori:'),
+       ('invalid_username_password', 'fr', 'Mauvais nom d''utilisateur ou mot de passe'),
+       ('invalid_username_password', 'en', 'Le nom d''utilisateur et le mot de passe ne correspondent pas'),
+       ('invalid_username_password', 'en', 'Wrong username or password'),
+       ('invalid_username_password', 'it', 'Nome utente o password sbagliati');
+
 -- Rapports (requêtes SQL)
 -- Réservations sur une période donnée
 INSERT INTO Report (code, description, isActive, query)
