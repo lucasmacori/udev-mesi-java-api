@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ModelService {
 
-    public static WsGetModels read() throws JSONException {
+    public static WsGetModels read(final String acceptLanguage, final String username, final String token) throws JSONException {
 
         // Initialisation de la réponse
         Session session = null;
@@ -30,6 +30,15 @@ public class ModelService {
         List<Model> models = null;
 
         try {
+            // Récupération de la langue de l'utilisateur
+            String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+            // Vérification du token
+            if (!AuthService.verifyToken(username, token)) {
+                code = 401;
+                throw new Exception(MessageService.getMessageFromCode("user_not_authentified", languageCode).text);
+            }
+
             session = Database.sessionFactory.openSession();
 
             // Récupération des modèles depuis la base de données
@@ -52,7 +61,7 @@ public class ModelService {
         return response;
     }
 
-    public static WsGetSingleModel readOne(final long id, final String acceptLanguage) throws JSONException {
+    public static WsGetSingleModel readOne(final long id, final String acceptLanguage, final String username, final String token) throws JSONException {
 
         // Initialisation de la réponse
         Session session = null;
@@ -67,6 +76,12 @@ public class ModelService {
         Model model = null;
 
         try {
+            // Vérification du token
+            if (!AuthService.verifyToken(username, token)) {
+                code = 401;
+                throw new Exception(MessageService.getMessageFromCode("user_not_authentified", languageCode).text);
+            }
+
             session = Database.sessionFactory.openSession();
 
             // Récupération du modèle depuis la base de données
@@ -94,7 +109,7 @@ public class ModelService {
         return response;
     }
 
-    public static WsGetPlanes readPlanes(final long id, final String acceptLanguage) throws JSONException {
+    public static WsGetPlanes readPlanes(final long id, final String acceptLanguage, final String username, final String token) throws JSONException {
 
         // Initialisation de la réponse
         Session session = null;
@@ -106,6 +121,15 @@ public class ModelService {
         List<Plane> planes = null;
 
         try {
+            // Récupération de la langue de l'utilisateur
+            String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+            // Vérification du token
+            if (!AuthService.verifyToken(username, token)) {
+                code = 401;
+                throw new Exception(MessageService.getMessageFromCode("user_not_authentified", languageCode).text);
+            }
+
             session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
@@ -129,7 +153,7 @@ public class ModelService {
         return response;
     }
 
-    public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams, final String username, final String token) throws JSONException {
 
         // Initialisation de la réponse
         Session session = null;
@@ -147,6 +171,12 @@ public class ModelService {
         int conversion_step = 0;
 
         try {
+            // Vérification du token
+            if (!AuthService.verifyToken(username, token)) {
+                code = 401;
+                throw new Exception(MessageService.getMessageFromCode("user_not_authentified", languageCode).text);
+            }
+
             session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
@@ -204,7 +234,7 @@ public class ModelService {
         return new WsResponse(status, message, code);
     }
 
-    public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsResponse update(final String acceptLanguage, final MultivaluedMap<String, String> formParams, final String username, final String token) throws JSONException {
 
         // Initialisation de la réponse
         Session session = null;
@@ -217,6 +247,12 @@ public class ModelService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            // Vérification du token
+            if (!AuthService.verifyToken(username, token)) {
+                code = 401;
+                throw new Exception(MessageService.getMessageFromCode("user_not_authentified", languageCode).text);
+            }
+
             session = Database.sessionFactory.openSession();
 
             // Vérification des paramètres
@@ -288,7 +324,7 @@ public class ModelService {
         return new WsResponse(status, message, code);
     }
 
-    public static WsResponse delete(final String acceptLanguage, final Long id) throws JSONException {
+    public static WsResponse delete(final String acceptLanguage, final Long id, final String username, final String token) throws JSONException {
 
         // Initialisation de la réponse
         Session session = null;
@@ -303,6 +339,12 @@ public class ModelService {
         Model model = null;
 
         try {
+            // Vérification du token
+            if (!AuthService.verifyToken(username, token)) {
+                code = 401;
+                throw new Exception(MessageService.getMessageFromCode("user_not_authentified", languageCode).text);
+            }
+
             session = Database.sessionFactory.openSession();
 
             // Récupération des modèles depuis la base de données

@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ReportService {
 
-    public static WsGetReports read() throws JSONException {
+    public static WsGetReports read(final String acceptLanguage, final String username, final String token) throws JSONException {
 
         // Initialisation de la réponse
         Session session = null;
@@ -32,6 +32,15 @@ public class ReportService {
         List<Report> reports = null;
 
         try {
+            // Récupération de la langue de l'utilisateur
+            String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
+
+            // Vérification du token
+            if (!AuthService.verifyToken(username, token)) {
+                code = 401;
+                throw new Exception(MessageService.getMessageFromCode("user_not_authentified", languageCode).text);
+            }
+
             session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
@@ -54,7 +63,7 @@ public class ReportService {
         return response;
     }
 
-    public static WsGetSingleReport readOne(final String reportCode, final String acceptLanguage) throws JSONException {
+    public static WsGetSingleReport readOne(final String reportCode, final String acceptLanguage, final String username, final String token) throws JSONException {
 
         // Initialisation de la réponse
         Session session = null;
@@ -68,6 +77,12 @@ public class ReportService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            // Vérification du token
+            if (!AuthService.verifyToken(username, token)) {
+                code = 401;
+                throw new Exception(MessageService.getMessageFromCode("user_not_authentified", languageCode).text);
+            }
+
             session = Database.sessionFactory.openSession();
 
             // Récupération du rapport depuis la base de données
@@ -101,7 +116,7 @@ public class ReportService {
         return response;
     }
 
-    public static WsGetReportResults executeReport(final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
+    public static WsGetReportResults executeReport(final String acceptLanguage, final MultivaluedMap<String, String> formParams, final String username, final String token) throws JSONException {
 
         // Initialisation de la réponse
         Session session = null;
@@ -115,6 +130,12 @@ public class ReportService {
         String languageCode = MessageService.processAcceptLanguage(acceptLanguage);
 
         try {
+            // Vérification du token
+            if (!AuthService.verifyToken(username, token)) {
+                code = 401;
+                throw new Exception(MessageService.getMessageFromCode("user_not_authentified", languageCode).text);
+            }
+
             // Vérification des paramètres
             if (!formParams.containsKey("code")) {
                 code = 400;

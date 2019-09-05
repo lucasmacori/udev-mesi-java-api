@@ -16,48 +16,48 @@ import javax.ws.rs.core.Response;
 public class PlaneServlet {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get() throws JSONException {
-        WsGetPlanes response = PlaneService.read();
+    public Response get(@HeaderParam("Accept-Language") final String acceptLanguage, @HeaderParam("username") final String username, @HeaderParam("token") final String token) throws JSONException {
+        WsGetPlanes response = PlaneService.read(acceptLanguage, username, token);
         return Response.status(response.getCode()).entity(response).build();
     }
 
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getByPk(@PathParam("id") final String ARN, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
-        WsGetSinglePlane response = PlaneService.readOne(ARN, acceptLanguage);
+    public Response getByPk(@PathParam("id") final String ARN, @HeaderParam("Accept-Language") final String acceptLanguage, @HeaderParam("username") final String username, @HeaderParam("token") final String token) throws JSONException {
+        WsGetSinglePlane response = PlaneService.readOne(ARN, acceptLanguage, username, token);
         return Response.status(response.getCode()).entity(response).build();
     }
 
     @GET
     @Path("{id}/flightDetails")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getFlightDetails(@PathParam("id") final String ARN, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
-        WsGetFlightDetails response = PlaneService.readFlightDetails(ARN, acceptLanguage);
+    public Response getFlightDetails(@PathParam("id") final String ARN, @HeaderParam("Accept-Language") final String acceptLanguage, @HeaderParam("username") final String username, @HeaderParam("token") final String token) throws JSONException {
+        WsGetFlightDetails response = PlaneService.readFlightDetails(ARN, acceptLanguage, username, token);
         return Response.status(response.getCode()).entity(response).build();
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response create(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
-        WsResponse response = PlaneService.create(acceptLanguage, formParams);
+    public Response create(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams, @HeaderParam("username") final String username, @HeaderParam("token") final String token) throws JSONException {
+        WsResponse response = PlaneService.create(acceptLanguage, formParams, username, token);
         return Response.status(response.getCode()).entity(response).build();
     }
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response update(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
-        WsResponse response = PlaneService.update(acceptLanguage, formParams);
+    public Response update(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams, @HeaderParam("username") final String username, @HeaderParam("token") final String token) throws JSONException {
+        WsResponse response = PlaneService.update(acceptLanguage, formParams, username, token);
         return Response.status(response.getCode()).entity(response).build();
     }
 
     @DELETE
     @Path("{ARN}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("ARN") final String ARN, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
-        WsResponse response = PlaneService.delete(acceptLanguage, ARN);
+    public Response delete(@PathParam("ARN") final String ARN, @HeaderParam("Accept-Language") final String acceptLanguage, @HeaderParam("username") final String username, @HeaderParam("token") final String token) throws JSONException {
+        WsResponse response = PlaneService.delete(acceptLanguage, ARN, username, token);
         return Response.status(response.getCode()).entity(response).build();
     }
 }

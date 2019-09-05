@@ -312,9 +312,20 @@ VALUES ('invalid_auth', 'fr', 'Les données de connexion sont invalides, veuille
        ('invalid_auth', 'en', 'The authentication data is invalid, please provide the following values:'),
        ('invalid_auth', 'it', 'I dati della connessione non sono validi, inserire i seguenti valori:'),
        ('invalid_username_password', 'fr', 'Mauvais nom d''utilisateur ou mot de passe'),
-       ('invalid_username_password', 'en', 'Le nom d''utilisateur et le mot de passe ne correspondent pas'),
        ('invalid_username_password', 'en', 'Wrong username or password'),
-       ('invalid_username_password', 'it', 'Nome utente o password sbagliati');
+       ('invalid_username_password', 'it', 'Nome utente o password sbagliati'),
+       ('invalid_username_token', 'fr', 'Mauvais nom d''utilisateur ou token'),
+       ('invalid_username_token', 'en', 'Wrong username or token'),
+       ('invalid_username_token', 'it', 'Nome utente o token sbagliati'),
+       ('user_already_exists', 'fr', 'L''utilisateur existe déjà'),
+       ('user_already_exists', 'en', 'The user already exists'),
+       ('user_already_exists', 'it', 'L''utente esiste già'),
+       ('user_does_not_exist', 'fr', 'L''utilisateur n''existe pas'),
+       ('user_does_not_exist', 'en', 'The user does not exist'),
+       ('user_does_not_exist', 'it', 'L''utente non esiste'),
+       ('user_not_authentified', 'fr', 'L''utilisateur n''est pas identifié'),
+       ('user_not_authentified', 'en', 'The user is not authentified'),
+       ('user_not_authentified', 'it', 'L''utente non é autenticata');
 
 -- Rapports (requêtes SQL)
 -- Réservations sur une période donnée

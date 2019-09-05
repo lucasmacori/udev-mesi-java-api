@@ -15,23 +15,23 @@ import javax.ws.rs.core.Response;
 public class ReportServlet {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get() throws JSONException {
-        WsGetReports response = ReportService.read();
+    public Response get(@HeaderParam("Accept-Language") final String acceptLanguage, @HeaderParam("username") final String username, @HeaderParam("token") final String token) throws JSONException {
+        WsGetReports response = ReportService.read(acceptLanguage, username, token);
         return Response.status(response.getCode()).entity(response).build();
     }
 
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getByPk(@PathParam("id") final String code, @HeaderParam("Accept-Language") final String acceptLanguage) throws JSONException {
-        WsGetSingleReport response = ReportService.readOne(code, acceptLanguage);
+    public Response getByPk(@PathParam("id") final String code, @HeaderParam("Accept-Language") final String acceptLanguage, @HeaderParam("username") final String username, @HeaderParam("token") final String token) throws JSONException {
+        WsGetSingleReport response = ReportService.readOne(code, acceptLanguage, username, token);
         return Response.status(response.getCode()).entity(response).build();
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response execute(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams) throws JSONException {
-        WsGetReportResults response = ReportService.executeReport(acceptLanguage, formParams);
+    public Response execute(@HeaderParam("Accept-Language") final String acceptLanguage, final MultivaluedMap<String, String> formParams, @HeaderParam("username") final String username, @HeaderParam("token") final String token) throws JSONException {
+        WsGetReportResults response = ReportService.executeReport(acceptLanguage, formParams, username, token);
         return Response.status(response.getCode()).entity(response).build();
     }
 }
