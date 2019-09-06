@@ -327,6 +327,10 @@ VALUES ('invalid_auth', 'fr', 'Les données de connexion sont invalides, veuille
        ('user_not_authentified', 'en', 'The user is not authentified'),
        ('user_not_authentified', 'it', 'L''utente non é autenticata');
 
+-- Compte admin (MDP = admin123)
+INSERT INTO AppUser (id, username, hash)
+VALUES (1, 'admin', '$2a$12$GSWojTSkm0ZROczOm5brGOuHkL.xYUzo2k2HsvnS3C/h8zXHBVKPO');
+
 -- Rapports (requêtes SQL)
 -- Réservations sur une période donnée
 INSERT INTO Report (code, description, isActive, query)

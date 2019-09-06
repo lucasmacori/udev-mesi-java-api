@@ -88,6 +88,9 @@ public class AuthService {
         }
     }
 
+    // TODO: Faire une méthode de récupération des utilisateurs
+    // TODO: Faire une méthode de récupération d'un utilisateur spécifique
+
     public static WsResponse create(final String acceptLanguage, final MultivaluedMap<String, String> formParams, final String username, final String token) {
         Session session = null;
 
