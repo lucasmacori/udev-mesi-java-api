@@ -182,7 +182,7 @@ create table report
             primary key,
     description varchar(255)         not null,
     isactive    boolean default true not null,
-    query       varchar(255)         not null
+    query       varchar(1000)        not null
 );
 
 alter table report
@@ -352,3 +352,13 @@ VALUES ('nombre_passagers_reservations_periode',
 INSERT INTO Report (code, description, isActive, query)
 VALUES ('nombre_annulations_periode', 'Récupère le nombre d''annulations sur une période donnée', true,
         'SELECT COUNT(*) AS Nombre FROM Reservation WHERE isActive = false AND reservationDate >= :minDate AND reservationdate <= :maxDate ');
+
+-- Nombre d'avions actuellement en maintenance
+INSERT INTO Report (code, description, isActive, query)
+VALUES ('nombre_avions_maintenance', 'Récupère le nombre d''avions actuellement en maintance', true,
+        'SELECT COUNT(*) AS Nombre FROM Plane WHERE isUnderMaintenance = true');
+
+-- L'avion qui a effectué le plus de vols sur une période donnée
+INSERT INTO Report (code, description, isActive, query)
+VALUES ('avion_plus_vols_periode', 'Récupère l''avion ayant effectué le plus de vols sur une période donnée', true,
+        'SELECT COUNT(fd.id) AS Nombre, p.ARN AS ARN, m.name AS Modele, c.name AS Constructeur FROM Plane p, Model m, Manufacturer c, FlightDetails fd WHERE p.isActive = true AND m.isActive = true AND c.isActive = true AND m.id = p.model_id AND c.id = m.manufacturer_id AND fd.plane_arn = p.ARN AND fd.departuredatetime >= :minDate AND fd.arrivaledatetime <= :maxDate GROUP BY p.ARN, m.name, c.name HAVING COUNT(fd.id) = (SELECT MAX((SELECT DISTINCT COUNT(DISTINCT a1.ARN) FROM Plane a1, FlightDetails fd1 WHERE fd1.plane_arn = a1.ARN)))');

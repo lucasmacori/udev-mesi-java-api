@@ -41,7 +41,7 @@ public class PlaneService {
             session = Database.sessionFactory.openSession();
 
             // Récupération des constructeurs depuis la base de données
-            Query query = session.createQuery("SELECT p FROM Plane p, Model m WHERE m.id = p.model AND p.isActive = true AND m.isActive = true ORDER BY p.ARN");
+            Query query = session.createQuery("SELECT p FROM Plane p, Model m WHERE m = p.model AND p.isActive = true AND m.isActive = true ORDER BY p.ARN");
             planes = query.getResultList();
 
             // Création de la réponse JSON

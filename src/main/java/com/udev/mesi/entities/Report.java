@@ -19,7 +19,7 @@ public class Report implements IEntity {
     @Column(nullable = false, columnDefinition = "bool default true")
     public boolean isActive;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     public String query;
 
     @Override

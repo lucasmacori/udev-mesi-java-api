@@ -173,7 +173,7 @@ public class ReportService {
             for (int i = 0; i < fields.length; i++) {
                 fields[i] = fields[i].trim();
                 if (fields[i].toUpperCase().contains(" AS ")) {
-                    fields[i] = fields[i].substring(fields[i].indexOf(" AS ") + 4).trim();
+                    fields[i] = fields[i].substring(fields[i].toUpperCase().indexOf(" AS ") + 4).trim();
                 }
             }
 

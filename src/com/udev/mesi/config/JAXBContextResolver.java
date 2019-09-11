@@ -15,7 +15,7 @@ import java.util.Set;
 public class JAXBContextResolver implements ContextResolver<JAXBContext> {
     private final JAXBContext context;
     private final Set<Class> types;
-    private Class[] ctypes = {WsResponse.class, WsGetManufacturers.class, WsGetModels.class, WsGetPlanes.class, WsGetFlights.class, WsGetFlightDetails.class, WsGetPassengers.class, WsGetReservations.class, WsGetReports.class}; //your pojo class
+    private Class[] ctypes = {WsResponse.class, WsGetManufacturers.class, WsGetModels.class, WsGetPlanes.class, WsGetFlights.class, WsGetFlightDetails.class, WsGetPassengers.class, WsGetReservations.class, WsGetReports.class, WsGetReportResults.class}; //your pojo class
 
     public JAXBContextResolver() throws Exception {
         this.types = new HashSet(Arrays.asList(ctypes));
