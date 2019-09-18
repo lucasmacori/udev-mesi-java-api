@@ -17,6 +17,14 @@ public class Language implements IEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "language")
     public List<Message> messages;
 
+    public Language() {
+    }
+
+    public Language(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
+
     @Override
     public WsLanguage toWs() {
         return new WsLanguage(code, name);

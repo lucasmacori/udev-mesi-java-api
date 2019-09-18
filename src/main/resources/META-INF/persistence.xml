@@ -15,7 +15,8 @@
         <class>main.java.com.udev.mesi.entities.Passenger</class>
         <class>main.java.com.udev.mesi.entities.Reservation</class>
 		<properties>
-            <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/udev"/>
+            <property name="hibernate.connection.url"
+                      value="jdbc:postgresql://localhost:5432/udev?characterEncoding=UTF-8"/>
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
             <property name="hibernate.connection.username" value="udev"/>
             <property name="hibernate.connection.password" value="udev"/>
@@ -23,6 +24,7 @@
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.query.substitutions" value="org.hibernate.hql.ast.origin.hql.parse.HQLParser"/>
             <property name="connection.autocommit" value="true"/>
+            <property name="connection.characterEncoding" value="utf-8"/>
         </properties>
     </persistence-unit>
 </persistence>

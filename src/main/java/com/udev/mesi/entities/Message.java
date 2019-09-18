@@ -21,6 +21,15 @@ public class Message implements IEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     public String text;
 
+    public Message() {
+    }
+
+    public Message(String code, Language language, String text) {
+        this.code = code;
+        this.language = language;
+        this.text = text;
+    }
+
     @Override
     public WsMessage toWs() {
         return new WsMessage(code, language.toWs(), text);

@@ -22,4 +22,8 @@
 		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
 
+    <listener>
+        <listener-class>com.udev.mesi.config.ApplicationServletContextListener</listener-class>
+    </listener>
+
 </web-app>

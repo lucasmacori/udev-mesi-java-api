@@ -18,4 +18,12 @@ public class AppUser {
 
     @Column(nullable = false, length = 100)
     public String hash;
+
+    public AppUser() {
+    }
+
+    public AppUser(String username, String hash) {
+        this.username = username;
+        this.hash = hash;
+    }
 }

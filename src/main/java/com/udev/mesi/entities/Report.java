@@ -22,6 +22,15 @@ public class Report implements IEntity {
     @Column(nullable = false, length = 1000)
     public String query;
 
+    public Report() {
+    }
+
+    public Report(String code, String description, String query) {
+        this.code = code;
+        this.description = description;
+        this.query = query;
+    }
+
     @Override
     public WsReport toWs() {
         return new WsReport(code, description, query, isActive);

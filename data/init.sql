@@ -1,6 +1,6 @@
 -- Base de données et utilisateur
 CREATE USER udev WITH PASSWORD 'udev';
-CREATE DATABASE udev;
+CREATE DATABASE udev WITH ENCODING ='UTF8';
 GRANT ALL PRIVILEGES ON DATABASE udev to udev;
 
 -- Table
